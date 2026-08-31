@@ -42,14 +42,11 @@
 
     <script>
         const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDgxODIxODQsImV4cCI6MjAxMzc1ODE4NH0.-LGIK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         
-        const opciones = {
-            auth: {
-                persistSession: false
-            }
-        };
-
+        // REEMPLAZA ESTO CON LA LLAVE QUE COPIASTE DE SUPABASE
+        const supabaseKey = 'PEGA_AQUÍ_TU_NUEVA_LLAVE_COMPLETA_SIN_ESPACIOS'; 
+        
+        const opciones = { auth: { persistSession: false } };
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, opciones);
 
         // FUNCIÓN 1: CARGAR EVENTOS
@@ -80,31 +77,22 @@
             });
         }
 
-        // FUNCIÓN 2: CARGAR GALERÍA AUTOMÁTICA
+        // FUNCIÓN 2: CARGAR GALERÍA
         async function cargarGaleria() {
             const contenedorGaleria = document.getElementById('contenedor-galeria');
-            
-            // Busca la lista de archivos en el bucket "galeria"
             const { data, error } = await clienteSupabase.storage.from('galeria').list();
 
             if (error) {
                 console.error(error);
-                return contenedorGaleria.innerHTML = "<p>Error conectando con la galería.</p>";
+                return contenedorGaleria.innerHTML = "<p>Error conectando con la galería. (Requiere permiso SQL)</p>";
             }
 
-            // Filtra archivos ocultos del sistema
             const archivos = data.filter(archivo => archivo.name !== '.emptyFolderPlaceholder');
-
-            if (archivos.length === 0) {
-                return contenedorGaleria.innerHTML = "<p>No hay fotografías publicadas en este momento.</p>";
-            }
+            if (archivos.length === 0) return contenedorGaleria.innerHTML = "<p>No hay fotografías publicadas en este momento.</p>";
 
             contenedorGaleria.innerHTML = '';
-
-            // Genera una tarjeta visual por cada imagen encontrada
             archivos.forEach(archivo => {
                 const urlData = clienteSupabase.storage.from('galeria').getPublicUrl(archivo.name);
-                
                 contenedorGaleria.innerHTML += `
                     <div class="tarjeta" style="display: flex; align-items: center; justify-content: center;">
                         <img src="${urlData.data.publicUrl}" alt="${archivo.name}" class="foto-galeria">
@@ -113,7 +101,6 @@
             });
         }
 
-        // Iniciar todo
         cargarDatosPiloto();
         cargarGaleria();
     </script>
