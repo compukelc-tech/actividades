@@ -42,9 +42,7 @@
 
     <script>
         const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
-        
-        // REEMPLAZA ESTO CON LA LLAVE QUE COPIASTE DE SUPABASE
-        const supabaseKey = 'PEGA_AQUÍ_TU_NUEVA_LLAVE_COMPLETA_SIN_ESPACIOS'; 
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDgxODIxODQsImV4cCI6MjAxMzc1ODE4NH0.-LGIK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         
         const opciones = { auth: { persistSession: false } };
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, opciones);
