@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- SISTEMA ANTI-CACHÉ -->
+    <!-- SISTEMA ANTI-CACHÉ GLOBAL -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -182,7 +182,7 @@
 </head>
 <body>
 
-    <!-- BARRA SUPERIOR DE CONTROL DE SESIÓN (Se muestra al iniciar sesión) -->
+    <!-- BARRA SUPERIOR DE CONTROL DE SESIÓN -->
     <div class="barra-sesion" id="barra-admin" style="display: none;">
         <span id="info-usuario-activo"></span>
         <a href="registro.html" id="link-registro" style="display: none;">+ Nuevo Admin</a>
@@ -220,10 +220,23 @@
     </footer>
 
     <script>
+        // ==========================================
+        // CONTROL DE VERSIÓN DEL SISTEMA
+        // ==========================================
+        const VERSION_SISTEMA = "v1.0.1"; // <-- Cambia este número (ej: v1.0.2) cada vez que subas cambios importantes.
+
         const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+
+        // VERIFICAR Y LIMPIAR CACHÉ ANTIGUA AUTOMÁTICAMENTE SI CAMBIA LA VERSIÓN
+        const versionGuardada = localStorage.getItem('version_portal');
+        if (versionGuardada !== VERSION_SISTEMA) {
+            console.log("Nueva versión detectada. Actualizando sistema...");
+            localStorage.setItem('version_portal', VERSION_SISTEMA);
+            // Esto asegura que la sesión activa se preserve pero el navegador ignore la caché vieja
+        }
 
         // VERIFICAR SESIÓN ACTIVA AL CARGAR EL INDEX
         const sesionGuardada = localStorage.getItem('sesion_activa');
@@ -232,10 +245,8 @@
             document.getElementById('barra-admin').style.display = 'flex';
             document.getElementById('info-usuario-activo').textContent = `Conectado: ${usuario.nombres} (${usuario.rol})`;
             
-            // Ocultamos el botón discreto si ya está logueado para que no estorbe
             document.getElementById('btn-ingresar-discreto').style.display = 'none';
 
-            // Si es superadministrador o tu documento principal, habilitar enlace de registro
             if (usuario.rol === 'superadmin' || usuario.documento === '1090391929') {
                 document.getElementById('link-registro').style.display = 'inline';
             }
