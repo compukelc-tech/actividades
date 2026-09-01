@@ -2,59 +2,92 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Superadministrador - Gestión de Usuarios</title>
+    <title>Panel de Administración y Control</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 0; color: #333; }
         header { background: #003366; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
-        .container { max-width: 1100px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2 { color: #003366; margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        .container { max-width: 1200px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2, h3 { color: #003366; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background-color: #003366; color: white; }
-        .badge { padding: 5px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .badge { padding: 4px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
         .badge-pendiente { background: #ffc107; color: #333; }
         .badge-autorizado { background: #28a745; color: white; }
         .badge-bloqueado { background: #dc3545; color: white; }
-        button { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; margin-right: 5px; }
+        button { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; }
         .btn-autorizar { background: #28a745; color: white; }
         .btn-bloquear { background: #ffc107; color: #333; }
-        .btn-eliminar { background: #dc3545; color: white; }
+        .btn-eliminar { background: #dc3545; color: white; margin-left: 5px; }
+        .seccion-admin { margin-top: 40px; padding-top: 20px; border-top: 2px solid #eee; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .btn-accion { background: #003366; color: white; padding: 12px; font-size: 13px; width: 100%; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-volver { background: #6c757d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 12px; display: inline-block; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2>Panel de Control - Superadministrador</h2>
+        <h2>Panel de Control General</h2>
         <div>
-            <span id="nombre-superadmin" style="font-weight: bold; margin-right: 15px;"></span>
-            <button onclick="cerrarSesion()" style="background: #cc0000; color: white; padding: 8px 12px;">Cerrar Sesión</button>
+            <span id="nombre-usuario-rol" style="font-weight: bold; margin-right: 15px;"></span>
+            <button onclick="cerrarSesion()" style="background: #cc0000; color: white;">Cerrar Sesión</button>
         </div>
     </header>
 
     <div class="container">
         <a href="index.html" class="btn-volver">← Volver al Portal Principal</a>
-        
-        <h3>Gestión de Usuarios y Accesos Administrativos</h3>
-        <p style="font-size: 13px; color: #666;">Aquí puedes autorizar solicitudes pendientes, bloquear accesos o eliminar del sistema a los usuarios que ya no pertenezcan al proyecto.</p>
 
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Documento</th>
-                        <th>Nombres y Apellidos</th>
-                        <th>Dependencia / Lugar</th>
-                        <th>Cargo</th>
-                        <th>Estado</th>
-                        <th>Acciones de Control</th>
-                    </tr>
-                ></thead>
-                <tbody id="tabla-usuarios">
-                    <tr><td colspan="6" style="text-align: center;">Cargando usuarios...</td></tr>
-                </tbody>
-            </table>
+        <!-- SECCIÓN 1: GESTIÓN DE USUARIOS (Solo visible para Superadmin) -->
+        <div id="contenedor-gestion-usuarios" style="display: none;">
+            <h3>Gestión de Usuarios (Superadmin)</h3>
+            <p style="font-size: 12px; color: #666;">Aprueba, bloquea o elimina cuentas de administradores.</p>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Nombres</th>
+                            <th>Dependencia</th>
+                            <th>Cargo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-usuarios">
+                        <tr><td colspan="6" style="text-align: center;">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: GESTIÓN DE CONTENIDO (Para Administradores y Superadmin) -->
+        <div class="seccion-admin">
+            <h3>Subir Fotografía a la Galería</h3>
+            <div class="form-grid">
+                <input type="file" id="archivo-foto" accept="image/*">
+                <button class="btn-accion" onclick="subirFoto()">Subir Fotografía</button>
+            </div>
+        </div>
+
+        <div class="seccion-admin">
+            <h3>Publicar Evento o Enlaces en Vivo</h3>
+            <input type="text" id="titulo-evento" placeholder="Título del Evento o Transmisión" style="margin-bottom: 15px;">
+            <div class="form-grid">
+                <input type="text" id="url-youtube" placeholder="URL de YouTube (Opcional)">
+                <input type="text" id="url-facebook" placeholder="URL de Facebook (Opcional)">
+            </div>
+            <div class="form-grid">
+                <input type="text" id="url-tiktok" placeholder="URL de TikTok (Opcional)">
+                <select id="tipo-evento">
+                    <option value="Transmisión">Transmisión en Vivo</option>
+                    <option value="Cultura">Cultura</option>
+                    <option value="Deporte">Deporte</option>
+                </select>
+            </div>
+            <button class="btn-accion" onclick="publicarEvento()">Publicar en el Portal</button>
         </div>
     </div>
 
@@ -63,106 +96,105 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Verificar si hay sesión y si es superadmin
         const sesionGuardada = localStorage.getItem('sesion_activa');
         if (!sesionGuardada) {
-            alert("Acceso denegado. Debe iniciar sesión.");
+            alert("Acceso denegado. Inicie sesión.");
             window.location.href = 'login.html';
-        } else {
-            const usuario = JSON.parse(sesionGuardada);
-            document.getElementById('nombre-superadmin').textContent = `Superadmin: ${usuario.nombres}`;
-            
-            // Validación estricta de superadmin
-            if (usuario.rol !== 'superadmin' && usuario.documento !== '1090391929') {
-                alert("No tienes permisos de Superadministrador para ver esta página.");
-                window.location.href = 'index.html';
-            }
+        }
+
+        const usuarioActual = JSON.parse(sesionGuardada);
+        document.getElementById('nombre-usuario-rol').textContent = `${usuarioActual.nombres} (${usuarioActual.rol})`;
+
+        const esSuperadmin = usuarioActual.rol === 'superadmin' || usuarioActual.documento === '1090391929';
+        if (esSuperadmin) {
+            document.getElementById('contenedor-gestion-usuarios').style.display = 'block';
+            cargarUsuarios();
         }
 
         async function cargarUsuarios() {
             const tbody = document.getElementById('tabla-usuarios');
             const { data, error } = await clienteSupabase.from('perfiles_administrativos').select('*').order('fecha_creacion', { ascending: false });
 
-            if (error) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">Error al cargar datos.</td></tr>`;
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No hay usuarios registrados.</td></tr>`;
-                return;
-            }
+            if (error || !data) return tbody.innerHTML = `<tr><td colspan="6">Error al cargar.</td></tr>`;
 
             tbody.innerHTML = '';
             data.forEach(user => {
-                let badgeClass = 'badge-pendiente';
-                if (user.estado === 'autorizado') badgeClass = 'badge-autorizado';
-                if (user.estado === 'bloqueado') badgeClass = 'badge-bloqueado';
-
-                // Si es superadmin principal, no se le muestran botones destructivos a sí mismo por seguridad
-                let botonesAccion = '';
-                if (user.rol !== 'superadmin') {
-                    if (user.estado !== 'autorizado') {
-                        botonesAccion += `<button class="btn-autorizar" onclick="cambiarEstado('${user.documento}', 'autorizado')">Autorizar</button>`;
-                    }
-                    if (user.estado !== 'bloqueado') {
-                        botonesAccion += `<button class="btn-bloquear" onclick="cambiarEstado('${user.documento}', 'bloqueado')">Bloquear</button>`;
-                    }
-                    botonesAccion += `<button class="btn-eliminar" onclick="eliminarUsuario('${user.documento}')">Eliminar</button>`;
-                } else {
-                    botonesAccion = `<span style="font-size: 11px; color: #888; font-style: italic;">Superadmin Principal</span>`;
-                }
+                let badge = user.estado === 'autorizado' ? 'badge-autorizado' : (user.estado === 'bloqueado' ? 'badge-bloqueado' : 'badge-pendiente');
+                let botones = user.rol !== 'superadmin' ? `
+                    ${user.estado !== 'autorizado' ? `<button class="btn-autorizar" onclick="cambiarEstado('${user.documento}', 'autorizado')">Autorizar</button>` : ''}
+                    ${user.estado !== 'bloqueado' ? `<button class="btn-bloquear" onclick="cambiarEstado('${user.documento}', 'bloqueado')">Bloquear</button>` : ''}
+                    <button class="btn-eliminar" onclick="eliminarUsuario('${user.documento}')">Eliminar</button>
+                ` : `<em>Superadmin</em>`;
 
                 tbody.innerHTML += `
                     <tr>
                         <td>${user.documento}</td>
-                        <td><strong>${user.nombres} ${user.apellidos}</strong><br><span style="font-size:11px; color:#666;">${user.correo || ''}</span></td>
+                        <td><strong>${user.nombres} ${user.apellidos}</strong></td>
                         <td>${user.tipo_dependencia}: ${user.nombre_lugar || ''}</td>
                         <td>${user.cargo || '---'}</td>
-                        <td><span class="badge ${badgeClass}">${user.estado}</span></td>
-                        <td>${botonesAccion}</td>
+                        <td><span class="badge ${badge}">${user.estado}</span></td>
+                        <td>${botones}</td>
                     </tr>
                 `;
             });
         }
 
-        async function cambiarEstado(documento, nuevoEstado) {
-            const { error } = await clienteSupabase
-                .from('perfiles_administrativos')
-                .update({ estado: nuevoEstado })
-                .eq('documento', documento);
-
-            if (error) {
-                alert("Error al actualizar el estado: " + error.message);
-            } else {
-                alert(`Usuario actualizado a estado: ${nuevoEstado}`);
-                cargarUsuarios();
-            }
+        async function cambiarEstado(doc, estado) {
+            await clienteSupabase.from('perfiles_administrativos').update({ estado: estado }).eq('documento', doc);
+            alert(`Estado actualizado a: ${estado}`);
+            cargarUsuarios();
         }
 
-        async function eliminarUsuario(documento) {
-            if (!confirm(`¿Estás seguro de eliminar permanentemente al usuario con documento ${documento}? Esta acción no se puede deshacer.`)) return;
+        async function eliminarUsuario(doc) {
+            if (!confirm("¿Eliminar permanentemente este usuario?")) return;
+            await clienteSupabase.from('perfiles_administrativos').delete().eq('documento', doc);
+            alert("Usuario eliminado.");
+            cargarUsuarios();
+        }
 
-            const { error } = await clienteSupabase
-                .from('perfiles_administrativos')
-                .delete()
-                .eq('documento', documento);
+        async function subirFoto() {
+            const archivoInput = document.getElementById('archivo-foto');
+            if (archivoInput.files.length === 0) return alert("Seleccione una fotografía.");
+            const archivo = archivoInput.files[0];
+            const nombreArchivo = `${Date.now()}_${archivo.name}`;
 
-            if (error) {
-                alert("Error al eliminar el usuario: " + error.message);
-            } else {
-                alert("Usuario eliminado del sistema correctamente.");
-                cargarUsuarios();
-            }
+            const { error } = await clienteSupabase.storage.from('galeria').upload(nombreArchivo, archivo);
+            if (error) return alert("Error al subir foto: " + error.message);
+
+            alert("¡Fotografía subida con éxito a la galería!");
+            archivoInput.value = '';
+        }
+
+        async function publicarEvento() {
+            const titulo = document.getElementById('titulo-evento').value;
+            const tipo = document.getElementById('tipo-evento').value;
+            const youtube = document.getElementById('url-youtube').value;
+            const facebook = document.getElementById('url-facebook').value;
+            const tiktok = document.getElementById('url-tiktok').value;
+
+            if (!titulo) return alert("Ingrese el título del evento.");
+
+            const { error } = await clienteSupabase.from('actividades').insert([{
+                titulo: titulo,
+                tipo: tipo,
+                url_youtube: youtube,
+                url_facebook: facebook,
+                url_tiktok: tiktok
+            }]);
+
+            if (error) return alert("Error al publicar: " + error.message);
+
+            alert("¡Evento publicado con éxito en tiempo real!");
+            document.getElementById('titulo-evento').value = '';
+            document.getElementById('url-youtube').value = '';
+            document.getElementById('url-facebook').value = '';
+            document.getElementById('url-tiktok').value = '';
         }
 
         function cerrarSesion() {
             localStorage.removeItem('sesion_activa');
             window.location.href = 'login.html';
         }
-
-        // Cargar la lista al iniciar la página
-        cargarUsuarios();
     </script>
 </body>
 </html>
