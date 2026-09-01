@@ -5,7 +5,7 @@
     <title>Iniciar Sesión - Portal Administrativo</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 40px; display: flex; justify-content: center; align-items: center; height: 80vh; }
+        body { font-family: sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 80vh; }
         .formulario { width: 100%; max-width: 380px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         input { width: 100%; padding: 12px; margin-bottom: 15px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
         .fila-password { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
@@ -20,7 +20,7 @@
     <div class="formulario">
         <h2 style="text-align: center; color: #003366; margin-bottom: 25px;">Acceso Administrativo</h2>
         
-        <input type="text" inputmode="numeric" pattern="[0-9]*" id="documento-login" placeholder="Documento de Identidad" required>
+        <input type="text" inputmode="numeric" id="documento-login" placeholder="Documento de Identidad" required>
         
         <div class="fila-password">
             <input type="password" id="clave-login" placeholder="Contraseña" required>
@@ -41,13 +41,8 @@
 
         document.getElementById('btn-ver-login').addEventListener('click', function() {
             const campo = document.getElementById('clave-login');
-            if (campo.type === 'password') {
-                campo.type = 'text';
-                this.textContent = 'Ocultar';
-            } else {
-                campo.type = 'password';
-                this.textContent = 'Ver';
-            }
+            campo.type = campo.type === 'password' ? 'text' : 'password';
+            this.textContent = campo.type === 'password' ? 'Ver' : 'Ocultar';
         });
 
         async function iniciarSesion() {
@@ -56,9 +51,8 @@
             const error = document.getElementById('mensaje-error-login');
 
             if (!documento || !clave) {
-                error.textContent = "Por favor ingrese su documento y contraseña.";
-                error.style.display = "block";
-                return;
+                error.textContent = "Ingrese documento y contraseña.";
+                error.style.display = "block"; return;
             }
             error.style.display = "none";
 
@@ -69,39 +63,22 @@
                     .eq('documento', documento)
                     .single();
 
-                if (dbError || !data) {
-                    throw new Error("El documento ingresado no se encuentra registrado.");
-                }
+                if (dbError || !data) throw new Error("Documento no registrado.");
+                if (data.clave !== clave) throw new Error("Contraseña incorrecta.");
 
-                if (data.clave !== clave) {
-                    throw new Error("Contraseña incorrecta. Intente nuevamente.");
-                }
-
-                // VALIDACIÓN DE ESTADO (Superadmin o Autorizado)
                 if (data.rol !== 'superadmin' && data.estado !== 'autorizado') {
-                    if (data.estado === 'pendiente') {
-                        throw new Error("Su cuenta está pendiente de aprobación por el Superadministrador.");
-                    } else if (data.estado === 'bloqueado') {
-                        throw new Error("Acceso denegado. Su cuenta se encuentra bloqueada.");
-                    } else {
-                        throw new Error("Su cuenta no cuenta con autorización activa.");
-                    }
+                    if (data.estado === 'pendiente') throw new Error("Su cuenta está pendiente de aprobación.");
+                    if (data.estado === 'bloqueado') throw new Error("Su cuenta está bloqueada.");
+                    throw new Error("Acceso no autorizado.");
                 }
 
-                // Guardar sesión
                 localStorage.setItem('sesion_activa', JSON.stringify({
                     documento: data.documento,
                     nombres: data.nombres,
-                    apellidos: data.apellidos,
                     rol: data.rol
                 }));
 
-                await clienteSupabase.from('registro_actividades').insert([{
-                    documento_usuario: documento,
-                    accion: 'Inicio de sesión exitoso'
-                }]);
-
-                alert(`¡Bienvenido de nuevo, ${data.nombres} ${data.apellidos}!`);
+                alert(`¡Bienvenido, ${data.nombres}!`);
                 window.location.href = 'index.html';
 
             } catch (err) {
