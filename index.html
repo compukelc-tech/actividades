@@ -12,96 +12,225 @@
     <title>Portal Multimedia - Piloto Institucional</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #f8f9fa; }
-        .encabezado-institucional { text-align: center; margin-bottom: 40px; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .datos-contacto { font-size: 0.9em; color: #666; margin-top: 10px; }
-        .seccion-titulo { border-bottom: 2px solid #0056b3; padding-bottom: 10px; color: #333; }
-        .grid-eventos { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .tarjeta { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .foto-galeria { width: 100%; max-width: 400px; height: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .footer-desarrollo { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.8em; color: #888; }
+        :root {
+            --color-primario: #003366; 
+            --color-fondo: #f4f7f6;
+            --color-texto: #333;
+            --color-tarjeta: #ffffff;
+        }
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: var(--color-fondo); 
+            color: var(--color-texto);
+        }
+        .header-principal {
+            background-color: var(--color-primario);
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header-principal h1 { margin: 0; font-size: 24px; font-weight: 700; text-transform: uppercase; }
+        .header-principal h3 { margin: 5px 0 0; font-size: 14px; font-weight: 400; color: #e0e0e0; }
+        
+        /* ESTRUCTURA PRINCIPAL: DOS COLUMNAS */
+        .contenedor-maestro {
+            display: grid;
+            grid-template-columns: 300px 1fr; /* Columna izq fija 300px, derecha flexible */
+            gap: 30px;
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        @media (max-width: 900px) {
+            .contenedor-maestro {
+                grid-template-columns: 1fr; /* Móviles: una columna */
+            }
+        }
+
+        .titulo-seccion {
+            font-size: 16px;
+            color: var(--color-primario);
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 8px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        /* COLUMNA IZQUIERDA: EVENTOS */
+        .columna-eventos {
+            background: transparent;
+        }
+        .tarjeta-evento {
+            background: var(--color-tarjeta);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 4px solid #d9534f;
+            transition: transform 0.2s;
+        }
+        .tarjeta-evento:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .tarjeta-evento h3 {
+            margin: 0 0 8px;
+            font-size: 14px;
+            color: var(--color-primario);
+        }
+        .etiqueta-tipo {
+            display: inline-block;
+            background: #eee;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            color: #555;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .btn-link {
+            display: block;
+            text-align: center;
+            padding: 7px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            transition: opacity 0.2s;
+        }
+        .btn-link:hover { opacity: 0.85; }
+        .btn-youtube { background-color: #ff0000; }
+        .btn-facebook { background-color: #1877f2; }
+        .btn-tiktok { background-color: #000000; }
+
+        /* COLUMNA DERECHA: GALERÍA */
+        .columna-galeria {
+            background: var(--color-tarjeta);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .grid-fotos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+        .foto-item {
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1; /* Fotos cuadradas uniformes */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .foto-item:hover {
+            transform: scale(1.03);
+        }
+        .foto-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .footer-desarrollo {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            font-size: 11px;
+            color: #888;
+            background: #e9ecef;
+        }
     </style>
 </head>
 <body>
 
-    <div class="encabezado-institucional">
+    <header class="header-principal">
         <h1>Actividades Culturales y Deportivas</h1>
         <h3>Gobernación de Norte de Santander | Alcaldía de San José de Cúcuta</h3>
-        <div class="datos-contacto">
-            Contacto: [CORREO INSTITUCIONAL] | Tel: [TELÉFONO INSTITUCIONAL]
-        </div>
+    </header>
+
+    <div class="contenedor-maestro">
+        <!-- IZQUIERDA: BANNERS PEQUEÑOS (EVENTOS) -->
+        <aside class="columna-eventos">
+            <h2 class="titulo-seccion">Transmisiones en Vivo</h2>
+            <div id="contenedor-transmisiones">
+                <p style="font-size: 12px; color: #666;">Cargando transmisiones...</p>
+            </div>
+        </aside>
+
+        <!-- DERECHA: GALERÍA VISUAL (FOTOGRAFÍAS) -->
+        <main class="columna-galeria">
+            <h2 class="titulo-seccion">Galería Fotográfica Institucional</h2>
+            <div id="contenedor-galeria" class="grid-fotos">
+                <p style="font-size: 12px; color: #666;">Buscando fotografías recientes...</p>
+            </div>
+        </main>
     </div>
 
-    <h2 class="seccion-titulo">Transmisiones y Eventos en Vivo</h2>
-    <div id="contenedor-transmisiones" class="grid-eventos">
-        <p>Cargando información desde los servidores...</p>
-    </div>
-
-    <h2 class="seccion-titulo">Galería Fotográfica</h2>
-    <div id="contenedor-galeria" class="grid-eventos">
-        <p>Buscando fotografías recientes...</p>
-    </div>
-
-    <div class="footer-desarrollo">
+    <footer class="footer-desarrollo">
         Desarrollo técnico: compukelc | compukelc@hotmail.com | cel. 3507973351
-    </div>
+    </footer>
 
     <script>
         const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
-        
-        // LLAVE OFICIAL ASIGNADA
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         
-        const opciones = { auth: { persistSession: false } };
-        const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, opciones);
+        const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
-        // FUNCIÓN 1: CARGAR EVENTOS
+        // FUNCIÓN 1: CARGAR EVENTOS EN COLUMNA IZQUIERDA
         async function cargarDatosPiloto() {
             const contenedor = document.getElementById('contenedor-transmisiones');
             const { data, error } = await clienteSupabase.from('actividades').select('*');
 
-            if (error) return contenedor.innerHTML = "<p>Error de conexión con los servidores gubernamentales.</p>";
-            if (!data || data.length === 0) return contenedor.innerHTML = "<p>No hay eventos activos programados en este momento.</p>";
+            if (error) return contenedor.innerHTML = "<p style='font-size:12px; color:red;'>Error de conexión.</p>";
+            if (!data || data.length === 0) return contenedor.innerHTML = "<p style='font-size:12px; color:#666;'>No hay eventos programados.</p>";
 
             contenedor.innerHTML = '';
             data.forEach(evento => {
                 const tarjeta = document.createElement('div');
-                tarjeta.className = 'tarjeta';
+                tarjeta.className = 'tarjeta-evento';
                 
                 let botonesHTML = '';
-                if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" style="display: block; background: #ff0000; color: white; padding: 10px; text-align: center; border-radius: 5px; text-decoration: none; margin-bottom: 10px; font-weight: bold;">Ver en YouTube</a>`;
-                if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" style="display: block; background: #1877f2; color: white; padding: 10px; text-align: center; border-radius: 5px; text-decoration: none; margin-bottom: 10px; font-weight: bold;">Ver en Facebook</a>`;
-                if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" style="display: block; background: #000000; color: white; padding: 10px; text-align: center; border-radius: 5px; text-decoration: none; font-weight: bold;">Ver en TikTok</a>`;
+                if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" class="btn-link btn-youtube">YouTube</a>`;
+                if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" class="btn-link btn-facebook">Facebook</a>`;
+                if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" class="btn-link btn-tiktok">TikTok</a>`;
 
                 tarjeta.innerHTML = `
-                    <h3 style="margin-top: 0; color: #0056b3; font-size: 1.2em;">${evento.titulo || 'Sin Título'}</h3>
-                    <span style="background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold; color: #555;">${evento.tipo || 'Evento'}</span>
-                    <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                    <h3>${evento.titulo || 'Sin Título'}</h3>
+                    <span class="etiqueta-tipo">${evento.tipo || 'Evento'}</span>
                     <div>${botonesHTML}</div>
                 `;
                 contenedor.appendChild(tarjeta);
             });
         }
 
-        // FUNCIÓN 2: CARGAR GALERÍA
+        // FUNCIÓN 2: CARGAR GALERÍA EN LA DERECHA (CUADRÍCULA)
         async function cargarGaleria() {
             const contenedorGaleria = document.getElementById('contenedor-galeria');
             const { data, error } = await clienteSupabase.storage.from('galeria').list();
 
-            if (error) {
-                console.error(error);
-                return contenedorGaleria.innerHTML = "<p>Error conectando con la galería. (Requiere permiso SQL en Supabase)</p>";
-            }
+            if (error) return contenedorGaleria.innerHTML = "<p style='font-size:12px; color:red;'>Error al cargar la galería.</p>";
 
             const archivos = data.filter(archivo => archivo.name !== '.emptyFolderPlaceholder');
-            if (archivos.length === 0) return contenedorGaleria.innerHTML = "<p>No hay fotografías publicadas en este momento.</p>";
+            if (archivos.length === 0) return contenedorGaleria.innerHTML = "<p style='font-size:12px; color:#666;'>No hay fotografías publicadas.</p>";
 
             contenedorGaleria.innerHTML = '';
             archivos.forEach(archivo => {
                 const urlData = clienteSupabase.storage.from('galeria').getPublicUrl(archivo.name);
                 contenedorGaleria.innerHTML += `
-                    <div style="display: flex; align-items: center; justify-content: center; padding: 10px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                        <img src="${urlData.data.publicUrl}" alt="${archivo.name}" class="foto-galeria">
+                    <div class="foto-item">
+                        <a href="${urlData.data.publicUrl}" target="_blank">
+                            <img src="${urlData.data.publicUrl}" alt="${archivo.name}" loading="lazy">
+                        </a>
                     </div>
                 `;
             });
