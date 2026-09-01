@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Administración y Control</title>
+    <title>Panel de Administración y Control - Compukelc</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 0; color: #333; }
@@ -22,7 +22,8 @@
         .btn-eliminar { background: #dc3545; color: white; margin-left: 5px; }
         .seccion-admin { margin-top: 40px; padding-top: 20px; border-top: 2px solid #eee; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
+        textarea { resize: vertical; height: 80px; }
         .btn-accion { background: #003366; color: white; padding: 12px; font-size: 13px; width: 100%; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-volver { background: #6c757d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 12px; display: inline-block; margin-bottom: 20px; }
     </style>
@@ -40,7 +41,7 @@
     <div class="container">
         <a href="index.html" class="btn-volver">← Volver al Portal Principal</a>
 
-        <!-- SECCIÓN 1: GESTIÓN DE USUARIOS (Solo visible para Superadmin) -->
+        <!-- SECCIÓN 1: GESTIÓN DE USUARIOS (Solo Superadmin) -->
         <div id="contenedor-gestion-usuarios" style="display: none;">
             <h3>Gestión de Usuarios (Superadmin)</h3>
             <p style="font-size: 12px; color: #666;">Aprueba, bloquea o elimina cuentas de administradores.</p>
@@ -63,31 +64,56 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 2: GESTIÓN DE CONTENIDO (Para Administradores y Superadmin) -->
+        <!-- SECCIÓN 2: CREAR ÁLBUM DE GALERÍA (Título, Descripción y Múltiples Fotos) -->
         <div class="seccion-admin">
-            <h3>Subir Fotografía a la Galería</h3>
+            <h3>Crear Álbum y Subir Galería Fotográfica</h3>
+            <p style="font-size: 12px; color: #666;">Asigna un título y una descripción al álbum, luego selecciona las fotografías que formarán parte de él.</p>
+            
+            <input type="text" id="album-titulo" placeholder="Título del Álbum (Ej: Jornada Cultural 2026)" style="margin-bottom: 15px;">
+            <textarea id="album-descripcion" placeholder="Descripción breve del evento o galería..." style="margin-bottom: 15px;"></textarea>
+            
             <div class="form-grid">
-                <input type="file" id="archivo-foto" accept="image/*">
-                <button class="btn-accion" onclick="subirFoto()">Subir Fotografía</button>
+                <div>
+                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Seleccionar Fotografías:</label>
+                    <input type="file" id="archivos-album" accept="image/*" multiple>
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn-accion" onclick="crearAlbumYSubirFotos()">Guardar y Publicar Álbum</button>
+                </div>
             </div>
         </div>
 
+        <!-- SECCIÓN 3: PUBLICAR EVENTOS / PUBLICIDAD CON BANNER -->
         <div class="seccion-admin">
-            <h3>Publicar Evento o Enlaces en Vivo</h3>
-            <input type="text" id="titulo-evento" placeholder="Título del Evento o Transmisión" style="margin-bottom: 15px;">
+            <h3>Publicar Evento, Transmisión o Publicidad</h3>
+            <p style="font-size: 12px; color: #666;">Ingresa los detalles, los enlaces de redes y adjunta la imagen publicitaria o flyer visible para los usuarios.</p>
+            
+            <input type="text" id="titulo-evento" placeholder="Título del Evento o Anuncio Publicitario" style="margin-bottom: 15px;">
+            
             <div class="form-grid">
                 <input type="text" id="url-youtube" placeholder="URL de YouTube (Opcional)">
                 <input type="text" id="url-facebook" placeholder="URL de Facebook (Opcional)">
             </div>
+            
             <div class="form-grid">
                 <input type="text" id="url-tiktok" placeholder="URL de TikTok (Opcional)">
                 <select id="tipo-evento">
-                    <option value="Transmisión">Transmisión en Vivo</option>
+                    <option value="Transmisión en Vivo">Transmisión en Vivo</option>
                     <option value="Cultura">Cultura</option>
                     <option value="Deporte">Deporte</option>
+                    <option value="Publicidad Institucional">Publicidad Institucional</option>
                 </select>
             </div>
-            <button class="btn-accion" onclick="publicarEvento()">Publicar en el Portal</button>
+
+            <div class="form-grid">
+                <div>
+                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Imagen de Publicidad / Banner:</label>
+                    <input type="file" id="archivo-publicidad" accept="image/*">
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn-accion" onclick="publicarEventoConPublicidad()">Publicar Evento con Publicidad</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -152,43 +178,95 @@
             cargarUsuarios();
         }
 
-        async function subirFoto() {
-            const archivoInput = document.getElementById('archivo-foto');
-            if (archivoInput.files.length === 0) return alert("Seleccione una fotografía.");
-            const archivo = archivoInput.files[0];
-            const nombreArchivo = `${Date.now()}_${archivo.name}`;
+        // FUNCIONALIDAD DE ÁLBUMES DE GALERÍA
+        async function crearAlbumYSubirFotos() {
+            const titulo = document.getElementById('album-titulo').value.trim();
+            const descripcion = document.getElementById('album-descripcion').value.trim();
+            const inputArchivos = document.getElementById('archivos-album');
 
-            const { error } = await clienteSupabase.storage.from('galeria').upload(nombreArchivo, archivo);
-            if (error) return alert("Error al subir foto: " + error.message);
+            if (!titulo) return alert("Por favor ingrese el título del álbum.");
+            if (inputArchivos.files.length === 0) return alert("Seleccione al menos una fotografía para la galería.");
 
-            alert("¡Fotografía subida con éxito a la galería!");
-            archivoInput.value = '';
+            // 1. Crear el álbum en la tabla albumes_galeria
+            const { data: albumData, error: albumError } = await clienteSupabase
+                .from('albumes_galeria')
+                .insert([{ titulo: titulo, descripcion: descripcion }])
+                .select()
+                .single();
+
+            if (albumError) return alert("Error al crear el álbum: " + albumError.message);
+
+            const albumId = albumData.id;
+
+            // 2. Subir cada foto seleccionada al Storage y registrarla ligada al álbum
+            for (let i = 0; i < inputArchivos.files.length; i++) {
+                const archivo = inputArchivos.files[i];
+                const rutaStorage = `album_${albumId}/${Date.now()}_${archivo.name}`;
+
+                const { error: uploadError } = await clienteSupabase.storage
+                    .from('galeria')
+                    .upload(rutaStorage, archivo);
+
+                if (!uploadError) {
+                    const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
+                    
+                    await clienteSupabase.from('fotos_album').insert([{
+                        album_id: albumId,
+                        url_foto: urlPublica
+                    }]);
+                }
+            }
+
+            alert("¡Álbum y galería fotográfica publicados con éxito!");
+            document.getElementById('album-titulo').value = '';
+            document.getElementById('album-descripcion').value = '';
+            inputArchivos.value = '';
         }
 
-        async function publicarEvento() {
-            const titulo = document.getElementById('titulo-evento').value;
+        // FUNCIONALIDAD DE EVENTOS Y PUBLICIDAD CON BANNER
+        async function publicarEventoConPublicidad() {
+            const titulo = document.getElementById('titulo-evento').value.trim();
             const tipo = document.getElementById('tipo-evento').value;
-            const youtube = document.getElementById('url-youtube').value;
-            const facebook = document.getElementById('url-facebook').value;
-            const tiktok = document.getElementById('url-tiktok').value;
+            const youtube = document.getElementById('url-youtube').value.trim();
+            const facebook = document.getElementById('url-facebook').value.trim();
+            const tiktok = document.getElementById('url-tiktok').value.trim();
+            const inputPublicidad = document.getElementById('archivo-publicidad');
 
-            if (!titulo) return alert("Ingrese el título del evento.");
+            if (!titulo) return alert("Ingrese el título del evento o anuncio.");
+
+            let urlPublicidadFinal = null;
+
+            // Si subió un archivo de publicidad/banner
+            if (inputPublicidad.files.length > 0) {
+                const archivo = inputPublicidad.files[0];
+                const rutaPub = `publicidad/${Date.now()}_${archivo.name}`;
+                
+                const { error: errorUpload } = await clienteSupabase.storage
+                    .from('galeria')
+                    .upload(rutaPub, archivo);
+
+                if (!errorUpload) {
+                    urlPublicidadFinal = clienteSupabase.storage.from('galeria').getPublicUrl(rutaPub).data.publicUrl;
+                }
+            }
 
             const { error } = await clienteSupabase.from('actividades').insert([{
                 titulo: titulo,
                 tipo: tipo,
                 url_youtube: youtube,
                 url_facebook: facebook,
-                url_tiktok: tiktok
+                url_tiktok: tiktok,
+                url_publicidad: urlPublicidadFinal
             }]);
 
             if (error) return alert("Error al publicar: " + error.message);
 
-            alert("¡Evento publicado con éxito en tiempo real!");
+            alert("¡Evento y publicidad publicados correctamente!");
             document.getElementById('titulo-evento').value = '';
             document.getElementById('url-youtube').value = '';
             document.getElementById('url-facebook').value = '';
             document.getElementById('url-tiktok').value = '';
+            inputPublicidad.value = '';
         }
 
         function cerrarSesion() {
