@@ -2,334 +2,164 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Administración y Control - Compukelc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Portal Multimedia Institucional - compukelc</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 0; color: #333; }
-        header { background: #003366; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
-        .container { max-width: 1200px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2, h3 { color: #003366; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #003366; color: white; }
-        .badge { padding: 4px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .badge-pendiente { background: #ffc107; color: #333; }
-        .badge-autorizado { background: #28a745; color: white; }
-        .badge-bloqueado { background: #dc3545; color: white; }
-        button { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; }
-        .btn-autorizar { background: #28a745; color: white; }
-        .btn-bloquear { background: #ffc107; color: #333; }
-        .btn-eliminar { background: #dc3545; color: white; margin-left: 5px; }
-        .seccion-admin { margin-top: 40px; padding-top: 20px; border-top: 2px solid #eee; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
-        textarea { resize: vertical; height: 70px; }
-        .btn-accion { background: #003366; color: white; padding: 12px; font-size: 13px; width: 100%; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .btn-volver { background: #6c757d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 12px; display: inline-block; margin-bottom: 20px; }
+        :root { --color-primario: #003366; --color-fondo: #f4f7f6; --color-tarjeta: #ffffff; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: var(--color-fondo); color: #333; }
+        .barra-sesion { background-color: #002244; color: white; padding: 10px 40px; display: flex; justify-content: flex-end; align-items: center; font-size: 13px; gap: 15px; }
+        .barra-sesion a { color: #fff; text-decoration: underline; font-weight: bold; }
+        .btn-salir-menu { background: #cc0000; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .header-principal { background-color: var(--color-primario); color: white; padding: 25px 40px; text-align: center; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header-principal h1 { margin: 0; font-size: 24px; text-transform: uppercase; }
+        .header-principal h3 { margin: 5px 0 0; font-size: 14px; font-weight: 400; color: #e0e0e0; }
+        .contenedor-maestro { display: grid; grid-template-columns: 340px 1fr; gap: 30px; max-width: 1400px; margin: 30px auto; padding: 0 20px; }
+        @media (max-width: 900px) { .contenedor-maestro { grid-template-columns: 1fr; } }
+        .titulo-seccion { font-size: 16px; color: var(--color-primario); border-bottom: 2px solid #ccc; padding-bottom: 8px; margin-top: 0; text-transform: uppercase; font-weight: 700; }
+        .tarjeta-evento { background: var(--color-tarjeta); border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #d9534f; }
+        .tarjeta-evento h3 { margin: 0 0 8px; font-size: 14px; color: var(--color-primario); }
+        .etiqueta-tipo { display: inline-block; background: #eee; font-size: 10px; padding: 3px 8px; border-radius: 12px; margin-bottom: 10px; color: #555; font-weight: bold; text-transform: uppercase; }
+        .banner-publicidad { width: 100%; max-height: 180px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; }
+        .btn-link { display: block; text-align: center; padding: 7px; border-radius: 6px; text-decoration: none; color: white; font-size: 11px; font-weight: bold; margin-bottom: 6px; }
+        .btn-youtube { background-color: #ff0000; }
+        .btn-facebook { background-color: #1877f2; }
+        .btn-tiktok { background-color: #000; }
+        .btn-x { background-color: #0f1419; } /* Color oscuro para X */
+        .columna-galeria { background: var(--color-tarjeta); padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .album-contenedor { margin-bottom: 35px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+        .album-titulo { font-size: 18px; color: #003366; margin-bottom: 5px; font-weight: bold; }
+        .album-descripcion { font-size: 13px; color: #666; margin-bottom: 15px; }
+        .grid-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+        .foto-item { border-radius: 6px; overflow: hidden; aspect-ratio: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .foto-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.2s; }
+        .foto-item img:hover { transform: scale(1.03); }
+        .footer-desarrollo { text-align: center; padding: 20px; margin-top: 40px; font-size: 11px; color: #888; background: #e9ecef; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h2>Panel de Control General</h2>
-        <div>
-            <span id="nombre-usuario-rol" style="font-weight: bold; margin-right: 15px;"></span>
-            <button onclick="cerrarSesion()" style="background: #cc0000; color: white;">Cerrar Sesión</button>
-        </div>
+    <div class="barra-sesion" id="barra-admin" style="display: none;">
+        <span id="info-usuario-activo"></span>
+        <a href="admin.html" id="link-panel-admin" style="display: none; color: #ffeb3b;">⚙️ Panel Admin</a>
+        <a href="registro.html" id="link-registro" style="display: none;">+ Nuevo Admin</a>
+        <button class="btn-salir-menu" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+
+    <header class="header-principal">
+        <a href="login.html" id="btn-ingresar-discreto" style="position: absolute; top: 15px; right: 20px; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 12px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 4px;" title="Acceso Administrativo">🔒 Ingresar</a>
+        <h1>Actividades Culturales y Deportivas</h1>
+        <h3>Gobernación de Norte de Santander | Alcaldía de San José de Cúcuta</h3>
     </header>
 
-    <div class="container">
-        <a href="index.html" class="btn-volver">← Volver al Portal Principal</a>
+    <div class="contenedor-maestro">
+        <aside class="columna-eventos">
+            <h2 class="titulo-seccion">Transmisiones y Publicidad</h2>
+            <div id="contenedor-transmisiones"><p style="font-size: 12px; color: #666;">Cargando anuncios...</p></div>
+        </aside>
 
-        <!-- SECCIÓN 1: GESTIÓN DE USUARIOS (Solo Superadmin) -->
-        <div id="contenedor-gestion-usuarios" style="display: none;">
-            <h3>Gestión de Usuarios (Superadmin)</h3>
-            <p style="font-size: 12px; color: #666;">Aprueba, bloquea o elimina cuentas de administradores.</p>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Documento</th>
-                            <th>Nombres</th>
-                            <th>Dependencia</th>
-                            <th>Cargo</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-usuarios">
-                        <tr><td colspan="6" style="text-align: center;">Cargando...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- SECCIÓN 2: CREAR NUEVO ÁLBUM -->
-        <div class="seccion-admin">
-            <h3>1. Crear Nuevo Álbum de Galería</h3>
-            <input type="text" id="album-titulo" placeholder="Título del Álbum (Ej: Jornada Cultural 2026)" style="margin-bottom: 15px;">
-            <textarea id="album-descripcion" placeholder="Descripción breve del álbum..." style="margin-bottom: 15px;"></textarea>
-            
-            <div class="form-grid">
-                <div>
-                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Fotografías iniciales:</label>
-                    <input type="file" id="archivos-album" accept="image/*" multiple>
-                </div>
-                <div style="display: flex; align-items: flex-end;">
-                    <button class="btn-accion" onclick="crearAlbumYSubirFotos()">Crear Álbum y Subir Fotos</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN 3: AGREGAR FOTOS A ÁLBUM EXISTENTE -->
-        <div class="seccion-admin">
-            <h3>2. Gestionar Álbumes (Agregar Fotos o Eliminar)</h3>
-            <div class="form-grid">
-                <div>
-                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Seleccionar Álbum:</label>
-                    <select id="select-albumes">
-                        <option value="">Cargando álbumes...</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Nuevas Fotografías:</label>
-                    <input type="file" id="archivos-extra" accept="image/*" multiple>
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button class="btn-accion" onclick="agregarFotosAAlbum()" style="background: #28a745;">Agregar Fotos al Álbum</button>
-                <button class="btn-accion" onclick="eliminarAlbumSeleccionado()" style="background: #dc3545; width: 250px;">Eliminar Álbum</button>
-            </div>
-        </div>
-
-        <!-- SECCIÓN 4: PUBLICAR EVENTOS / PUBLICIDAD -->
-        <div class="seccion-admin">
-            <h3>3. Publicar Evento, Transmisión o Publicidad</h3>
-            <input type="text" id="titulo-evento" placeholder="Título del Evento o Anuncio Publicitario" style="margin-bottom: 15px;">
-            
-            <div class="form-grid">
-                <input type="text" id="url-youtube" placeholder="URL de YouTube (Opcional)">
-                <input type="text" id="url-facebook" placeholder="URL de Facebook (Opcional)">
-            </div>
-            
-            <div class="form-grid">
-                <input type="text" id="url-tiktok" placeholder="URL de TikTok (Opcional)">
-                <select id="tipo-evento">
-                    <option value="Transmisión en Vivo">Transmisión en Vivo</option>
-                    <option value="Cultura">Cultura</option>
-                    <option value="Deporte">Deporte</option>
-                    <option value="Publicidad Institucional">Publicidad Institucional</option>
-                </select>
-            </div>
-
-            <div class="form-grid">
-                <div>
-                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Imagen de Publicidad / Banner:</label>
-                    <input type="file" id="archivo-publicidad" accept="image/*">
-                </div>
-                <div style="display: flex; align-items: flex-end;">
-                    <button class="btn-accion" onclick="publicarEventoConPublicidad()">Publicar Evento con Publicidad</button>
-                </div>
-            </div>
-        </div>
+        <main class="columna-galeria">
+            <h2 class="titulo-seccion">Galería Fotográfica Institucional</h2>
+            <div id="contenedor-galeria-albumes"><p style="font-size: 12px; color: #666;">Cargando álbumes...</p></div>
+        </main>
     </div>
+
+    <footer class="footer-desarrollo">
+        Desarrollo técnico: compukelc | compukelc@hotmail.com | cel. 3507973351
+    </footer>
 
     <script>
         const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
-        const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
         const sesionGuardada = localStorage.getItem('sesion_activa');
-        if (!sesionGuardada) {
-            alert("Acceso denegado. Inicie sesión.");
-            window.location.href = 'login.html';
-        }
+        if (sesionGuardada) {
+            const usuario = JSON.parse(sesionGuardada);
+            document.getElementById('barra-admin').style.display = 'flex';
+            document.getElementById('info-usuario-activo').textContent = `Conectado: ${usuario.nombres} (${usuario.rol})`;
+            document.getElementById('btn-ingresar-discreto').style.display = 'none';
 
-        const usuarioActual = JSON.parse(sesionGuardada);
-        document.getElementById('nombre-usuario-rol').textContent = `${usuarioActual.nombres} (${usuarioActual.rol})`;
-
-        const esSuperadmin = usuarioActual.rol === 'superadmin' || usuarioActual.documento === '1090391929';
-        if (esSuperadmin) {
-            document.getElementById('contenedor-gestion-usuarios').style.display = 'block';
-            cargarUsuarios();
-        }
-
-        async function cargarUsuarios() {
-            const tbody = document.getElementById('tabla-usuarios');
-            const { data, error } = await clienteSupabase.from('perfiles_administrativos').select('*').order('fecha_creacion', { ascending: false });
-            if (error || !data) return tbody.innerHTML = `<tr><td colspan="6">Error al cargar.</td></tr>`;
-            tbody.innerHTML = '';
-            data.forEach(user => {
-                let badge = user.estado === 'autorizado' ? 'badge-autorizado' : (user.estado === 'bloqueado' ? 'badge-bloqueado' : 'badge-pendiente');
-                let botones = user.rol !== 'superadmin' ? `
-                    ${user.estado !== 'autorizado' ? `<button class="btn-autorizar" onclick="cambiarEstado('${user.documento}', 'autorizado')">Autorizar</button>` : ''}
-                    ${user.estado !== 'bloqueado' ? `<button class="btn-bloquear" onclick="cambiarEstado('${user.documento}', 'bloqueado')">Bloquear</button>` : ''}
-                    <button class="btn-eliminar" onclick="eliminarUsuario('${user.documento}')">Eliminar</button>
-                ` : `<em>Superadmin</em>`;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${user.documento}</td>
-                        <td><strong>${user.nombres} ${user.apellidos}</strong></td>
-                        <td>${user.tipo_dependencia}: ${user.nombre_lugar || ''}</td>
-                        <td>${user.cargo || '---'}</td>
-                        <td><span class="badge ${badge}">${user.estado}</span></td>
-                        <td>${botones}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        async function cambiarEstado(doc, estado) {
-            await clienteSupabase.from('perfiles_administrativos').update({ estado: estado }).eq('documento', doc);
-            alert(`Estado actualizado a: ${estado}`);
-            cargarUsuarios();
-        }
-
-        async function eliminarUsuario(doc) {
-            if (!confirm("¿Eliminar permanentemente este usuario?")) return;
-            await clienteSupabase.from('perfiles_administrativos').delete().eq('documento', doc);
-            alert("Usuario eliminado.");
-            cargarUsuarios();
-        }
-
-        async function cargarSelectAlbumes() {
-            const select = document.getElementById('select-albumes');
-            const { data, error } = await clienteSupabase.from('albumes_galeria').select('id, titulo').order('id', { ascending: false });
-            if (error || !data || data.length === 0) {
-                select.innerHTML = `<option value="">No hay álbumes creados</option>`;
-                return;
+            if (usuario.rol === 'superadmin' || usuario.documento === '1090391929') {
+                document.getElementById('link-panel-admin').style.display = 'inline';
+                document.getElementById('link-registro').style.display = 'inline';
             }
-            select.innerHTML = `<option value="">-- Seleccione un álbum --</option>`;
-            data.forEach(album => {
-                select.innerHTML += `<option value="${album.id}">${album.titulo}</option>`;
-            });
-        }
-
-        async function crearAlbumYSubirFotos() {
-            const titulo = document.getElementById('album-titulo').value.trim();
-            const descripcion = document.getElementById('album-descripcion').value.trim();
-            const inputArchivos = document.getElementById('archivos-album');
-
-            if (!titulo) return alert("Por favor ingrese el título del álbum.");
-
-            // 1. Crear el álbum
-            const { data: albumData, error: albumError } = await clienteSupabase
-                .from('albumes_galeria')
-                .insert([{ titulo: titulo, descripcion: descripcion }])
-                .select()
-                .single();
-
-            if (albumError) return alert("Error al crear el álbum: " + albumError.message);
-            const albumId = albumData.id;
-
-            // 2. Subir las fotos si seleccionó alguna
-            if (inputArchivos.files.length > 0) {
-                for (let i = 0; i < inputArchivos.files.length; i++) {
-                    const archivo = inputArchivos.files[i];
-                    const rutaStorage = `album_${albumId}/${Date.now()}_${archivo.name}`;
-
-                    const { error: uploadError } = await clienteSupabase.storage
-                        .from('galeria')
-                        .upload(rutaStorage, archivo);
-
-                    if (!uploadError) {
-                        const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
-                        await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
-                    }
-                }
-            }
-
-            alert("¡Álbum creado y fotografías subidas con éxito!");
-            document.getElementById('album-titulo').value = '';
-            document.getElementById('album-descripcion').value = '';
-            inputArchivos.value = '';
-            cargarSelectAlbumes();
-        }
-
-        async function agregarFotosAAlbum() {
-            const albumId = document.getElementById('select-albumes').value;
-            const inputArchivos = document.getElementById('archivos-extra');
-
-            if (!albumId) return alert("Seleccione un álbum de la lista.");
-            if (inputArchivos.files.length === 0) return alert("Seleccione al menos una fotografía.");
-
-            for (let i = 0; i < inputArchivos.files.length; i++) {
-                const archivo = inputArchivos.files[i];
-                const rutaStorage = `album_${albumId}/${Date.now()}_${archivo.name}`;
-
-                const { error: uploadError } = await clienteSupabase.storage
-                    .from('galeria')
-                    .upload(rutaStorage, archivo);
-
-                if (!uploadError) {
-                    const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
-                    await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
-                }
-            }
-
-            alert("¡Fotografías agregadas con éxito al álbum!");
-            inputArchivos.value = '';
-        }
-
-        async function eliminarAlbumSeleccionado() {
-            const albumId = document.getElementById('select-albumes').value;
-            if (!albumId) return alert("Seleccione el álbum que desea eliminar.");
-
-            if (!confirm("¿Está seguro de eliminar este álbum y todas sus fotos?")) return;
-
-            const { error } = await clienteSupabase.from('albumes_galeria').delete().eq('id', albumId);
-            if (error) return alert("Error al eliminar álbum: " + error.message);
-
-            alert("Álbum eliminado correctamente.");
-            cargarSelectAlbumes();
-        }
-
-        async function publicarEventoConPublicidad() {
-            const titulo = document.getElementById('titulo-evento').value.trim();
-            const tipo = document.getElementById('tipo-evento').value;
-            const youtube = document.getElementById('url-youtube').value.trim();
-            const facebook = document.getElementById('url-facebook').value.trim();
-            const tiktok = document.getElementById('url-tiktok').value.trim();
-            const inputPublicidad = document.getElementById('archivo-publicidad');
-
-            if (!titulo) return alert("Ingrese el título del evento o anuncio.");
-
-            let urlPublicidadFinal = null;
-            if (inputPublicidad.files.length > 0) {
-                const archivo = inputPublicidad.files[0];
-                const rutaPub = `publicidad/${Date.now()}_${archivo.name}`;
-                const { error: errorUpload } = await clienteSupabase.storage.from('galeria').upload(rutaPub, archivo);
-                if (!errorUpload) {
-                    urlPublicidadFinal = clienteSupabase.storage.from('galeria').getPublicUrl(rutaPub).data.publicUrl;
-                }
-            }
-
-            const { error } = await clienteSupabase.from('actividades').insert([{
-                titulo: titulo,
-                tipo: tipo,
-                url_youtube: youtube,
-                url_facebook: facebook,
-                url_tiktok: tiktok,
-                url_publicidad: urlPublicidadFinal
-            }]);
-
-            if (error) return alert("Error al publicar: " + error.message);
-
-            alert("¡Evento y publicidad publicados correctamente!");
-            document.getElementById('titulo-evento').value = '';
-            document.getElementById('url-youtube').value = '';
-            document.getElementById('url-facebook').value = '';
-            document.getElementById('url-tiktok').value = '';
-            inputPublicidad.value = '';
         }
 
         function cerrarSesion() {
             localStorage.removeItem('sesion_activa');
-            window.location.href = 'login.html';
+            window.location.reload();
         }
 
-        cargarSelectAlbumes();
+        async function cargarEventosYPublicidad() {
+            const contenedor = document.getElementById('contenedor-transmisiones');
+            const { data, error } = await clienteSupabase.from('actividades').select('*').order('id', { ascending: false });
+
+            if (error || !data || data.length === 0) return contenedor.innerHTML = "<p style='font-size:12px; color:#666;'>No hay eventos registrados.</p>";
+
+            contenedor.innerHTML = '';
+            data.forEach(evento => {
+                let imagenBanner = evento.url_publicidad ? `<img src="${evento.url_publicidad}" class="banner-publicidad">` : '';
+                let botonesHTML = '';
+                
+                if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" class="btn-link btn-youtube">Ver en YouTube</a>`;
+                if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" class="btn-link btn-facebook">Ver en Facebook</a>`;
+                if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" class="btn-link btn-tiktok">Ver en TikTok</a>`;
+                if(evento.url_x) botonesHTML += `<a href="${evento.url_x}" target="_blank" class="btn-link btn-x">Ver en X</a>`;
+
+                contenedor.innerHTML += `
+                    <div class="tarjeta-evento">
+                        <h3>${evento.titulo || 'Sin Título'}</h3>
+                        <span class="etiqueta-tipo">${evento.tipo || 'Evento'}</span>
+                        ${imagenBanner}
+                        <div>${botonesHTML}</div>
+                    </div>
+                `;
+            });
+        }
+
+        async function cargarAlbumesGaleria() {
+            const contenedor = document.getElementById('contenedor-galeria-albumes');
+            
+            const { data: albumes, error } = await clienteSupabase
+                .from('albumes_galeria')
+                .select('*, fotos_album(*)')
+                .order('id', { ascending: false });
+
+            if (error || !albumes || albumes.length === 0) {
+                return contenedor.innerHTML = "<p style='font-size:12px; color:#666;'>No hay álbumes fotográficos publicados.</p>";
+            }
+
+            contenedor.innerHTML = '';
+            albumes.forEach(album => {
+                let fotosHTML = '';
+                if (album.fotos_album && album.fotos_album.length > 0) {
+                    album.fotos_album.forEach(foto => {
+                        fotosHTML += `
+                            <div class="foto-item">
+                                <a href="${foto.url_foto}" target="_blank"><img src="${foto.url_foto}" loading="lazy"></a>
+                            </div>
+                        `;
+                    });
+                } else {
+                    fotosHTML = `<p style="font-size:12px; color:#888;">Este álbum no contiene fotos todavía.</p>`;
+                }
+
+                contenedor.innerHTML += `
+                    <div class="album-contenedor">
+                        <div class="album-titulo">📁 ${album.titulo}</div>
+                        <div class="album-descripcion">${album.descripcion || ''}</div>
+                        <div class="grid-fotos">
+                            ${fotosHTML}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        cargarEventosYPublicidad();
+        cargarAlbumesGaleria();
     </script>
 </body>
 </html>
