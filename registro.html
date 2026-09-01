@@ -21,12 +21,8 @@
         
         <input type="text" id="nombres" placeholder="Nombres" required>
         <input type="text" id="apellidos" placeholder="Apellidos" required>
-        
-        <!-- Casilla corregida para bloquear símbolos extraños -->
-        <input type="text" inputmode="numeric" pattern="[0-9]*" id="documento" placeholder="Documento de Identidad" required>
-        
-        <!-- Casilla nueva para correo real -->
-        <input type="email" id="correo" placeholder="Correo Electrónico Institucional o Personal" required>
+        <input type="text" inputmode="numeric" pattern="[0-9]*" id="documento" placeholder="Documento de Identidad (Usuario)" required>
+        <input type="email" id="correo" placeholder="Correo Electrónico de contacto" required>
         
         <select id="entidad-principal" required>
             <option value="">Seleccione Entidad Base...</option>
@@ -57,7 +53,7 @@
             Confirmo que los datos son correctos y acepto el registro.
         </label>
 
-        <button onclick="validarYRegistrar()">Registrar Usuario</button>
+        <button onclick="registrarDirecto()">Registrar Usuario</button>
     </div>
 
     <script>
@@ -82,55 +78,43 @@
             this.textContent = tipo === 'password' ? 'Ver' : 'Ocultar';
         });
 
-        async function validarYRegistrar() {
+        async function registrarDirecto() {
             const clave = document.getElementById('clave').value;
             const claveRep = document.getElementById('clave-repetida').value;
             const error = document.getElementById('mensaje-error');
             const terminos = document.getElementById('terminos').checked;
             const documento = document.getElementById('documento').value;
-            const correo = document.getElementById('correo').value;
             
             const reglaFuerte = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
-            if (!terminos || clave !== claveRep || !reglaFuerte.test(clave) || !documento || !correo) {
-                error.textContent = "Revisa los campos: Asegúrate de ingresar un correo válido, aceptar los términos y cumplir las reglas de seguridad en la contraseña.";
+            if (!terminos || clave !== claveRep || !reglaFuerte.test(clave) || !documento) {
+                error.textContent = "Revisa los campos: Acepta los términos, verifica que las contraseñas coincidan y cumplan las reglas de seguridad.";
                 error.style.display = "block"; return;
             }
             error.style.display = "none";
 
             try {
-                // 1. Crear acceso usando el correo REAL del usuario
-                const { data: authData, error: authError } = await clienteSupabase.auth.signUp({
-                    email: correo,
-                    password: clave
-                });
-                if (authError) throw authError;
-
-                // 2. Guardar datos en la tabla de perfiles
+                // Guardar directamente en la tabla sin pasar por Auth de Supabase
                 const { error: perfilError } = await clienteSupabase.from('perfiles_administrativos').insert([{
-                    id: authData.user.id,
                     documento: documento,
                     nombres: document.getElementById('nombres').value,
                     apellidos: document.getElementById('apellidos').value,
+                    correo: document.getElementById('correo').value,
                     entidad_base: document.getElementById('entidad-principal').value,
                     tipo_dependencia: document.getElementById('tipo-dependencia').value,
                     nombre_lugar: document.getElementById('nombre-especifico').value,
                     cargo: document.getElementById('cargo').value,
+                    clave: clave,
                     rol: 'administrador'
                 }]);
+
                 if (perfilError) throw perfilError;
 
-                // 3. Registrar acción en la caja negra
-                await clienteSupabase.from('registro_actividades').insert([{
-                    documento_usuario: documento,
-                    accion: 'Registro inicial de nuevo administrador'
-                }]);
-
-                alert('Usuario administrador registrado con éxito.');
+                alert('¡Usuario registrado con éxito en la base de datos!');
                 window.location.reload(); 
 
             } catch (err) {
-                alert('Error en el registro: ' + err.message);
+                alert('Error al registrar (Es posible que el documento ya esté registrado): ' + err.message);
             }
         }
     </script>
