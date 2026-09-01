@@ -42,7 +42,7 @@
     <div class="container">
         <a href="index.html" class="btn-volver">← Volver al Portal Principal</a>
 
-        <!-- SECCIÓN 1: GESTIÓN DE USUARIOS (Solo Superadmin) -->
+        <!-- SECCIÓN 1: GESTIÓN DE USUARIOS -->
         <div id="contenedor-gestion-usuarios" style="display: none;">
             <h3>Gestión de Usuarios (Superadmin)</h3>
             <div style="overflow-x: auto;">
@@ -142,7 +142,6 @@
                 </div>
             </div>
 
-            <!-- Caja de edición dinámica -->
             <div id="caja-editar-evento" class="caja-edicion">
                 <h4 style="margin-top: 0; color: #003366;">Editar Datos del Evento</h4>
                 <input type="text" id="edit-titulo-evento" placeholder="Título" style="margin-bottom: 10px;">
@@ -187,7 +186,6 @@
             cargarUsuarios();
         }
 
-        // Funciones de Usuarios
         async function cargarUsuarios() {
             const tbody = document.getElementById('tabla-usuarios');
             const { data, error } = await clienteSupabase.from('perfiles_administrativos').select('*').order('fecha_creacion', { ascending: false });
@@ -206,7 +204,6 @@
         async function cambiarEstado(doc, estado) { await clienteSupabase.from('perfiles_administrativos').update({ estado: estado }).eq('documento', doc); cargarUsuarios(); }
         async function eliminarUsuario(doc) { if (!confirm("¿Eliminar usuario?")) return; await clienteSupabase.from('perfiles_administrativos').delete().eq('documento', doc); cargarUsuarios(); }
 
-        // Funciones de Álbumes
         async function cargarSelectAlbumes() {
             const select = document.getElementById('select-albumes');
             const { data, error } = await clienteSupabase.from('albumes_galeria').select('id, titulo').order('id', { ascending: false });
@@ -225,21 +222,33 @@
 
             if (!titulo) return alert("Ingrese el título del álbum.");
             const { data: albumData, error: albumError } = await clienteSupabase.from('albumes_galeria').insert([{ titulo: titulo, descripcion: descripcion }]).select().single();
-            if (albumError) return alert("Error: " + albumError.message);
+            if (albumError) return alert("Error al crear álbum: " + albumError.message);
 
             const albumId = albumData.id;
+            let subidasExitosas = 0;
+
             if (inputArchivos.files.length > 0) {
                 for (let i = 0; i < inputArchivos.files.length; i++) {
                     const archivo = inputArchivos.files[i];
-                    const rutaStorage = `album_${albumId}/${Date.now()}_${archivo.name}`;
+                    // Ruta limpia para evitar errores
+                    const rutaStorage = `foto_${Date.now()}_${archivo.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
+                    
                     const { error: uploadError } = await clienteSupabase.storage.from('galeria').upload(rutaStorage, archivo);
-                    if (!uploadError) {
+                    if (uploadError) {
+                        alert("Error al subir imagen a la nube: " + uploadError.message);
+                    } else {
                         const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
-                        await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
+                        const { error: dbError } = await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
+                        if (dbError) {
+                            alert("Error al guardar foto en la base de datos: " + dbError.message);
+                        } else {
+                            subidasExitosas++;
+                        }
                     }
                 }
             }
-            alert("Álbum creado.");
+            
+            alert(`¡Álbum creado exitosamente! (${subidasExitosas} fotos guardadas)`);
             document.getElementById('album-titulo').value = '';
             document.getElementById('album-descripcion').value = '';
             inputArchivos.value = '';
@@ -252,16 +261,25 @@
             if (!albumId) return alert("Seleccione un álbum.");
             if (inputArchivos.files.length === 0) return alert("Seleccione fotos.");
 
+            let subidasExitosas = 0;
             for (let i = 0; i < inputArchivos.files.length; i++) {
                 const archivo = inputArchivos.files[i];
-                const rutaStorage = `album_${albumId}/${Date.now()}_${archivo.name}`;
+                const rutaStorage = `foto_${Date.now()}_${archivo.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
+                
                 const { error: uploadError } = await clienteSupabase.storage.from('galeria').upload(rutaStorage, archivo);
-                if (!uploadError) {
+                if (uploadError) {
+                    alert("Error al subir foto: " + uploadError.message);
+                } else {
                     const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
-                    await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
+                    const { error: dbError } = await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
+                    if (dbError) {
+                        alert("Error de base de datos: " + dbError.message);
+                    } else {
+                        subidasExitosas++;
+                    }
                 }
             }
-            alert("Fotos agregadas.");
+            alert(`¡${subidasExitosas} fotos agregadas al álbum!`);
             inputArchivos.value = '';
         }
 
@@ -274,7 +292,6 @@
             cargarSelectAlbumes();
         }
 
-        // Funciones de Eventos
         async function cargarSelectEventos() {
             const select = document.getElementById('select-eventos');
             const { data, error } = await clienteSupabase.from('actividades').select('*').order('id', { ascending: false });
@@ -339,17 +356,20 @@
             let urlPublicidadFinal = null;
             if (inputPublicidad.files.length > 0) {
                 const archivo = inputPublicidad.files[0];
-                const rutaPub = `publicidad/${Date.now()}_${archivo.name}`;
+                const rutaPub = `banner_${Date.now()}_${archivo.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
                 const { error: errorUpload } = await clienteSupabase.storage.from('galeria').upload(rutaPub, archivo);
-                if (!errorUpload) urlPublicidadFinal = clienteSupabase.storage.from('galeria').getPublicUrl(rutaPub).data.publicUrl;
+                if (errorUpload) {
+                    return alert("Error al subir el banner publicitario: " + errorUpload.message);
+                }
+                urlPublicidadFinal = clienteSupabase.storage.from('galeria').getPublicUrl(rutaPub).data.publicUrl;
             }
 
             const { error } = await clienteSupabase.from('actividades').insert([{
                 titulo: titulo, tipo: tipo, url_youtube: youtube, url_facebook: facebook, url_tiktok: tiktok, url_x: x_twitter, url_publicidad: urlPublicidadFinal
             }]);
 
-            if (error) return alert("Error: " + error.message);
-            alert("Evento publicado.");
+            if (error) return alert("Error en base de datos: " + error.message);
+            alert("Evento publicado con éxito.");
             
             document.getElementById('titulo-evento').value = '';
             document.getElementById('url-youtube').value = '';
