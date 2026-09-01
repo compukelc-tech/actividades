@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro Administrativo - compukelc</title>
-    <!-- Librería de Supabase -->
+    <title>Registro Administrativo</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
@@ -22,7 +21,12 @@
         
         <input type="text" id="nombres" placeholder="Nombres" required>
         <input type="text" id="apellidos" placeholder="Apellidos" required>
-        <input type="text" inputmode="numeric" pattern="[0-9]*" id="documento" placeholder="Documento de Identidad (Usuario)" required>
+        
+        <!-- Casilla corregida para bloquear símbolos extraños -->
+        <input type="text" inputmode="numeric" pattern="[0-9]*" id="documento" placeholder="Documento de Identidad" required>
+        
+        <!-- Casilla nueva para correo real -->
+        <input type="email" id="correo" placeholder="Correo Electrónico Institucional o Personal" required>
         
         <select id="entidad-principal" required>
             <option value="">Seleccione Entidad Base...</option>
@@ -57,7 +61,6 @@
     </div>
 
     <script>
-        // Conexión oficial a tu proyecto en Supabase
         const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -85,22 +88,20 @@
             const error = document.getElementById('mensaje-error');
             const terminos = document.getElementById('terminos').checked;
             const documento = document.getElementById('documento').value;
+            const correo = document.getElementById('correo').value;
             
             const reglaFuerte = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
-            if (!terminos || clave !== claveRep || !reglaFuerte.test(clave) || !documento) {
-                error.textContent = "Revisa los campos: Asegúrate de aceptar los términos, que las contraseñas coincidan y cumplan las reglas de seguridad.";
+            if (!terminos || clave !== claveRep || !reglaFuerte.test(clave) || !documento || !correo) {
+                error.textContent = "Revisa los campos: Asegúrate de ingresar un correo válido, aceptar los términos y cumplir las reglas de seguridad en la contraseña.";
                 error.style.display = "block"; return;
             }
             error.style.display = "none";
 
-            // Creación del correo interno para validación de Supabase
-            const correoFicticio = documento + '@admin.compukelc.com';
-
             try {
-                // 1. Crear acceso en el sistema de autenticación
+                // 1. Crear acceso usando el correo REAL del usuario
                 const { data: authData, error: authError } = await clienteSupabase.auth.signUp({
-                    email: correoFicticio,
+                    email: correo,
                     password: clave
                 });
                 if (authError) throw authError;
@@ -126,7 +127,7 @@
                 }]);
 
                 alert('Usuario administrador registrado con éxito.');
-                window.location.reload(); // Recarga para limpiar el formulario
+                window.location.reload(); 
 
             } catch (err) {
                 alert('Error en el registro: ' + err.message);
