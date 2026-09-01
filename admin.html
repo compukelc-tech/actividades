@@ -23,7 +23,7 @@
         .seccion-admin { margin-top: 40px; padding-top: 20px; border-top: 2px solid #eee; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
-        textarea { resize: vertical; height: 80px; }
+        textarea { resize: vertical; height: 70px; }
         .btn-accion { background: #003366; color: white; padding: 12px; font-size: 13px; width: 100%; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-volver { background: #6c757d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 12px; display: inline-block; margin-bottom: 20px; }
     </style>
@@ -64,30 +64,47 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 2: CREAR ÁLBUM DE GALERÍA (Título, Descripción y Múltiples Fotos) -->
+        <!-- SECCIÓN 2: CREAR NUEVO ÁLBUM -->
         <div class="seccion-admin">
-            <h3>Crear Álbum y Subir Galería Fotográfica</h3>
-            <p style="font-size: 12px; color: #666;">Asigna un título y una descripción al álbum, luego selecciona las fotografías que formarán parte de él.</p>
-            
+            <h3>1. Crear Nuevo Álbum de Galería</h3>
             <input type="text" id="album-titulo" placeholder="Título del Álbum (Ej: Jornada Cultural 2026)" style="margin-bottom: 15px;">
-            <textarea id="album-descripcion" placeholder="Descripción breve del evento o galería..." style="margin-bottom: 15px;"></textarea>
+            <textarea id="album-descripcion" placeholder="Descripción breve del álbum..." style="margin-bottom: 15px;"></textarea>
             
             <div class="form-grid">
                 <div>
-                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Seleccionar Fotografías:</label>
+                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Fotografías iniciales:</label>
                     <input type="file" id="archivos-album" accept="image/*" multiple>
                 </div>
                 <div style="display: flex; align-items: flex-end;">
-                    <button class="btn-accion" onclick="crearAlbumYSubirFotos()">Guardar y Publicar Álbum</button>
+                    <button class="btn-accion" onclick="crearAlbumYSubirFotos()">Crear Álbum y Subir Fotos</button>
                 </div>
             </div>
         </div>
 
-        <!-- SECCIÓN 3: PUBLICAR EVENTOS / PUBLICIDAD CON BANNER -->
+        <!-- SECCIÓN 3: GESTIONAR ÁLBUMES EXISTENTES -->
         <div class="seccion-admin">
-            <h3>Publicar Evento, Transmisión o Publicidad</h3>
-            <p style="font-size: 12px; color: #666;">Ingresa los detalles, los enlaces de redes y adjunta la imagen publicitaria o flyer visible para los usuarios.</p>
-            
+            <h3>2. Gestionar Álbumes (Agregar Fotos o Eliminar)</h3>
+            <div class="form-grid">
+                <div>
+                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Seleccionar Álbum:</label>
+                    <select id="select-albumes">
+                        <option value="">Cargando álbumes...</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Nuevas Fotografías:</label>
+                    <input type="file" id="archivos-extra" accept="image/*" multiple>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn-accion" onclick="agregarFotosAAlbum()" style="background: #28a745;">Agregar Fotos al Álbum</button>
+                <button class="btn-accion" onclick="eliminarAlbumSeleccionado()" style="background: #dc3545; width: 250px;">Eliminar Álbum</button>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: PUBLICAR EVENTOS / PUBLICIDAD -->
+        <div class="seccion-admin">
+            <h3>3. Publicar Evento, Transmisión o Publicidad</h3>
             <input type="text" id="titulo-evento" placeholder="Título del Evento o Anuncio Publicitario" style="margin-bottom: 15px;">
             
             <div class="form-grid">
@@ -112,6 +129,24 @@
                 </div>
                 <div style="display: flex; align-items: flex-end;">
                     <button class="btn-accion" onclick="publicarEventoConPublicidad()">Publicar Evento con Publicidad</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 5: GESTIONAR EVENTOS Y PUBLICIDAD EXISTENTES -->
+        <div class="seccion-admin">
+            <h3>4. Gestionar Eventos y Publicidad Existentes</h3>
+            <p style="font-size: 12px; color: #666;">Selecciona un evento o anuncio publicado para eliminarlo del portal.</p>
+            
+            <div class="form-grid">
+                <div>
+                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Seleccionar Evento / Anuncio:</label>
+                    <select id="select-eventos">
+                        <option value="">Cargando eventos...</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn-accion" onclick="eliminarEventoSeleccionado()" style="background: #dc3545;">Eliminar Evento / Anuncio</button>
                 </div>
             </div>
         </div>
@@ -140,9 +175,7 @@
         async function cargarUsuarios() {
             const tbody = document.getElementById('tabla-usuarios');
             const { data, error } = await clienteSupabase.from('perfiles_administrativos').select('*').order('fecha_creacion', { ascending: false });
-
             if (error || !data) return tbody.innerHTML = `<tr><td colspan="6">Error al cargar.</td></tr>`;
-
             tbody.innerHTML = '';
             data.forEach(user => {
                 let badge = user.estado === 'autorizado' ? 'badge-autorizado' : (user.estado === 'bloqueado' ? 'badge-bloqueado' : 'badge-pendiente');
@@ -178,16 +211,39 @@
             cargarUsuarios();
         }
 
-        // FUNCIONALIDAD DE ÁLBUMES DE GALERÍA
+        async function cargarSelectAlbumes() {
+            const select = document.getElementById('select-albumes');
+            const { data, error } = await clienteSupabase.from('albumes_galeria').select('id, titulo').order('id', { ascending: false });
+            if (error || !data || data.length === 0) {
+                select.innerHTML = `<option value="">No hay álbumes creados</option>`;
+                return;
+            }
+            select.innerHTML = `<option value="">-- Seleccione un álbum --</option>`;
+            data.forEach(album => {
+                select.innerHTML += `<option value="${album.id}">${album.titulo}</option>`;
+            });
+        }
+
+        async function cargarSelectEventos() {
+            const select = document.getElementById('select-eventos');
+            const { data, error } = await clienteSupabase.from('actividades').select('id, titulo, tipo').order('id', { ascending: false });
+            if (error || !data || data.length === 0) {
+                select.innerHTML = `<option value="">No hay eventos o anuncios publicados</option>`;
+                return;
+            }
+            select.innerHTML = `<option value="">-- Seleccione un evento o anuncio --</option>`;
+            data.forEach(ev => {
+                select.innerHTML += `<option value="${ev.id}">[${ev.tipo}] ${ev.titulo}</option>`;
+            });
+        }
+
         async function crearAlbumYSubirFotos() {
             const titulo = document.getElementById('album-titulo').value.trim();
             const descripcion = document.getElementById('album-descripcion').value.trim();
             const inputArchivos = document.getElementById('archivos-album');
 
             if (!titulo) return alert("Por favor ingrese el título del álbum.");
-            if (inputArchivos.files.length === 0) return alert("Seleccione al menos una fotografía para la galería.");
 
-            // 1. Crear el álbum en la tabla albumes_galeria
             const { data: albumData, error: albumError } = await clienteSupabase
                 .from('albumes_galeria')
                 .insert([{ titulo: titulo, descripcion: descripcion }])
@@ -195,10 +251,38 @@
                 .single();
 
             if (albumError) return alert("Error al crear el álbum: " + albumError.message);
-
             const albumId = albumData.id;
 
-            // 2. Subir cada foto seleccionada al Storage y registrarla ligada al álbum
+            if (inputArchivos.files.length > 0) {
+                for (let i = 0; i < inputArchivos.files.length; i++) {
+                    const archivo = inputArchivos.files[i];
+                    const rutaStorage = `album_${albumId}/${Date.now()}_${archivo.name}`;
+
+                    const { error: uploadError } = await clienteSupabase.storage
+                        .from('galeria')
+                        .upload(rutaStorage, archivo);
+
+                    if (!uploadError) {
+                        const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
+                        await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
+                    }
+                }
+            }
+
+            alert("¡Álbum creado y fotografías subidas con éxito!");
+            document.getElementById('album-titulo').value = '';
+            document.getElementById('album-descripcion').value = '';
+            inputArchivos.value = '';
+            cargarSelectAlbumes();
+        }
+
+        async function agregarFotosAAlbum() {
+            const albumId = document.getElementById('select-albumes').value;
+            const inputArchivos = document.getElementById('archivos-extra');
+
+            if (!albumId) return alert("Seleccione un álbum de la lista.");
+            if (inputArchivos.files.length === 0) return alert("Seleccione al menos una fotografía.");
+
             for (let i = 0; i < inputArchivos.files.length; i++) {
                 const archivo = inputArchivos.files[i];
                 const rutaStorage = `album_${albumId}/${Date.now()}_${archivo.name}`;
@@ -209,21 +293,27 @@
 
                 if (!uploadError) {
                     const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
-                    
-                    await clienteSupabase.from('fotos_album').insert([{
-                        album_id: albumId,
-                        url_foto: urlPublica
-                    }]);
+                    await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
                 }
             }
 
-            alert("¡Álbum y galería fotográfica publicados con éxito!");
-            document.getElementById('album-titulo').value = '';
-            document.getElementById('album-descripcion').value = '';
+            alert("¡Fotografías agregadas con éxito al álbum!");
             inputArchivos.value = '';
         }
 
-        // FUNCIONALIDAD DE EVENTOS Y PUBLICIDAD CON BANNER
+        async function eliminarAlbumSeleccionado() {
+            const albumId = document.getElementById('select-albumes').value;
+            if (!albumId) return alert("Seleccione el álbum que desea eliminar.");
+
+            if (!confirm("¿Está seguro de eliminar este álbum y todas sus fotos?")) return;
+
+            const { error } = await clienteSupabase.from('albumes_galeria').delete().eq('id', albumId);
+            if (error) return alert("Error al eliminar álbum: " + error.message);
+
+            alert("Álbum eliminado correctamente.");
+            cargarSelectAlbumes();
+        }
+
         async function publicarEventoConPublicidad() {
             const titulo = document.getElementById('titulo-evento').value.trim();
             const tipo = document.getElementById('tipo-evento').value;
@@ -235,16 +325,10 @@
             if (!titulo) return alert("Ingrese el título del evento o anuncio.");
 
             let urlPublicidadFinal = null;
-
-            // Si subió un archivo de publicidad/banner
             if (inputPublicidad.files.length > 0) {
                 const archivo = inputPublicidad.files[0];
                 const rutaPub = `publicidad/${Date.now()}_${archivo.name}`;
-                
-                const { error: errorUpload } = await clienteSupabase.storage
-                    .from('galeria')
-                    .upload(rutaPub, archivo);
-
+                const { error: errorUpload } = await clienteSupabase.storage.from('galeria').upload(rutaPub, archivo);
                 if (!errorUpload) {
                     urlPublicidadFinal = clienteSupabase.storage.from('galeria').getPublicUrl(rutaPub).data.publicUrl;
                 }
@@ -267,12 +351,30 @@
             document.getElementById('url-facebook').value = '';
             document.getElementById('url-tiktok').value = '';
             inputPublicidad.value = '';
+            cargarSelectEventos();
+        }
+
+        async function eliminarEventoSeleccionado() {
+            const eventoId = document.getElementById('select-eventos').value;
+            if (!eventoId) return alert("Seleccione el evento o anuncio que desea eliminar.");
+
+            if (!confirm("¿Está seguro de eliminar este evento o anuncio del portal?")) return;
+
+            const { error } = await clienteSupabase.from('actividades').delete().eq('id', eventoId);
+            if (error) return alert("Error al eliminar evento: " + error.message);
+
+            alert("Evento o anuncio eliminado correctamente.");
+            cargarSelectEventos();
         }
 
         function cerrarSesion() {
             localStorage.removeItem('sesion_activa');
             window.location.href = 'login.html';
         }
+
+        // Cargar listas al abrir la página
+        cargarSelectAlbumes();
+        cargarSelectEventos();
     </script>
 </body>
 </html>
