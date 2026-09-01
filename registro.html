@@ -2,62 +2,105 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro Administrativo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Acceso Administrativo - compukelc</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
-        .formulario { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        input, select { width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        .fila-password { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
-        .fila-password input { margin-bottom: 0; }
-        button { width: 100%; padding: 12px; background: #003366; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .error { color: red; font-size: 12px; margin-bottom: 15px; display: none; }
-        .aviso-info { background: #eef2f5; padding: 10px; font-size: 11px; color: #555; border-radius: 4px; margin-bottom: 15px; text-align: center; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; color: #333; }
+        .formulario-contenedor { width: 100%; max-width: 500px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #003366; margin-top: 0; margin-bottom: 20px; font-size: 22px; }
+        p.subtitulo { text-align: center; font-size: 13px; color: #666; margin-bottom: 25px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .form-full { margin-bottom: 12px; }
+        label { font-size: 12px; font-weight: bold; color: #003366; display: block; margin-bottom: 4px; }
+        input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; font-size: 13px; }
+        button { width: 100%; padding: 12px; background: #003366; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #002244; }
+        .link-volver { display: block; text-align: center; margin-top: 20px; font-size: 12px; color: #003366; text-decoration: none; }
+        .link-volver:hover { text-decoration: underline; }
+        .footer-login { text-align: center; margin-top: 25px; font-size: 11px; color: #888; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="formulario">
-        <h2 style="text-align: center; color: #003366;">Solicitud de Acceso</h2>
-        <div class="aviso-info">Tu cuenta requerirá aprobación del Superadministrador antes de poder ingresar.</div>
+    <div class="formulario-contenedor">
+        <h2>Solicitud de Acceso Administrativo</h2>
+        <p class="subtitulo">Complete el formulario. Su cuenta quedará en estado pendiente hasta ser autorizada por el Superadministrador.</p>
         
-        <input type="text" id="nombres" placeholder="Nombres" required>
-        <input type="text" id="apellidos" placeholder="Apellidos" required>
-        <input type="text" inputmode="numeric" pattern="[0-9]*" id="documento" placeholder="Documento de Identidad (Usuario)" required>
-        <input type="email" id="correo" placeholder="Correo Electrónico de contacto" required>
+        <form id="form-registro" onsubmit="registrarUsuario(event)">
+            
+            <div class="form-full">
+                <label>Documento de Identidad</label>
+                <input type="text" id="reg-documento" inputmode="numeric" required>
+            </div>
+
+            <div class="form-grid">
+                <div>
+                    <label>Nombres</label>
+                    <input type="text" id="reg-nombres" required>
+                </div>
+                <div>
+                    <label>Apellidos</label>
+                    <input type="text" id="reg-apellidos" required>
+                </div>
+            </div>
+
+            <div class="form-full">
+                <label>Correo Electrónico Institucional</label>
+                <input type="email" id="reg-correo" required>
+            </div>
+
+            <div class="form-grid">
+                <div>
+                    <label>Entidad Base</label>
+                    <select id="reg-entidad" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Gobernacion">Gobernación</option>
+                        <option value="Alcaldia">Alcaldía</option>
+                        <option value="Otra">Otra Entidad</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Tipo de Dependencia</label>
+                    <select id="reg-dependencia" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Secretaria">Secretaría</option>
+                        <option value="Instituto">Instituto</option>
+                        <option value="Oficina">Oficina Asesora</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div>
+                    <label>Nombre del Lugar / Área</label>
+                    <input type="text" id="reg-lugar" required>
+                </div>
+                <div>
+                    <label>Cargo de quien registra</label>
+                    <input type="text" id="reg-cargo" required>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div>
+                    <label>Contraseña</label>
+                    <input type="password" id="reg-clave" required>
+                </div>
+                <div>
+                    <label>Confirmar Contraseña</label>
+                    <input type="password" id="reg-clave-conf" required>
+                </div>
+            </div>
+
+            <button type="submit">Enviar Solicitud de Acceso</button>
+        </form>
+
+        <a href="login.html" class="link-volver">← Volver al Inicio de Sesión</a>
         
-        <select id="entidad-principal" required>
-            <option value="">Seleccione Entidad Base...</option>
-            <option value="Gobernacion">Gobernación</option>
-            <option value="Alcaldia">Alcaldía</option>
-        </select>
-
-        <select id="tipo-dependencia" required onchange="actualizarGuia()">
-            <option value="">¿Dónde trabaja?...</option>
-            <option value="Secretaria">Secretaría</option>
-            <option value="Colegio">Colegio Institucional</option>
-            <option value="Otro">Otra Dependencia</option>
-        </select>
-
-        <input type="text" id="nombre-especifico" placeholder="Especifique el nombre del lugar" required>
-        <input type="text" id="cargo" placeholder="Cargo que desempeña" required>
-
-        <div class="fila-password">
-            <input type="password" id="clave" placeholder="Contraseña" required>
-            <button type="button" id="btn-ver" style="width: auto; padding: 10px;">Ver</button>
-        </div>
-        <input type="password" id="clave-repetida" placeholder="Repetir Contraseña" required>
-
-        <p id="mensaje-error" class="error"></p>
-
-        <label style="display: flex; gap: 10px; align-items: center; font-size: 12px; margin-bottom: 20px;">
-            <input type="checkbox" id="terminos" style="width: auto; margin: 0;" required>
-            Confirmo que los datos son correctos.
-        </label>
-
-        <button onclick="registrarSolicitud()">Enviar Solicitud</button>
-        <div style="text-align: center; margin-top: 15px;">
-            <a href="login.html" style="font-size: 12px; color: #003366; text-decoration: none;">← Volver al login</a>
+        <div class="footer-login">
+            Sistema de Gestión Multimedia<br>
+            Desarrollo técnico: compukelc | compukelc@hotmail.com | cel. 3507973351
         </div>
     </div>
 
@@ -66,62 +109,49 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        function actualizarGuia() {
-            const tipo = document.getElementById('tipo-dependencia').value;
-            const inputNombre = document.getElementById('nombre-especifico');
-            if (tipo === 'Secretaria') inputNombre.placeholder = "Ej: Secretaría de Cultura";
-            else if (tipo === 'Colegio') inputNombre.placeholder = "Ej: Colegio San Francisco de Sales";
-            else inputNombre.placeholder = "Especifique el nombre del lugar";
-        }
+        async function registrarUsuario(event) {
+            event.preventDefault(); 
 
-        document.getElementById('btn-ver').addEventListener('click', function() {
-            const campo = document.getElementById('clave');
-            const campoRepetido = document.getElementById('clave-repetida');
-            const tipo = campo.type === 'password' ? 'text' : 'password';
-            campo.type = tipo;
-            campoRepetido.type = tipo;
-            this.textContent = tipo === 'password' ? 'Ver' : 'Ocultar';
-        });
+            const documento = document.getElementById('reg-documento').value.trim();
+            const nombres = document.getElementById('reg-nombres').value.trim();
+            const apellidos = document.getElementById('reg-apellidos').value.trim();
+            const correo = document.getElementById('reg-correo').value.trim();
+            const entidad = document.getElementById('reg-entidad').value;
+            const dependencia = document.getElementById('reg-dependencia').value;
+            const lugar = document.getElementById('reg-lugar').value.trim();
+            const cargo = document.getElementById('reg-cargo').value.trim();
+            const clave = document.getElementById('reg-clave').value;
+            const claveConf = document.getElementById('reg-clave-conf').value;
 
-        async function registrarSolicitud() {
-            const clave = document.getElementById('clave').value;
-            const claveRep = document.getElementById('clave-repetida').value;
-            const error = document.getElementById('mensaje-error');
-            const terminos = document.getElementById('terminos').checked;
-            const documento = document.getElementById('documento').value;
-            const correo = document.getElementById('correo').value;
-            
-            const reglaFuerte = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
-
-            if (!terminos || clave !== claveRep || !reglaFuerte.test(clave) || !documento || !correo) {
-                error.textContent = "Revisa los campos: Acepta los términos, ingresa el correo, verifica contraseñas (mínimo 8 caracteres, 1 mayúscula, 1 número y 1 símbolo).";
-                error.style.display = "block"; return;
+            if (clave !== claveConf) {
+                return alert("Las contraseñas no coinciden. Por favor, verifíquelas.");
             }
-            error.style.display = "none";
 
-            try {
-                const { error: perfilError } = await clienteSupabase.from('perfiles_administrativos').insert([{
-                    documento: documento,
-                    nombres: document.getElementById('nombres').value,
-                    apellidos: document.getElementById('apellidos').value,
-                    correo: correo,
-                    entidad_base: document.getElementById('entidad-principal').value,
-                    tipo_dependencia: document.getElementById('tipo-dependencia').value,
-                    nombre_lugar: document.getElementById('nombre-especifico').value,
-                    cargo: document.getElementById('cargo').value,
-                    clave: clave,
-                    rol: 'administrador',
-                    estado: 'pendiente' // Queda inactivo hasta que tú lo autorices
-                }]);
+            const { error } = await clienteSupabase.from('perfiles_administrativos').insert([{
+                documento: documento,
+                nombres: nombres,
+                apellidos: apellidos,
+                correo: correo,
+                entidad_base: entidad,
+                tipo_dependencia: dependencia,
+                nombre_lugar: lugar,
+                cargo: cargo,
+                clave: clave,
+                rol: 'administrador', // Por defecto todos son administradores base
+                estado: 'pendiente'   // Obliga al superadmin a aprobarlos
+            }]);
 
-                if (perfilError) throw perfilError;
-
-                alert('¡Solicitud enviada con éxito! Quedará en espera de autorización.');
-                window.location.href = 'login.html'; 
-
-            } catch (err) {
-                alert('Error al registrar (Es posible que el documento ya esté registrado): ' + err.message);
+            if (error) {
+                if (error.code === '23505') {
+                    alert("Error: El documento ingresado ya se encuentra registrado en el sistema.");
+                } else {
+                    alert("Error al registrar solicitud: " + error.message);
+                }
+                return;
             }
+
+            alert("¡Solicitud enviada con éxito! Queda a la espera de autorización por parte del Superadministrador.");
+            window.location.href = 'login.html';
         }
     </script>
 </body>
