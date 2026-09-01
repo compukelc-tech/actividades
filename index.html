@@ -56,9 +56,10 @@
         .header-principal {
             background-color: var(--color-primario);
             color: white;
-            padding: 20px 40px;
+            padding: 25px 40px;
             text-align: center;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
         }
         .header-principal h1 { margin: 0; font-size: 24px; font-weight: 700; text-transform: uppercase; }
         .header-principal h3 { margin: 5px 0 0; font-size: 14px; font-weight: 400; color: #e0e0e0; }
@@ -66,7 +67,7 @@
         /* ESTRUCTURA PRINCIPAL: DOS COLUMNAS */
         .contenedor-maestro {
             display: grid;
-            grid-template-columns: 300px 1fr; /* Columna izq fija 300px, derecha flexible */
+            grid-template-columns: 300px 1fr;
             gap: 30px;
             max-width: 1400px;
             margin: 30px auto;
@@ -75,7 +76,7 @@
 
         @media (max-width: 900px) {
             .contenedor-maestro {
-                grid-template-columns: 1fr; /* Móviles: una columna */
+                grid-template-columns: 1fr;
             }
         }
 
@@ -155,7 +156,7 @@
         .foto-item {
             border-radius: 8px;
             overflow: hidden;
-            aspect-ratio: 1; /* Fotos cuadradas uniformes */
+            aspect-ratio: 1;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             transition: transform 0.3s;
         }
@@ -181,7 +182,7 @@
 </head>
 <body>
 
-    <!-- BARRA SUPERIOR DE CONTROL DE SESIÓN -->
+    <!-- BARRA SUPERIOR DE CONTROL DE SESIÓN (Se muestra al iniciar sesión) -->
     <div class="barra-sesion" id="barra-admin" style="display: none;">
         <span id="info-usuario-activo"></span>
         <a href="registro.html" id="link-registro" style="display: none;">+ Nuevo Admin</a>
@@ -189,6 +190,9 @@
     </div>
 
     <header class="header-principal">
+        <!-- Botón de acceso discreto para administradores -->
+        <a href="login.html" id="btn-ingresar-discreto" style="position: absolute; top: 15px; right: 20px; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 12px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 4px; transition: color 0.2s;" title="Acceso Administrativo">🔒 Ingresar</a>
+
         <h1>Actividades Culturales y Deportivas</h1>
         <h3>Gobernación de Norte de Santander | Alcaldía de San José de Cúcuta</h3>
     </header>
@@ -228,6 +232,9 @@
             document.getElementById('barra-admin').style.display = 'flex';
             document.getElementById('info-usuario-activo').textContent = `Conectado: ${usuario.nombres} (${usuario.rol})`;
             
+            // Ocultamos el botón discreto si ya está logueado para que no estorbe
+            document.getElementById('btn-ingresar-discreto').style.display = 'none';
+
             // Si es superadministrador o tu documento principal, habilitar enlace de registro
             if (usuario.rol === 'superadmin' || usuario.documento === '1090391929') {
                 document.getElementById('link-registro').style.display = 'inline';
@@ -237,7 +244,7 @@
         function cerrarSesion() {
             localStorage.removeItem('sesion_activa');
             alert("Sesión cerrada correctamente.");
-            window.location.href = 'login.html';
+            window.location.reload();
         }
 
         // FUNCIÓN 1: CARGAR EVENTOS EN COLUMNA IZQUIERDA
