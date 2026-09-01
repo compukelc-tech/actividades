@@ -3,215 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- SISTEMA ANTI-CACHÉ GLOBAL -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
-    <title>Portal Multimedia - Piloto Institucional</title>
+    <title>Portal Multimedia Institucional</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root {
-            --color-primario: #003366; 
-            --color-fondo: #f4f7f6;
-            --color-texto: #333;
-            --color-tarjeta: #ffffff;
-        }
-        body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            background-color: var(--color-fondo); 
-            color: var(--color-texto);
-        }
-        
-        /* BARRA DE SESIÓN ADMINISTRATIVA */
-        .barra-sesion {
-            background-color: #002244;
-            color: white;
-            padding: 8px 40px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            font-size: 13px;
-            gap: 15px;
-        }
-        .barra-sesion a {
-            color: #fff;
-            text-decoration: underline;
-            font-weight: bold;
-        }
-        .btn-salir-menu {
-            background: #cc0000;
-            color: white;
-            border: none;
-            padding: 4px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .header-principal {
-            background-color: var(--color-primario);
-            color: white;
-            padding: 25px 40px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        .header-principal h1 { margin: 0; font-size: 24px; font-weight: 700; text-transform: uppercase; }
+        :root { --color-primario: #003366; --color-fondo: #f4f7f6; --color-tarjeta: #ffffff; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: var(--color-fondo); color: #333; }
+        .barra-sesion { background-color: #002244; color: white; padding: 10px 40px; display: flex; justify-content: flex-end; align-items: center; font-size: 13px; gap: 15px; }
+        .barra-sesion a { color: #fff; text-decoration: underline; font-weight: bold; }
+        .btn-salir-menu { background: #cc0000; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .header-principal { background-color: var(--color-primario); color: white; padding: 25px 40px; text-align: center; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header-principal h1 { margin: 0; font-size: 24px; text-transform: uppercase; }
         .header-principal h3 { margin: 5px 0 0; font-size: 14px; font-weight: 400; color: #e0e0e0; }
-        
-        /* ESTRUCTURA PRINCIPAL: DOS COLUMNAS */
-        .contenedor-maestro {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 30px;
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        @media (max-width: 900px) {
-            .contenedor-maestro {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .titulo-seccion {
-            font-size: 16px;
-            color: var(--color-primario);
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 8px;
-            margin-top: 0;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-
-        /* COLUMNA IZQUIERDA: EVENTOS */
-        .columna-eventos {
-            background: transparent;
-        }
-        .tarjeta-evento {
-            background: var(--color-tarjeta);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border-left: 4px solid #d9534f;
-            transition: transform 0.2s;
-        }
-        .tarjeta-evento:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .tarjeta-evento h3 {
-            margin: 0 0 8px;
-            font-size: 14px;
-            color: var(--color-primario);
-        }
-        .etiqueta-tipo {
-            display: inline-block;
-            background: #eee;
-            font-size: 10px;
-            padding: 3px 8px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            color: #555;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .btn-link {
-            display: block;
-            text-align: center;
-            padding: 7px;
-            border-radius: 6px;
-            text-decoration: none;
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
-            margin-bottom: 6px;
-            transition: opacity 0.2s;
-        }
-        .btn-link:hover { opacity: 0.85; }
+        .contenedor-maestro { display: grid; grid-template-columns: 320px 1fr; gap: 30px; max-width: 1400px; margin: 30px auto; padding: 0 20px; }
+        @media (max-width: 900px) { .contenedor-maestro { grid-template-columns: 1fr; } }
+        .titulo-seccion { font-size: 16px; color: var(--color-primario); border-bottom: 2px solid #ccc; padding-bottom: 8px; margin-top: 0; text-transform: uppercase; font-weight: 700; }
+        .tarjeta-evento { background: var(--color-tarjeta); border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #d9534f; }
+        .tarjeta-evento h3 { margin: 0 0 8px; font-size: 14px; color: var(--color-primario); }
+        .etiqueta-tipo { display: inline-block; background: #eee; font-size: 10px; padding: 3px 8px; border-radius: 12px; margin-bottom: 12px; color: #555; font-weight: bold; text-transform: uppercase; }
+        .btn-link { display: block; text-align: center; padding: 7px; border-radius: 6px; text-decoration: none; color: white; font-size: 11px; font-weight: bold; margin-bottom: 6px; }
         .btn-youtube { background-color: #ff0000; }
         .btn-facebook { background-color: #1877f2; }
-        .btn-tiktok { background-color: #000000; }
-
-        /* COLUMNA DERECHA: GALERÍA */
-        .columna-galeria {
-            background: var(--color-tarjeta);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        .grid-fotos {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 15px;
-        }
-        .foto-item {
-            border-radius: 8px;
-            overflow: hidden;
-            aspect-ratio: 1;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .foto-item:hover {
-            transform: scale(1.03);
-        }
-        .foto-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .footer-desarrollo {
-            text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-            font-size: 11px;
-            color: #888;
-            background: #e9ecef;
-        }
+        .btn-tiktok { background-color: #000; }
+        .columna-galeria { background: var(--color-tarjeta); padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .grid-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .foto-item { border-radius: 8px; overflow: hidden; aspect-ratio: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .foto-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .footer-desarrollo { text-align: center; padding: 20px; margin-top: 40px; font-size: 11px; color: #888; background: #e9ecef; }
     </style>
 </head>
 <body>
 
-    <!-- BARRA SUPERIOR DE CONTROL DE SESIÓN -->
     <div class="barra-sesion" id="barra-admin" style="display: none;">
         <span id="info-usuario-activo"></span>
+        <a href="admin.html" id="link-panel-admin" style="display: none; color: #ffeb3b;">⚙️ Panel Admin</a>
         <a href="registro.html" id="link-registro" style="display: none;">+ Nuevo Admin</a>
         <button class="btn-salir-menu" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
 
     <header class="header-principal">
-        <!-- Botón de acceso discreto para administradores -->
-        <a href="login.html" id="btn-ingresar-discreto" style="position: absolute; top: 15px; right: 20px; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 12px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 4px; transition: color 0.2s;" title="Acceso Administrativo">🔒 Ingresar</a>
-
+        <a href="login.html" id="btn-ingresar-discreto" style="position: absolute; top: 15px; right: 20px; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 12px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 4px;" title="Acceso Administrativo">🔒 Ingresar</a>
         <h1>Actividades Culturales y Deportivas</h1>
         <h3>Gobernación de Norte de Santander | Alcaldía de San José de Cúcuta</h3>
     </header>
 
     <div class="contenedor-maestro">
-        <!-- IZQUIERDA: BANNERS PEQUEÑOS (EVENTOS) -->
         <aside class="columna-eventos">
-            <h2 class="titulo-seccion">Transmisiones en Vivo</h2>
-            <div id="contenedor-transmisiones">
-                <p style="font-size: 12px; color: #666;">Cargando transmisiones...</p>
-            </div>
+            <h2 class="titulo-seccion">Transmisiones y Enlaces</h2>
+            <div id="contenedor-transmisiones"><p style="font-size: 12px; color: #666;">Cargando...</p></div>
         </aside>
 
-        <!-- DERECHA: GALERÍA VISUAL (FOTOGRAFÍAS) -->
         <main class="columna-galeria">
             <h2 class="titulo-seccion">Galería Fotográfica Institucional</h2>
-            <div id="contenedor-galeria" class="grid-fotos">
-                <p style="font-size: 12px; color: #666;">Buscando fotografías recientes...</p>
-            </div>
+            <div id="contenedor-galeria" class="grid-fotos"><p style="font-size: 12px; color: #666;">Cargando galería...</p></div>
         </main>
     </div>
 
@@ -220,89 +64,66 @@
     </footer>
 
     <script>
-        // ==========================================
-        // CONTROL DE VERSIÓN DEL SISTEMA
-        // ==========================================
-        const VERSION_SISTEMA = "v1.0.2"; // <-- Cambia este número (ej: v1.0.2) cada vez que subas cambios importantes.
-
         const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
-        
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
-        // VERIFICAR Y LIMPIAR CACHÉ ANTIGUA AUTOMÁTICAMENTE SI CAMBIA LA VERSIÓN
-        const versionGuardada = localStorage.getItem('version_portal');
-        if (versionGuardada !== VERSION_SISTEMA) {
-            console.log("Nueva versión detectada. Actualizando sistema...");
-            localStorage.setItem('version_portal', VERSION_SISTEMA);
-            // Esto asegura que la sesión activa se preserve pero el navegador ignore la caché vieja
-        }
-
-        // VERIFICAR SESIÓN ACTIVA AL CARGAR EL INDEX
         const sesionGuardada = localStorage.getItem('sesion_activa');
         if (sesionGuardada) {
             const usuario = JSON.parse(sesionGuardada);
             document.getElementById('barra-admin').style.display = 'flex';
             document.getElementById('info-usuario-activo').textContent = `Conectado: ${usuario.nombres} (${usuario.rol})`;
-            
             document.getElementById('btn-ingresar-discreto').style.display = 'none';
 
             if (usuario.rol === 'superadmin' || usuario.documento === '1090391929') {
+                document.getElementById('link-panel-admin').style.display = 'inline';
                 document.getElementById('link-registro').style.display = 'inline';
             }
         }
 
         function cerrarSesion() {
             localStorage.removeItem('sesion_activa');
-            alert("Sesión cerrada correctamente.");
             window.location.reload();
         }
 
-        // FUNCIÓN 1: CARGAR EVENTOS EN COLUMNA IZQUIERDA
         async function cargarDatosPiloto() {
             const contenedor = document.getElementById('contenedor-transmisiones');
-            const { data, error } = await clienteSupabase.from('actividades').select('*');
+            const { data, error } = await clienteSupabase.from('actividades').select('*').order('id', { ascending: false });
 
-            if (error) return contenedor.innerHTML = "<p style='font-size:12px; color:red;'>Error de conexión.</p>";
-            if (!data || data.length === 0) return contenedor.innerHTML = "<p style='font-size:12px; color:#666;'>No hay eventos programados.</p>";
+            if (error || !data || data.length === 0) return contenedor.innerHTML = "<p style='font-size:12px; color:#666;'>No hay eventos registrados.</p>";
 
             contenedor.innerHTML = '';
             data.forEach(evento => {
-                const tarjeta = document.createElement('div');
-                tarjeta.className = 'tarjeta-evento';
-                
                 let botonesHTML = '';
                 if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" class="btn-link btn-youtube">YouTube</a>`;
                 if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" class="btn-link btn-facebook">Facebook</a>`;
                 if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" class="btn-link btn-tiktok">TikTok</a>`;
 
-                tarjeta.innerHTML = `
-                    <h3>${evento.titulo || 'Sin Título'}</h3>
-                    <span class="etiqueta-tipo">${evento.tipo || 'Evento'}</span>
-                    <div>${botonesHTML}</div>
+                contenedor.innerHTML += `
+                    <div class="tarjeta-evento">
+                        <h3>${evento.titulo || 'Sin Título'}</h3>
+                        <span class="etiqueta-tipo">${evento.tipo || 'Evento'}</span>
+                        <div>${botonesHTML}</div>
+                    </div>
                 `;
-                contenedor.appendChild(tarjeta);
             });
         }
 
-        // FUNCIÓN 2: CARGAR GALERÍA EN LA DERECHA (CUADRÍCULA)
         async function cargarGaleria() {
             const contenedorGaleria = document.getElementById('contenedor-galeria');
             const { data, error } = await clienteSupabase.storage.from('galeria').list();
 
-            if (error) return contenedorGaleria.innerHTML = "<p style='font-size:12px; color:red;'>Error al cargar la galería.</p>";
+            if (error || !data) return contenedorGaleria.innerHTML = "<p style='font-size:12px; color:red;'>Error al cargar galería.</p>";
 
-            const archivos = data.filter(archivo => archivo.name !== '.emptyFolderPlaceholder');
-            if (archivos.length === 0) return contenedorGaleria.innerHTML = "<p style='font-size:12px; color:#666;'>No hay fotografías publicadas.</p>";
+            const archivos = data.filter(a => a.name !== '.emptyFolderPlaceholder');
+            if (archivos.length === 0) return contenedorGaleria.innerHTML = "<p style='font-size:12px; color:#666;'>No hay fotos.</p>";
 
             contenedorGaleria.innerHTML = '';
             archivos.forEach(archivo => {
                 const urlData = clienteSupabase.storage.from('galeria').getPublicUrl(archivo.name);
                 contenedorGaleria.innerHTML += `
                     <div class="foto-item">
-                        <a href="${urlData.data.publicUrl}" target="_blank">
-                            <img src="${urlData.data.publicUrl}" alt="${archivo.name}" loading="lazy">
-                        </a>
+                        <a href="${urlData.data.publicUrl}" target="_blank"><img src="${urlData.data.publicUrl}" loading="lazy"></a>
                     </div>
                 `;
             });
