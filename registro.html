@@ -22,6 +22,8 @@
         <input type="text" id="nombres" placeholder="Nombres" required>
         <input type="text" id="apellidos" placeholder="Apellidos" required>
         <input type="text" inputmode="numeric" pattern="[0-9]*" id="documento" placeholder="Documento de Identidad (Usuario)" required>
+        
+        <!-- Casilla de correo electrónico -->
         <input type="email" id="correo" placeholder="Correo Electrónico de contacto" required>
         
         <select id="entidad-principal" required>
@@ -84,22 +86,22 @@
             const error = document.getElementById('mensaje-error');
             const terminos = document.getElementById('terminos').checked;
             const documento = document.getElementById('documento').value;
+            const correo = document.getElementById('correo').value;
             
             const reglaFuerte = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
-            if (!terminos || clave !== claveRep || !reglaFuerte.test(clave) || !documento) {
-                error.textContent = "Revisa los campos: Acepta los términos, verifica que las contraseñas coincidan y cumplan las reglas de seguridad.";
+            if (!terminos || clave !== claveRep || !reglaFuerte.test(clave) || !documento || !correo) {
+                error.textContent = "Revisa los campos: Acepta los términos, ingresa el correo, verifica que las contraseñas coincidan y cumplan las reglas de seguridad.";
                 error.style.display = "block"; return;
             }
             error.style.display = "none";
 
             try {
-                // Guardar directamente en la tabla sin pasar por Auth de Supabase
                 const { error: perfilError } = await clienteSupabase.from('perfiles_administrativos').insert([{
                     documento: documento,
                     nombres: document.getElementById('nombres').value,
                     apellidos: document.getElementById('apellidos').value,
-                    correo: document.getElementById('correo').value,
+                    correo: correo,
                     entidad_base: document.getElementById('entidad-principal').value,
                     tipo_dependencia: document.getElementById('tipo-dependencia').value,
                     nombre_lugar: document.getElementById('nombre-especifico').value,
