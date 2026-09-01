@@ -12,18 +12,18 @@
         .fila-password input { margin-bottom: 0; }
         button { width: 100%; padding: 12px; background: #003366; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .error { color: red; font-size: 12px; margin-bottom: 15px; display: none; }
+        .aviso-info { background: #eef2f5; padding: 10px; font-size: 11px; color: #555; border-radius: 4px; margin-bottom: 15px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div class="formulario">
-        <h2 style="text-align: center; color: #003366;">Alta de Administrador</h2>
+        <h2 style="text-align: center; color: #003366;">Solicitud de Acceso</h2>
+        <div class="aviso-info">Tu cuenta requerirá aprobación del Superadministrador antes de poder ingresar.</div>
         
         <input type="text" id="nombres" placeholder="Nombres" required>
         <input type="text" id="apellidos" placeholder="Apellidos" required>
         <input type="text" inputmode="numeric" pattern="[0-9]*" id="documento" placeholder="Documento de Identidad (Usuario)" required>
-        
-        <!-- Casilla de correo electrónico -->
         <input type="email" id="correo" placeholder="Correo Electrónico de contacto" required>
         
         <select id="entidad-principal" required>
@@ -52,10 +52,13 @@
 
         <label style="display: flex; gap: 10px; align-items: center; font-size: 12px; margin-bottom: 20px;">
             <input type="checkbox" id="terminos" style="width: auto; margin: 0;" required>
-            Confirmo que los datos son correctos y acepto el registro.
+            Confirmo que los datos son correctos.
         </label>
 
-        <button onclick="registrarDirecto()">Registrar Usuario</button>
+        <button onclick="registrarSolicitud()">Enviar Solicitud</button>
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="login.html" style="font-size: 12px; color: #003366; text-decoration: none;">← Volver al login</a>
+        </div>
     </div>
 
     <script>
@@ -80,7 +83,7 @@
             this.textContent = tipo === 'password' ? 'Ver' : 'Ocultar';
         });
 
-        async function registrarDirecto() {
+        async function registrarSolicitud() {
             const clave = document.getElementById('clave').value;
             const claveRep = document.getElementById('clave-repetida').value;
             const error = document.getElementById('mensaje-error');
@@ -91,7 +94,7 @@
             const reglaFuerte = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
             if (!terminos || clave !== claveRep || !reglaFuerte.test(clave) || !documento || !correo) {
-                error.textContent = "Revisa los campos: Acepta los términos, ingresa el correo, verifica que las contraseñas coincidan y cumplan las reglas de seguridad.";
+                error.textContent = "Revisa los campos: Acepta los términos, ingresa el correo, verifica contraseñas (mínimo 8 caracteres, 1 mayúscula, 1 número y 1 símbolo).";
                 error.style.display = "block"; return;
             }
             error.style.display = "none";
@@ -107,13 +110,14 @@
                     nombre_lugar: document.getElementById('nombre-especifico').value,
                     cargo: document.getElementById('cargo').value,
                     clave: clave,
-                    rol: 'administrador'
+                    rol: 'administrador',
+                    estado: 'pendiente' // Queda inactivo hasta que tú lo autorices
                 }]);
 
                 if (perfilError) throw perfilError;
 
-                alert('¡Usuario registrado con éxito en la base de datos!');
-                window.location.reload(); 
+                alert('¡Solicitud enviada con éxito! Quedará en espera de autorización.');
+                window.location.href = 'login.html'; 
 
             } catch (err) {
                 alert('Error al registrar (Es posible que el documento ya esté registrado): ' + err.message);
