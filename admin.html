@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Superadministrador - Gestión de Usuarios</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 0; }
+        header { background: #003366; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1100px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #003366; margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #003366; color: white; }
+        .badge { padding: 5px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .badge-pendiente { background: #ffc107; color: #333; }
+        .badge-autorizado { background: #28a745; color: white; }
+        .badge-bloqueado { background: #dc3545; color: white; }
+        button { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; margin-right: 5px; }
+        .btn-autorizar { background: #28a745; color: white; }
+        .btn-bloquear { background: #ffc107; color: #333; }
+        .btn-eliminar { background: #dc3545; color: white; }
+        .btn-volver { background: #6c757d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 12px; display: inline-block; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>Panel de Control - Superadministrador</h2>
+        <div>
+            <span id="nombre-superadmin" style="font-weight: bold; margin-right: 15px;"></span>
+            <button onclick="cerrarSesion()" style="background: #cc0000; color: white; padding: 8px 12px;">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="index.html" class="btn-volver">← Volver al Portal Principal</a>
+        
+        <h3>Gestión de Usuarios y Accesos Administrativos</h3>
+        <p style="font-size: 13px; color: #666;">Aquí puedes autorizar solicitudes pendientes, bloquear accesos o eliminar del sistema a los usuarios que ya no pertenezcan al proyecto.</p>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Nombres y Apellidos</th>
+                        <th>Dependencia / Lugar</th>
+                        <th>Cargo</th>
+                        <th>Estado</th>
+                        <th>Acciones de Control</th>
+                    </tr>
+                ></thead>
+                <tbody id="tabla-usuarios">
+                    <tr><td colspan="6" style="text-align: center;">Cargando usuarios...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
+        const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Verificar si hay sesión y si es superadmin
+        const sesionGuardada = localStorage.getItem('sesion_activa');
+        if (!sesionGuardada) {
+            alert("Acceso denegado. Debe iniciar sesión.");
+            window.location.href = 'login.html';
+        } else {
+            const usuario = JSON.parse(sesionGuardada);
+            document.getElementById('nombre-superadmin').textContent = `Superadmin: ${usuario.nombres}`;
+            
+            // Validación estricta de superadmin
+            if (usuario.rol !== 'superadmin' && usuario.documento !== '1090391929') {
+                alert("No tienes permisos de Superadministrador para ver esta página.");
+                window.location.href = 'index.html';
+            }
+        }
+
+        async function cargarUsuarios() {
+            const tbody = document.getElementById('tabla-usuarios');
+            const { data, error } = await clienteSupabase.from('perfiles_administrativos').select('*').order('fecha_creacion', { ascending: false });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">Error al cargar datos.</td></tr>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No hay usuarios registrados.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.forEach(user => {
+                let badgeClass = 'badge-pendiente';
+                if (user.estado === 'autorizado') badgeClass = 'badge-autorizado';
+                if (user.estado === 'bloqueado') badgeClass = 'badge-bloqueado';
+
+                // Si es superadmin principal, no se le muestran botones destructivos a sí mismo por seguridad
+                let botonesAccion = '';
+                if (user.rol !== 'superadmin') {
+                    if (user.estado !== 'autorizado') {
+                        botonesAccion += `<button class="btn-autorizar" onclick="cambiarEstado('${user.documento}', 'autorizado')">Autorizar</button>`;
+                    }
+                    if (user.estado !== 'bloqueado') {
+                        botonesAccion += `<button class="btn-bloquear" onclick="cambiarEstado('${user.documento}', 'bloqueado')">Bloquear</button>`;
+                    }
+                    botonesAccion += `<button class="btn-eliminar" onclick="eliminarUsuario('${user.documento}')">Eliminar</button>`;
+                } else {
+                    botonesAccion = `<span style="font-size: 11px; color: #888; font-style: italic;">Superadmin Principal</span>`;
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${user.documento}</td>
+                        <td><strong>${user.nombres} ${user.apellidos}</strong><br><span style="font-size:11px; color:#666;">${user.correo || ''}</span></td>
+                        <td>${user.tipo_dependencia}: ${user.nombre_lugar || ''}</td>
+                        <td>${user.cargo || '---'}</td>
+                        <td><span class="badge ${badgeClass}">${user.estado}</span></td>
+                        <td>${botonesAccion}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function cambiarEstado(documento, nuevoEstado) {
+            const { error } = await clienteSupabase
+                .from('perfiles_administrativos')
+                .update({ estado: nuevoEstado })
+                .eq('documento', documento);
+
+            if (error) {
+                alert("Error al actualizar el estado: " + error.message);
+            } else {
+                alert(`Usuario actualizado a estado: ${nuevoEstado}`);
+                cargarUsuarios();
+            }
+        }
+
+        async function eliminarUsuario(documento) {
+            if (!confirm(`¿Estás seguro de eliminar permanentemente al usuario con documento ${documento}? Esta acción no se puede deshacer.`)) return;
+
+            const { error } = await clienteSupabase
+                .from('perfiles_administrativos')
+                .delete()
+                .eq('documento', documento);
+
+            if (error) {
+                alert("Error al eliminar el usuario: " + error.message);
+            } else {
+                alert("Usuario eliminado del sistema correctamente.");
+                cargarUsuarios();
+            }
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('sesion_activa');
+            window.location.href = 'login.html';
+        }
+
+        // Cargar la lista al iniciar la página
+        cargarUsuarios();
+    </script>
+</body>
+</html>
