@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión - Portal Administrativo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; padding: 40px; display: flex; justify-content: center; align-items: center; height: 80vh; }
+        .formulario { width: 100%; max-width: 380px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .fila-password { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
+        .fila-password input { margin-bottom: 0; }
+        button { width: 100%; padding: 12px; background: #003366; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .error { color: red; font-size: 12px; margin-bottom: 15px; display: none; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="formulario">
+        <h2 style="text-align: center; color: #003366; margin-bottom: 25px;">Acceso Administrativo</h2>
+        
+        <input type="text" inputmode="numeric" pattern="[0-9]*" id="documento-login" placeholder="Documento de Identidad" required>
+        
+        <div class="fila-password">
+            <input type="password" id="clave-login" placeholder="Contraseña" required>
+            <button type="button" id="btn-ver-login" style="width: auto; padding: 10px;">Ver</button>
+        </div>
+
+        <p id="mensaje-error-login" class="error"></p>
+
+        <button onclick="iniciarSesion()">Ingresar al Sistema</button>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
+        const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Botón para ver/ocultar contraseña
+        document.getElementById('btn-ver-login').addEventListener('click', function() {
+            const campo = document.getElementById('clave-login');
+            if (campo.type === 'password') {
+                campo.type = 'text';
+                this.textContent = 'Ocultar';
+            } else {
+                campo.type = 'password';
+                this.textContent = 'Ver';
+            }
+        });
+
+        async function iniciarSesion() {
+            const documento = document.getElementById('documento-login').value.trim();
+            const clave = document.getElementById('clave-login').value;
+            const error = document.getElementById('mensaje-error-login');
+
+            if (!documento || !clave) {
+                error.textContent = "Por favor ingrese su documento y contraseña.";
+                error.style.display = "block";
+                return;
+            }
+            error.style.display = "none";
+
+            try {
+                // Buscamos el usuario por su documento en la tabla
+                const { data, error: dbError } = await clienteSupabase
+                    .from('perfiles_administrativos')
+                    .select('*')
+                    .eq('documento', documento)
+                    .single();
+
+                if (dbError || !data) {
+                    throw new Error("El documento ingresado no se encuentra registrado.");
+                }
+
+                // Verificamos si la contraseña coincide exactamente
+                if (data.clave !== clave) {
+                    throw new Error("Contraseña incorrecta. Intente nuevamente.");
+                }
+
+                // Guardamos los datos de sesión en la memoria del navegador
+                localStorage.setItem('sesion_activa', JSON.stringify({
+                    documento: data.documento,
+                    nombres: data.nombres,
+                    apellidos: data.apellidos,
+                    rol: data.rol
+                }));
+
+                // Registramos la acción en la caja negra de auditoría
+                await clienteSupabase.from('registro_actividades').insert([{
+                    documento_usuario: documento,
+                    accion: 'Inicio de sesión exitoso'
+                }]);
+
+                alert(`¡Bienvenido de nuevo, ${data.nombres} ${data.apellidos}!`);
+                
+                // Aquí redirigiremos al panel principal cuando esté listo
+                window.location.href = 'index.html';
+
+            } catch (err) {
+                error.textContent = err.message;
+                error.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
