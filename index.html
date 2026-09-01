@@ -25,6 +25,34 @@
             background-color: var(--color-fondo); 
             color: var(--color-texto);
         }
+        
+        /* BARRA DE SESIÓN ADMINISTRATIVA */
+        .barra-sesion {
+            background-color: #002244;
+            color: white;
+            padding: 8px 40px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            font-size: 13px;
+            gap: 15px;
+        }
+        .barra-sesion a {
+            color: #fff;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        .btn-salir-menu {
+            background: #cc0000;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
         .header-principal {
             background-color: var(--color-primario);
             color: white;
@@ -153,6 +181,13 @@
 </head>
 <body>
 
+    <!-- BARRA SUPERIOR DE CONTROL DE SESIÓN -->
+    <div class="barra-sesion" id="barra-admin" style="display: none;">
+        <span id="info-usuario-activo"></span>
+        <a href="registro.html" id="link-registro" style="display: none;">+ Nuevo Admin</a>
+        <button class="btn-salir-menu" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+
     <header class="header-principal">
         <h1>Actividades Culturales y Deportivas</h1>
         <h3>Gobernación de Norte de Santander | Alcaldía de San José de Cúcuta</h3>
@@ -185,6 +220,25 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+
+        // VERIFICAR SESIÓN ACTIVA AL CARGAR EL INDEX
+        const sesionGuardada = localStorage.getItem('sesion_activa');
+        if (sesionGuardada) {
+            const usuario = JSON.parse(sesionGuardada);
+            document.getElementById('barra-admin').style.display = 'flex';
+            document.getElementById('info-usuario-activo').textContent = `Conectado: ${usuario.nombres} (${usuario.rol})`;
+            
+            // Si es superadministrador o tu documento principal, habilitar enlace de registro
+            if (usuario.rol === 'superadmin' || usuario.documento === '1090391929') {
+                document.getElementById('link-registro').style.display = 'inline';
+            }
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('sesion_activa');
+            alert("Sesión cerrada correctamente.");
+            window.location.href = 'login.html';
+        }
 
         // FUNCIÓN 1: CARGAR EVENTOS EN COLUMNA IZQUIERDA
         async function cargarDatosPiloto() {
