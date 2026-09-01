@@ -12,6 +12,7 @@
         .fila-password input { margin-bottom: 0; }
         button { width: 100%; padding: 12px; background: #003366; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .error { color: red; font-size: 12px; margin-bottom: 15px; display: none; text-align: center; }
+        .link-registro { display: block; text-align: center; margin-top: 15px; font-size: 12px; color: #003366; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -29,6 +30,8 @@
         <p id="mensaje-error-login" class="error"></p>
 
         <button onclick="iniciarSesion()">Ingresar al Sistema</button>
+        
+        <a href="registro.html" class="link-registro">¿No tienes cuenta? Solicitar acceso</a>
     </div>
 
     <script>
@@ -36,7 +39,6 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Botón para ver/ocultar contraseña
         document.getElementById('btn-ver-login').addEventListener('click', function() {
             const campo = document.getElementById('clave-login');
             if (campo.type === 'password') {
@@ -61,7 +63,6 @@
             error.style.display = "none";
 
             try {
-                // Buscamos el usuario por su documento en la tabla
                 const { data, error: dbError } = await clienteSupabase
                     .from('perfiles_administrativos')
                     .select('*')
@@ -72,12 +73,22 @@
                     throw new Error("El documento ingresado no se encuentra registrado.");
                 }
 
-                // Verificamos si la contraseña coincide exactamente
                 if (data.clave !== clave) {
                     throw new Error("Contraseña incorrecta. Intente nuevamente.");
                 }
 
-                // Guardamos los datos de sesión en la memoria del navegador
+                // VALIDACIÓN DE ESTADO (Superadmin o Autorizado)
+                if (data.rol !== 'superadmin' && data.estado !== 'autorizado') {
+                    if (data.estado === 'pendiente') {
+                        throw new Error("Su cuenta está pendiente de aprobación por el Superadministrador.");
+                    } else if (data.estado === 'bloqueado') {
+                        throw new Error("Acceso denegado. Su cuenta se encuentra bloqueada.");
+                    } else {
+                        throw new Error("Su cuenta no cuenta con autorización activa.");
+                    }
+                }
+
+                // Guardar sesión
                 localStorage.setItem('sesion_activa', JSON.stringify({
                     documento: data.documento,
                     nombres: data.nombres,
@@ -85,15 +96,12 @@
                     rol: data.rol
                 }));
 
-                // Registramos la acción en la caja negra de auditoría
                 await clienteSupabase.from('registro_actividades').insert([{
                     documento_usuario: documento,
                     accion: 'Inicio de sesión exitoso'
                 }]);
 
                 alert(`¡Bienvenido de nuevo, ${data.nombres} ${data.apellidos}!`);
-                
-                // Aquí redirigiremos al panel principal cuando esté listo
                 window.location.href = 'index.html';
 
             } catch (err) {
