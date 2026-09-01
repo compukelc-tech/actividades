@@ -15,20 +15,25 @@
         .header-principal { background-color: var(--color-primario); color: white; padding: 25px 40px; text-align: center; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .header-principal h1 { margin: 0; font-size: 24px; text-transform: uppercase; }
         .header-principal h3 { margin: 5px 0 0; font-size: 14px; font-weight: 400; color: #e0e0e0; }
-        .contenedor-maestro { display: grid; grid-template-columns: 320px 1fr; gap: 30px; max-width: 1400px; margin: 30px auto; padding: 0 20px; }
+        .contenedor-maestro { display: grid; grid-template-columns: 340px 1fr; gap: 30px; max-width: 1400px; margin: 30px auto; padding: 0 20px; }
         @media (max-width: 900px) { .contenedor-maestro { grid-template-columns: 1fr; } }
         .titulo-seccion { font-size: 16px; color: var(--color-primario); border-bottom: 2px solid #ccc; padding-bottom: 8px; margin-top: 0; text-transform: uppercase; font-weight: 700; }
         .tarjeta-evento { background: var(--color-tarjeta); border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #d9534f; }
         .tarjeta-evento h3 { margin: 0 0 8px; font-size: 14px; color: var(--color-primario); }
-        .etiqueta-tipo { display: inline-block; background: #eee; font-size: 10px; padding: 3px 8px; border-radius: 12px; margin-bottom: 12px; color: #555; font-weight: bold; text-transform: uppercase; }
+        .etiqueta-tipo { display: inline-block; background: #eee; font-size: 10px; padding: 3px 8px; border-radius: 12px; margin-bottom: 10px; color: #555; font-weight: bold; text-transform: uppercase; }
+        .banner-publicidad { width: 100%; max-height: 180px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; }
         .btn-link { display: block; text-align: center; padding: 7px; border-radius: 6px; text-decoration: none; color: white; font-size: 11px; font-weight: bold; margin-bottom: 6px; }
         .btn-youtube { background-color: #ff0000; }
         .btn-facebook { background-color: #1877f2; }
         .btn-tiktok { background-color: #000; }
         .columna-galeria { background: var(--color-tarjeta); padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .grid-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .foto-item { border-radius: 8px; overflow: hidden; aspect-ratio: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .foto-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .album-contenedor { margin-bottom: 35px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+        .album-titulo { font-size: 18px; color: #003366; margin-bottom: 5px; font-weight: bold; }
+        .album-descripcion { font-size: 13px; color: #666; margin-bottom: 15px; }
+        .grid-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+        .foto-item { border-radius: 6px; overflow: hidden; aspect-ratio: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .foto-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.2s; }
+        .foto-item img:hover { transform: scale(1.03); }
         .footer-desarrollo { text-align: center; padding: 20px; margin-top: 40px; font-size: 11px; color: #888; background: #e9ecef; }
     </style>
 </head>
@@ -49,13 +54,13 @@
 
     <div class="contenedor-maestro">
         <aside class="columna-eventos">
-            <h2 class="titulo-seccion">Transmisiones y Enlaces</h2>
-            <div id="contenedor-transmisiones"><p style="font-size: 12px; color: #666;">Cargando...</p></div>
+            <h2 class="titulo-seccion">Transmisiones y Publicidad</h2>
+            <div id="contenedor-transmisiones"><p style="font-size: 12px; color: #666;">Cargando anuncios...</p></div>
         </aside>
 
         <main class="columna-galeria">
             <h2 class="titulo-seccion">Galería Fotográfica Institucional</h2>
-            <div id="contenedor-galeria" class="grid-fotos"><p style="font-size: 12px; color: #666;">Cargando galería...</p></div>
+            <div id="contenedor-galeria-albumes"><p style="font-size: 12px; color: #666;">Cargando álbumes...</p></div>
         </main>
     </div>
 
@@ -86,7 +91,8 @@
             window.location.reload();
         }
 
-        async function cargarDatosPiloto() {
+        // CARGAR EVENTOS Y PUBLICIDAD CON BANNER
+        async function cargarEventosYPublicidad() {
             const contenedor = document.getElementById('contenedor-transmisiones');
             const { data, error } = await clienteSupabase.from('actividades').select('*').order('id', { ascending: false });
 
@@ -94,43 +100,66 @@
 
             contenedor.innerHTML = '';
             data.forEach(evento => {
+                let imagenBanner = evento.url_publicidad ? `<img src="${evento.url_publicidad}" class="banner-publicidad">` : '';
                 let botonesHTML = '';
-                if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" class="btn-link btn-youtube">YouTube</a>`;
-                if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" class="btn-link btn-facebook">Facebook</a>`;
-                if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" class="btn-link btn-tiktok">TikTok</a>`;
+                if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" class="btn-link btn-youtube">Ver en YouTube</a>`;
+                if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" class="btn-link btn-facebook">Ver en Facebook</a>`;
+                if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" class="btn-link btn-tiktok">Ver en TikTok</a>`;
 
                 contenedor.innerHTML += `
                     <div class="tarjeta-evento">
                         <h3>${evento.titulo || 'Sin Título'}</h3>
                         <span class="etiqueta-tipo">${evento.tipo || 'Evento'}</span>
+                        ${imagenBanner}
                         <div>${botonesHTML}</div>
                     </div>
                 `;
             });
         }
 
-        async function cargarGaleria() {
-            const contenedorGaleria = document.getElementById('contenedor-galeria');
-            const { data, error } = await clienteSupabase.storage.from('galeria').list();
+        // CARGAR ÁLBUMES CON TÍTULO, DESCRIPCIÓN Y FOTOS
+        async function cargarAlbumesGaleria() {
+            const contenedor = document.getElementById('contenedor-galeria-albumes');
+            
+            // Consultar álbumes y sus fotos relacionadas
+            const { data: albumes, error } = await clienteSupabase
+                .from('albumes_galeria')
+                .select('*, fotos_album(*)')
+                .order('id', { ascending: false });
 
-            if (error || !data) return contenedorGaleria.innerHTML = "<p style='font-size:12px; color:red;'>Error al cargar galería.</p>";
+            if (error || !albumes || albumes.length === 0) {
+                return contenedor.innerHTML = "<p style='font-size:12px; color:#666;'>No hay álbumes fotográficos publicados.</p>";
+            }
 
-            const archivos = data.filter(a => a.name !== '.emptyFolderPlaceholder');
-            if (archivos.length === 0) return contenedorGaleria.innerHTML = "<p style='font-size:12px; color:#666;'>No hay fotos.</p>";
+            contenedor.innerHTML = '';
+            albumes.forEach(album => {
+                let fotosHTML = '';
+                if (album.fotos_album && album.fotos_album.length > 0) {
+                    album.fotos_album.forEach(foto => {
+                        fotosHTML += `
+                            <div class="foto-item">
+                                <a href="${foto.url_foto}" target="_blank"><img src="${foto.url_foto}" loading="lazy"></a>
+                            </div>
+                        `;
+                    });
+                } else {
+                    fotosHTML = `<p style="font-size:12px; color:#888;">Este álbum no contiene fotos todavía.</p>`;
+                }
 
-            contenedorGaleria.innerHTML = '';
-            archivos.forEach(archivo => {
-                const urlData = clienteSupabase.storage.from('galeria').getPublicUrl(archivo.name);
-                contenedorGaleria.innerHTML += `
-                    <div class="foto-item">
-                        <a href="${urlData.data.publicUrl}" target="_blank"><img src="${urlData.data.publicUrl}" loading="lazy"></a>
+                contenedor.innerHTML += `
+                    <div class="album-contenedor">
+                        <div class="album-titulo">📁 ${album.titulo}</div>
+                        <div class="album-descripcion">${album.descripcion || ''}</div>
+                        <div class="grid-fotos">
+                            ${fotosHTML}
+                        </div>
                     </div>
                 `;
             });
         }
 
-        cargarDatosPiloto();
-        cargarGaleria();
+        cargarEventosYPublicidad();
+        cargarAlbumesGaleria();
     </script>
 </body>
 </html>
