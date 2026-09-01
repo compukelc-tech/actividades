@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Administración y Control - Compukelc</title>
+    <title>Panel de Administración y Control - compukelc</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 0; color: #333; }
@@ -26,6 +26,7 @@
         textarea { resize: vertical; height: 70px; }
         .btn-accion { background: #003366; color: white; padding: 12px; font-size: 13px; width: 100%; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-volver { background: #6c757d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 12px; display: inline-block; margin-bottom: 20px; }
+        .caja-edicion { display: none; margin-top: 15px; padding: 15px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; }
     </style>
 </head>
 <body>
@@ -44,7 +45,6 @@
         <!-- SECCIÓN 1: GESTIÓN DE USUARIOS (Solo Superadmin) -->
         <div id="contenedor-gestion-usuarios" style="display: none;">
             <h3>Gestión de Usuarios (Superadmin)</h3>
-            <p style="font-size: 12px; color: #666;">Aprueba, bloquea o elimina cuentas de administradores.</p>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
@@ -52,14 +52,11 @@
                             <th>Documento</th>
                             <th>Nombres</th>
                             <th>Dependencia</th>
-                            <th>Cargo</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tabla-usuarios">
-                        <tr><td colspan="6" style="text-align: center;">Cargando...</td></tr>
-                    </tbody>
+                    <tbody id="tabla-usuarios"><tr><td colspan="5">Cargando...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -67,12 +64,12 @@
         <!-- SECCIÓN 2: CREAR NUEVO ÁLBUM -->
         <div class="seccion-admin">
             <h3>1. Crear Nuevo Álbum de Galería</h3>
-            <input type="text" id="album-titulo" placeholder="Título del Álbum (Ej: Jornada Cultural 2026)" style="margin-bottom: 15px;">
+            <input type="text" id="album-titulo" placeholder="Título del Álbum" style="margin-bottom: 15px;">
             <textarea id="album-descripcion" placeholder="Descripción breve del álbum..." style="margin-bottom: 15px;"></textarea>
             
             <div class="form-grid">
                 <div>
-                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Fotografías iniciales:</label>
+                    <label style="font-size: 12px; font-weight: bold;">Fotografías iniciales:</label>
                     <input type="file" id="archivos-album" accept="image/*" multiple>
                 </div>
                 <div style="display: flex; align-items: flex-end;">
@@ -104,7 +101,7 @@
 
         <!-- SECCIÓN 4: PUBLICAR EVENTOS / PUBLICIDAD -->
         <div class="seccion-admin">
-            <h3>3. Publicar Evento, Transmisión o Publicidad</h3>
+            <h3>3. Publicar Nuevo Evento, Transmisión o Publicidad</h3>
             <input type="text" id="titulo-evento" placeholder="Título del Evento o Anuncio Publicitario" style="margin-bottom: 15px;">
             
             <div class="form-grid">
@@ -114,39 +111,57 @@
             
             <div class="form-grid">
                 <input type="text" id="url-tiktok" placeholder="URL de TikTok (Opcional)">
+                <input type="text" id="url-x" placeholder="URL de X / Twitter (Opcional)">
+            </div>
+
+            <div class="form-grid">
                 <select id="tipo-evento">
                     <option value="Transmisión en Vivo">Transmisión en Vivo</option>
                     <option value="Cultura">Cultura</option>
                     <option value="Deporte">Deporte</option>
                     <option value="Publicidad Institucional">Publicidad Institucional</option>
                 </select>
+                <input type="file" id="archivo-publicidad" accept="image/*">
             </div>
-
-            <div class="form-grid">
-                <div>
-                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Imagen de Publicidad / Banner:</label>
-                    <input type="file" id="archivo-publicidad" accept="image/*">
-                </div>
-                <div style="display: flex; align-items: flex-end;">
-                    <button class="btn-accion" onclick="publicarEventoConPublicidad()">Publicar Evento con Publicidad</button>
-                </div>
-            </div>
+            <button class="btn-accion" onclick="publicarEventoConPublicidad()" style="margin-top: 10px;">Publicar Evento</button>
         </div>
 
-        <!-- SECCIÓN 5: GESTIONAR EVENTOS Y PUBLICIDAD EXISTENTES -->
+        <!-- SECCIÓN 5: GESTIONAR EVENTOS EXISTENTES (MODIFICAR O ELIMINAR) -->
         <div class="seccion-admin">
-            <h3>4. Gestionar Eventos y Publicidad Existentes</h3>
-            <p style="font-size: 12px; color: #666;">Selecciona un evento o anuncio publicado para eliminarlo del portal.</p>
+            <h3>4. Modificar o Eliminar Eventos / Enlaces Publicados</h3>
             
             <div class="form-grid">
                 <div>
-                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Seleccionar Evento / Anuncio:</label>
-                    <select id="select-eventos">
+                    <label style="font-size: 12px; font-weight: bold;">Seleccionar Evento para Gestionar:</label>
+                    <select id="select-eventos" onchange="cargarDatosEventoEdicion()">
                         <option value="">Cargando eventos...</option>
                     </select>
                 </div>
                 <div style="display: flex; align-items: flex-end;">
-                    <button class="btn-accion" onclick="eliminarEventoSeleccionado()" style="background: #dc3545;">Eliminar Evento / Anuncio</button>
+                    <button class="btn-accion" onclick="eliminarEventoSeleccionado()" style="background: #dc3545;">Eliminar Evento Completo</button>
+                </div>
+            </div>
+
+            <!-- Caja de edición dinámica -->
+            <div id="caja-editar-evento" class="caja-edicion">
+                <h4 style="margin-top: 0; color: #003366;">Editar Datos del Evento</h4>
+                <input type="text" id="edit-titulo-evento" placeholder="Título" style="margin-bottom: 10px;">
+                <div class="form-grid">
+                    <input type="text" id="edit-url-youtube" placeholder="URL de YouTube">
+                    <input type="text" id="edit-url-facebook" placeholder="URL de Facebook">
+                </div>
+                <div class="form-grid">
+                    <input type="text" id="edit-url-tiktok" placeholder="URL de TikTok">
+                    <input type="text" id="edit-url-x" placeholder="URL de X / Twitter">
+                </div>
+                <div class="form-grid">
+                    <select id="edit-tipo-evento">
+                        <option value="Transmisión en Vivo">Transmisión en Vivo</option>
+                        <option value="Cultura">Cultura</option>
+                        <option value="Deporte">Deporte</option>
+                        <option value="Publicidad Institucional">Publicidad Institucional</option>
+                    </select>
+                    <button class="btn-accion" onclick="guardarCambiosEvento()" style="background: #17a2b8;">Guardar Cambios</button>
                 </div>
             </div>
         </div>
@@ -157,25 +172,26 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+        let eventosGlobales = []; 
+
         const sesionGuardada = localStorage.getItem('sesion_activa');
         if (!sesionGuardada) {
-            alert("Acceso denegado. Inicie sesión.");
             window.location.href = 'login.html';
         }
 
         const usuarioActual = JSON.parse(sesionGuardada);
         document.getElementById('nombre-usuario-rol').textContent = `${usuarioActual.nombres} (${usuarioActual.rol})`;
 
-        const esSuperadmin = usuarioActual.rol === 'superadmin' || usuarioActual.documento === '1090391929';
-        if (esSuperadmin) {
+        if (usuarioActual.rol === 'superadmin' || usuarioActual.documento === '1090391929') {
             document.getElementById('contenedor-gestion-usuarios').style.display = 'block';
             cargarUsuarios();
         }
 
+        // Funciones de Usuarios
         async function cargarUsuarios() {
             const tbody = document.getElementById('tabla-usuarios');
             const { data, error } = await clienteSupabase.from('perfiles_administrativos').select('*').order('fecha_creacion', { ascending: false });
-            if (error || !data) return tbody.innerHTML = `<tr><td colspan="6">Error al cargar.</td></tr>`;
+            if (error || !data) return;
             tbody.innerHTML = '';
             data.forEach(user => {
                 let badge = user.estado === 'autorizado' ? 'badge-autorizado' : (user.estado === 'bloqueado' ? 'badge-bloqueado' : 'badge-pendiente');
@@ -184,33 +200,13 @@
                     ${user.estado !== 'bloqueado' ? `<button class="btn-bloquear" onclick="cambiarEstado('${user.documento}', 'bloqueado')">Bloquear</button>` : ''}
                     <button class="btn-eliminar" onclick="eliminarUsuario('${user.documento}')">Eliminar</button>
                 ` : `<em>Superadmin</em>`;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${user.documento}</td>
-                        <td><strong>${user.nombres} ${user.apellidos}</strong></td>
-                        <td>${user.tipo_dependencia}: ${user.nombre_lugar || ''}</td>
-                        <td>${user.cargo || '---'}</td>
-                        <td><span class="badge ${badge}">${user.estado}</span></td>
-                        <td>${botones}</td>
-                    </tr>
-                `;
+                tbody.innerHTML += `<tr><td>${user.documento}</td><td><strong>${user.nombres}</strong></td><td>${user.tipo_dependencia}</td><td><span class="badge ${badge}">${user.estado}</span></td><td>${botones}</td></tr>`;
             });
         }
+        async function cambiarEstado(doc, estado) { await clienteSupabase.from('perfiles_administrativos').update({ estado: estado }).eq('documento', doc); cargarUsuarios(); }
+        async function eliminarUsuario(doc) { if (!confirm("¿Eliminar usuario?")) return; await clienteSupabase.from('perfiles_administrativos').delete().eq('documento', doc); cargarUsuarios(); }
 
-        async function cambiarEstado(doc, estado) {
-            await clienteSupabase.from('perfiles_administrativos').update({ estado: estado }).eq('documento', doc);
-            alert(`Estado actualizado a: ${estado}`);
-            cargarUsuarios();
-        }
-
-        async function eliminarUsuario(doc) {
-            if (!confirm("¿Eliminar permanentemente este usuario?")) return;
-            await clienteSupabase.from('perfiles_administrativos').delete().eq('documento', doc);
-            alert("Usuario eliminado.");
-            cargarUsuarios();
-        }
-
+        // Funciones de Álbumes
         async function cargarSelectAlbumes() {
             const select = document.getElementById('select-albumes');
             const { data, error } = await clienteSupabase.from('albumes_galeria').select('id, titulo').order('id', { ascending: false });
@@ -219,22 +215,7 @@
                 return;
             }
             select.innerHTML = `<option value="">-- Seleccione un álbum --</option>`;
-            data.forEach(album => {
-                select.innerHTML += `<option value="${album.id}">${album.titulo}</option>`;
-            });
-        }
-
-        async function cargarSelectEventos() {
-            const select = document.getElementById('select-eventos');
-            const { data, error } = await clienteSupabase.from('actividades').select('id, titulo, tipo').order('id', { ascending: false });
-            if (error || !data || data.length === 0) {
-                select.innerHTML = `<option value="">No hay eventos o anuncios publicados</option>`;
-                return;
-            }
-            select.innerHTML = `<option value="">-- Seleccione un evento o anuncio --</option>`;
-            data.forEach(ev => {
-                select.innerHTML += `<option value="${ev.id}">[${ev.tipo}] ${ev.titulo}</option>`;
-            });
+            data.forEach(album => { select.innerHTML += `<option value="${album.id}">${album.titulo}</option>`; });
         }
 
         async function crearAlbumYSubirFotos() {
@@ -242,34 +223,23 @@
             const descripcion = document.getElementById('album-descripcion').value.trim();
             const inputArchivos = document.getElementById('archivos-album');
 
-            if (!titulo) return alert("Por favor ingrese el título del álbum.");
+            if (!titulo) return alert("Ingrese el título del álbum.");
+            const { data: albumData, error: albumError } = await clienteSupabase.from('albumes_galeria').insert([{ titulo: titulo, descripcion: descripcion }]).select().single();
+            if (albumError) return alert("Error: " + albumError.message);
 
-            const { data: albumData, error: albumError } = await clienteSupabase
-                .from('albumes_galeria')
-                .insert([{ titulo: titulo, descripcion: descripcion }])
-                .select()
-                .single();
-
-            if (albumError) return alert("Error al crear el álbum: " + albumError.message);
             const albumId = albumData.id;
-
             if (inputArchivos.files.length > 0) {
                 for (let i = 0; i < inputArchivos.files.length; i++) {
                     const archivo = inputArchivos.files[i];
                     const rutaStorage = `album_${albumId}/${Date.now()}_${archivo.name}`;
-
-                    const { error: uploadError } = await clienteSupabase.storage
-                        .from('galeria')
-                        .upload(rutaStorage, archivo);
-
+                    const { error: uploadError } = await clienteSupabase.storage.from('galeria').upload(rutaStorage, archivo);
                     if (!uploadError) {
                         const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
                         await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
                     }
                 }
             }
-
-            alert("¡Álbum creado y fotografías subidas con éxito!");
+            alert("Álbum creado.");
             document.getElementById('album-titulo').value = '';
             document.getElementById('album-descripcion').value = '';
             inputArchivos.value = '';
@@ -279,39 +249,80 @@
         async function agregarFotosAAlbum() {
             const albumId = document.getElementById('select-albumes').value;
             const inputArchivos = document.getElementById('archivos-extra');
-
-            if (!albumId) return alert("Seleccione un álbum de la lista.");
-            if (inputArchivos.files.length === 0) return alert("Seleccione al menos una fotografía.");
+            if (!albumId) return alert("Seleccione un álbum.");
+            if (inputArchivos.files.length === 0) return alert("Seleccione fotos.");
 
             for (let i = 0; i < inputArchivos.files.length; i++) {
                 const archivo = inputArchivos.files[i];
                 const rutaStorage = `album_${albumId}/${Date.now()}_${archivo.name}`;
-
-                const { error: uploadError } = await clienteSupabase.storage
-                    .from('galeria')
-                    .upload(rutaStorage, archivo);
-
+                const { error: uploadError } = await clienteSupabase.storage.from('galeria').upload(rutaStorage, archivo);
                 if (!uploadError) {
                     const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
                     await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
                 }
             }
-
-            alert("¡Fotografías agregadas con éxito al álbum!");
+            alert("Fotos agregadas.");
             inputArchivos.value = '';
         }
 
         async function eliminarAlbumSeleccionado() {
             const albumId = document.getElementById('select-albumes').value;
             if (!albumId) return alert("Seleccione el álbum que desea eliminar.");
-
-            if (!confirm("¿Está seguro de eliminar este álbum y todas sus fotos?")) return;
-
-            const { error } = await clienteSupabase.from('albumes_galeria').delete().eq('id', albumId);
-            if (error) return alert("Error al eliminar álbum: " + error.message);
-
-            alert("Álbum eliminado correctamente.");
+            if (!confirm("¿Eliminar este álbum y todas sus fotos?")) return;
+            await clienteSupabase.from('albumes_galeria').delete().eq('id', albumId);
+            alert("Álbum eliminado.");
             cargarSelectAlbumes();
+        }
+
+        // Funciones de Eventos
+        async function cargarSelectEventos() {
+            const select = document.getElementById('select-eventos');
+            const { data, error } = await clienteSupabase.from('actividades').select('*').order('id', { ascending: false });
+            
+            if (error || !data || data.length === 0) {
+                select.innerHTML = `<option value="">No hay eventos publicados</option>`;
+                eventosGlobales = [];
+                document.getElementById('caja-editar-evento').style.display = 'none';
+                return;
+            }
+            
+            eventosGlobales = data; 
+            select.innerHTML = `<option value="">-- Seleccione un evento para modificar --</option>`;
+            data.forEach(ev => { select.innerHTML += `<option value="${ev.id}">[${ev.tipo}] ${ev.titulo}</option>`; });
+        }
+
+        function cargarDatosEventoEdicion() {
+            const idSeleccionado = document.getElementById('select-eventos').value;
+            const cajaEdicion = document.getElementById('caja-editar-evento');
+            if (!idSeleccionado) { cajaEdicion.style.display = 'none'; return; }
+
+            const evento = eventosGlobales.find(ev => ev.id == idSeleccionado);
+            if (evento) {
+                document.getElementById('edit-titulo-evento').value = evento.titulo || '';
+                document.getElementById('edit-url-youtube').value = evento.url_youtube || '';
+                document.getElementById('edit-url-facebook').value = evento.url_facebook || '';
+                document.getElementById('edit-url-tiktok').value = evento.url_tiktok || '';
+                document.getElementById('edit-url-x').value = evento.url_x || '';
+                document.getElementById('edit-tipo-evento').value = evento.tipo || 'Transmisión en Vivo';
+                cajaEdicion.style.display = 'block';
+            }
+        }
+
+        async function guardarCambiosEvento() {
+            const idSeleccionado = document.getElementById('select-eventos').value;
+            const actualizaciones = {
+                titulo: document.getElementById('edit-titulo-evento').value.trim(),
+                url_youtube: document.getElementById('edit-url-youtube').value.trim(),
+                url_facebook: document.getElementById('edit-url-facebook').value.trim(),
+                url_tiktok: document.getElementById('edit-url-tiktok').value.trim(),
+                url_x: document.getElementById('edit-url-x').value.trim(),
+                tipo: document.getElementById('edit-tipo-evento').value
+            };
+            const { error } = await clienteSupabase.from('actividades').update(actualizaciones).eq('id', idSeleccionado);
+            if (error) return alert("Error: " + error.message);
+            alert("Evento actualizado.");
+            document.getElementById('caja-editar-evento').style.display = 'none';
+            cargarSelectEventos();
         }
 
         async function publicarEventoConPublicidad() {
@@ -320,50 +331,42 @@
             const youtube = document.getElementById('url-youtube').value.trim();
             const facebook = document.getElementById('url-facebook').value.trim();
             const tiktok = document.getElementById('url-tiktok').value.trim();
+            const x_twitter = document.getElementById('url-x').value.trim();
             const inputPublicidad = document.getElementById('archivo-publicidad');
 
-            if (!titulo) return alert("Ingrese el título del evento o anuncio.");
+            if (!titulo) return alert("Ingrese el título del evento.");
 
             let urlPublicidadFinal = null;
             if (inputPublicidad.files.length > 0) {
                 const archivo = inputPublicidad.files[0];
                 const rutaPub = `publicidad/${Date.now()}_${archivo.name}`;
                 const { error: errorUpload } = await clienteSupabase.storage.from('galeria').upload(rutaPub, archivo);
-                if (!errorUpload) {
-                    urlPublicidadFinal = clienteSupabase.storage.from('galeria').getPublicUrl(rutaPub).data.publicUrl;
-                }
+                if (!errorUpload) urlPublicidadFinal = clienteSupabase.storage.from('galeria').getPublicUrl(rutaPub).data.publicUrl;
             }
 
             const { error } = await clienteSupabase.from('actividades').insert([{
-                titulo: titulo,
-                tipo: tipo,
-                url_youtube: youtube,
-                url_facebook: facebook,
-                url_tiktok: tiktok,
-                url_publicidad: urlPublicidadFinal
+                titulo: titulo, tipo: tipo, url_youtube: youtube, url_facebook: facebook, url_tiktok: tiktok, url_x: x_twitter, url_publicidad: urlPublicidadFinal
             }]);
 
-            if (error) return alert("Error al publicar: " + error.message);
-
-            alert("¡Evento y publicidad publicados correctamente!");
+            if (error) return alert("Error: " + error.message);
+            alert("Evento publicado.");
+            
             document.getElementById('titulo-evento').value = '';
             document.getElementById('url-youtube').value = '';
             document.getElementById('url-facebook').value = '';
             document.getElementById('url-tiktok').value = '';
+            document.getElementById('url-x').value = '';
             inputPublicidad.value = '';
             cargarSelectEventos();
         }
 
         async function eliminarEventoSeleccionado() {
             const eventoId = document.getElementById('select-eventos').value;
-            if (!eventoId) return alert("Seleccione el evento o anuncio que desea eliminar.");
-
-            if (!confirm("¿Está seguro de eliminar este evento o anuncio del portal?")) return;
-
-            const { error } = await clienteSupabase.from('actividades').delete().eq('id', eventoId);
-            if (error) return alert("Error al eliminar evento: " + error.message);
-
-            alert("Evento o anuncio eliminado correctamente.");
+            if (!eventoId) return alert("Seleccione el evento.");
+            if (!confirm("¿Está seguro de eliminar este evento?")) return;
+            await clienteSupabase.from('actividades').delete().eq('id', eventoId);
+            alert("Evento eliminado.");
+            document.getElementById('caja-editar-evento').style.display = 'none';
             cargarSelectEventos();
         }
 
@@ -372,7 +375,6 @@
             window.location.href = 'login.html';
         }
 
-        // Cargar listas al abrir la página
         cargarSelectAlbumes();
         cargarSelectEventos();
     </script>
