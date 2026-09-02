@@ -32,10 +32,21 @@
         .album-titulo { font-size: 18px; color: #003366; margin-bottom: 5px; font-weight: bold; }
         .album-descripcion { font-size: 13px; color: #666; margin-bottom: 15px; }
         .grid-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-        .foto-item { border-radius: 6px; overflow: hidden; aspect-ratio: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .foto-item { border-radius: 6px; overflow: hidden; aspect-ratio: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
         .foto-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.2s; }
         .foto-item img:hover { transform: scale(1.03); }
         .footer-desarrollo { text-align: center; padding: 20px; margin-top: 40px; font-size: 11px; color: #888; background: #e9ecef; }
+        
+        /* ESTILOS DEL VISOR DE FOTOS (LIGHTBOX) */
+        .lightbox-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
+        .lightbox-contenido { max-width: 90%; max-height: 90%; text-align: center; position: relative; }
+        .lightbox-img { max-width: 100%; max-height: 90vh; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); object-fit: contain; }
+        .lightbox-cerrar { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 10000; transition: 0.3s; }
+        .lightbox-cerrar:hover { color: #ccc; }
+        .lightbox-btn { cursor: pointer; position: absolute; top: 50%; width: auto; padding: 16px; margin-top: -22px; color: white; font-weight: bold; font-size: 24px; transition: 0.6s ease; border-radius: 0 3px 3px 0; user-select: none; background-color: rgba(0,0,0,0.5); border: none; z-index: 10000; }
+        .lightbox-btn:hover { background-color: rgba(0,0,0,0.8); }
+        .lightbox-prev { left: 20px; border-radius: 3px; }
+        .lightbox-next { right: 20px; border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -69,10 +80,24 @@
         Desarrollo técnico: compukelc | compukelc@hotmail.com | cel. 3507973351
     </footer>
 
+    <!-- CONTENEDOR DEL VISOR DE FOTOS (LIGHTBOX) -->
+    <div id="visorLightbox" class="lightbox-modal">
+        <span class="lightbox-cerrar" onclick="cerrarLightbox()">&times;</span>
+        <button class="lightbox-btn lightbox-prev" onclick="cambiarImagen(-1)">&#10094;</button>
+        <div class="lightbox-contenido">
+            <img id="img-lightbox" class="lightbox-img" src="">
+        </div>
+        <button class="lightbox-btn lightbox-next" onclick="cambiarImagen(1)">&#10095;</button>
+    </div>
+
     <script>
         const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+
+        // Variables globales para el carrusel
+        let todasLasFotos = [];
+        let indiceActual = 0;
 
         const sesionGuardada = localStorage.getItem('sesion_activa');
         if (sesionGuardada) {
@@ -132,13 +157,19 @@
             }
 
             contenedor.innerHTML = '';
+            todasLasFotos = []; // Limpiamos el arreglo cada vez que cargamos
+
             albumes.forEach(album => {
                 let fotosHTML = '';
                 if (album.fotos_album && album.fotos_album.length > 0) {
                     album.fotos_album.forEach(foto => {
+                        // Guardar la foto en el arreglo global y obtener su índice
+                        const indiceGlobal = todasLasFotos.length;
+                        todasLasFotos.push(foto.url_foto);
+
                         fotosHTML += `
-                            <div class="foto-item">
-                                <a href="${foto.url_foto}" target="_blank"><img src="${foto.url_foto}" loading="lazy"></a>
+                            <div class="foto-item" onclick="abrirLightbox(${indiceGlobal})">
+                                <img src="${foto.url_foto}" loading="lazy">
                             </div>
                         `;
                     });
@@ -158,6 +189,38 @@
             });
         }
 
+        // FUNCIONES DEL VISOR DE FOTOS (LIGHTBOX/CARRUSEL)
+        function abrirLightbox(indice) {
+            indiceActual = indice;
+            document.getElementById('img-lightbox').src = todasLasFotos[indiceActual];
+            document.getElementById('visorLightbox').style.display = 'flex';
+        }
+
+        function cerrarLightbox() {
+            document.getElementById('visorLightbox').style.display = 'none';
+        }
+
+        function cambiarImagen(direccion) {
+            indiceActual += direccion;
+            // Si llega al final, vuelve a la primera. Si retrocede desde la primera, va a la última.
+            if (indiceActual >= todasLasFotos.length) {
+                indiceActual = 0;
+            } else if (indiceActual < 0) {
+                indiceActual = todasLasFotos.length - 1;
+            }
+            document.getElementById('img-lightbox').src = todasLasFotos[indiceActual];
+        }
+
+        // Eventos de teclado para facilitar la navegación del visor
+        document.addEventListener('keydown', function(event) {
+            if (document.getElementById('visorLightbox').style.display === 'flex') {
+                if (event.key === "Escape") cerrarLightbox();
+                if (event.key === "ArrowRight") cambiarImagen(1);
+                if (event.key === "ArrowLeft") cambiarImagen(-1);
+            }
+        });
+
+        // Inicializar cargas
         cargarEventosYPublicidad();
         cargarAlbumesGaleria();
     </script>
