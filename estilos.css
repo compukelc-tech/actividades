@@ -1,11 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
 
 :root { 
-    --azul-institucional: #002B5C; /* Azul marino extraído de los escudos */
-    --rojo-bandera: #D32F2F;       /* Rojo oficial vibrante */
-    --amarillo-oro: #FFB300;       /* Amarillo Norte de Santander */
+    --azul-institucional: #002B5C; 
+    --rojo-bandera: #D32F2F;       
+    --amarillo-oro: #FFB300;       
     --negro-cucuta: #1A1A1A;
-    --gris-fondo: #F4F6F9;         /* Gris un poco más limpio y claro */
+    --gris-fondo: #F4F6F9;         
     --blanco: #FFFFFF; 
     --text-main: #333333;
     --text-muted: #65676B;
@@ -19,13 +19,11 @@ body {
     line-height: 1.5;
 }
 
-/* Barra de Sesión */
 .barra-sesion { background-color: var(--negro-cucuta); color: white; padding: 10px 20px; display: flex; justify-content: flex-end; align-items: center; font-size: 13px; gap: 15px; flex-wrap: wrap;}
 .barra-sesion a { color: #ccc; text-decoration: none; font-weight: 600; }
 .barra-sesion a:hover { color: white; }
 .btn-salir-menu { background: var(--rojo-bandera); color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: 700; cursor: pointer;}
 
-/* Cabecera Principal (Fondo Blanco, Borde Rojo) */
 .header-principal { 
     background: var(--blanco);
     padding: 25px 20px; 
@@ -38,36 +36,51 @@ body {
     position: relative;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
-.header-logos { display: flex; align-items: center; gap: 15px; }
-.logo-inst { max-height: 75px; width: auto; object-fit: contain; }
 
 .header-textos { text-align: center; flex: 1; min-width: 280px;}
 .header-textos h1 { margin: 0; font-size: 26px; font-weight: 800; color: var(--azul-institucional); text-transform: uppercase; }
 .header-textos h3 { margin: 5px 0 0; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
 
-.btn-ingresar-flotante {
-    position: absolute; top: 15px; right: 15px; background: rgba(0, 43, 92, 0.05); color: var(--azul-institucional); text-decoration: none; font-size: 11px; padding: 6px 12px; border-radius: 4px; border: 1px solid var(--azul-institucional); font-weight: 700; transition: 0.3s;
-}
-.btn-ingresar-flotante:hover { background: var(--azul-institucional); color: white; }
+/* Contenedores de Logos */
+.contenedor-logo-izq { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; }
+.contenedor-logos-der { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 25px; }
+.logo-inst { max-height: 65px; width: auto; object-fit: contain; flex-shrink: 0; }
 
-/* Estructura Cuadriculada */
+/* Botón de Acceso (Debajo de la cabecera) */
+.contenedor-boton-admin { text-align: center; margin-top: 25px; margin-bottom: -5px; }
+.btn-ingresar-flotante {
+    display: inline-block;
+    background: var(--azul-institucional); 
+    color: var(--blanco); 
+    text-decoration: none; 
+    font-size: 11px; 
+    padding: 8px 25px; 
+    border-radius: 25px; 
+    font-weight: 800; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 8px rgba(0, 43, 92, 0.2);
+    transition: all 0.3s ease;
+}
+.btn-ingresar-flotante:hover { 
+    background: var(--rojo-bandera); 
+    color: var(--blanco);
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 12px rgba(211, 47, 47, 0.3);
+}
+
 .contenedor-maestro { display: grid; grid-template-columns: 350px 1fr; gap: 30px; max-width: 1200px; margin: 40px auto; padding: 0 15px; }
+
 @media (max-width: 900px) { 
     .contenedor-maestro { grid-template-columns: 1fr; } 
-    .header-principal { flex-direction: column; justify-content: center; padding-top: 60px;}
-    .header-logos { justify-content: center; width: 100%;}
+    .header-principal { flex-direction: column; justify-content: center; padding-top: 80px;}
+    .contenedor-logo-izq, .contenedor-logos-der { position: static; transform: none; justify-content: center; margin-top: 15px; margin-bottom: 15px; width: 100%; }
 }
 
 .titulo-seccion { font-size: 18px; color: var(--azul-institucional); border-bottom: 3px solid var(--rojo-bandera); padding-bottom: 8px; margin-top: 0; text-transform: uppercase; font-weight: 800; display: inline-block; margin-bottom: 20px;}
 
-/* Publicaciones / Feed */
 .post-social { background: var(--blanco); border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); overflow: hidden; }
-
-/* NUEVO: Borde Tricolor para las tarjetas institucionales */
-.tarjeta-institucional { 
-    border-top: 5px solid; 
-    border-image: linear-gradient(to right, var(--azul-institucional) 33%, var(--amarillo-oro) 33%, var(--amarillo-oro) 66%, var(--rojo-bandera) 66%) 1; 
-}
+.tarjeta-institucional { border-top: 5px solid; border-image: linear-gradient(to right, var(--azul-institucional) 33%, var(--amarillo-oro) 33%, var(--amarillo-oro) 66%, var(--rojo-bandera) 66%) 1; }
 .tarjeta-deporte { border-top: 5px solid; border-image: linear-gradient(to right, #0081C8 20%, #FCB131 40%, #000000 60%, #00A651 80%, #EE334E 100%) 1; }
 
 .post-header { display: flex; align-items: center; padding: 15px; gap: 12px; }
@@ -85,7 +98,6 @@ body {
 .btn-tiktok { background: #000000; }
 .btn-x { background: #333333; } 
 
-/* Galería de Álbumes */
 .album-social { background: var(--blanco); border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); border-top: 5px solid var(--azul-institucional); }
 .album-header { margin-bottom: 20px; }
 .album-titulo { font-size: 18px; color: var(--azul-institucional); margin: 0 0 5px 0; font-weight: 800; text-transform: uppercase;}
@@ -96,13 +108,12 @@ body {
 .foto-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; opacity: 0.9;}
 .foto-item:hover img { transform: scale(1.05); opacity: 1;}
 
-/* NUEVO: Tarjeta "+ Ver Más" en Azul Marino */
 .foto-mas-item { 
     border-radius: 6px; 
     overflow: hidden; 
     aspect-ratio: 16/12; 
     cursor: pointer; 
-    background: rgba(0, 43, 92, 0.9); /* Azul marino transparente */
+    background: rgba(0, 43, 92, 0.9);
     display: flex; 
     flex-direction: column; 
     align-items: center; 
@@ -119,7 +130,6 @@ body {
 
 .footer-desarrollo { text-align: center; padding: 20px; font-size: 11px; color: white; background: var(--negro-cucuta); font-weight: 600; border-top: 3px solid var(--rojo-bandera);}
 
-/* Visor */
 .lightbox-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
 .lightbox-contenido { max-width: 90%; max-height: 90%; text-align: center; position: relative; }
 .lightbox-img { max-width: 100%; max-height: 90vh; border-radius: 4px; object-fit: contain; border: 2px solid #333; }
@@ -129,13 +139,3 @@ body {
 .lightbox-btn:hover { background-color: var(--rojo-bandera); }
 .lightbox-prev { left: 10px; }
 .lightbox-next { right: 10px; }
-
-/* Contenedores para Logos en los Extremos */
-.contenedor-logo-izq { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; }
-.contenedor-logos-der { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 10px; }
-.logo-inst { max-height: 60px; width: auto; object-fit: contain; }
-
-@media (max-width: 900px) {
-    .header-principal { padding-top: 80px; }
-    .contenedor-logo-izq, .contenedor-logos-der { position: static; transform: none; justify-content: center; margin-top: 15px; margin-bottom: 15px; width: 100%; }
-}
