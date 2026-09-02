@@ -1,116 +1,123 @@
 :root { 
     --rojo-cucuta: #C8102E; 
     --negro-cucuta: #1A1A1A;
-    --gris-fondo: #EBEFF2; 
-    --blanco: #FFFFFF; 
+    --bg-social: #F0F2F5; 
+    --card-bg: #FFFFFF; 
+    --text-main: #050505;
+    --text-muted: #65676B;
+    --hover-btn: #E4E6EB;
 }
 
 body { 
     font-family: 'Montserrat', sans-serif; 
     margin: 0; 
-    background: var(--gris-fondo); 
-    color: var(--negro-cucuta); 
-    line-height: 1.6;
+    background: var(--bg-social); 
+    color: var(--text-main); 
+    line-height: 1.5;
 }
 
-/* Barra superior en negro profundo */
-.barra-sesion { background-color: #000000; color: white; padding: 12px 40px; display: flex; justify-content: flex-end; align-items: center; font-size: 13px; gap: 15px; }
-.barra-sesion a { color: #ccc; text-decoration: none; font-weight: 600; transition: color 0.3s; }
-.barra-sesion a:hover { color: var(--blanco); }
-.btn-salir-menu { background: var(--rojo-cucuta); color: white; border: none; padding: 6px 15px; border-radius: 4px; cursor: pointer; font-weight: 600; }
-.btn-salir-menu:hover { background: #a00d25; }
+/* Barra Superior */
+.barra-sesion { background-color: var(--negro-cucuta); color: white; padding: 10px 40px; display: flex; justify-content: flex-end; align-items: center; font-size: 13px; gap: 15px; }
+.barra-sesion a { color: #E4E6EB; text-decoration: none; font-weight: 600; transition: 0.2s; }
+.barra-sesion a:hover { color: white; }
+.btn-salir-menu { background: var(--hover-btn); color: var(--negro-cucuta); border: none; padding: 6px 15px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+.btn-salir-menu:hover { background: #D8DADF; }
 
-/* Cabecera institucional Rojinegra */
+/* Cabecera Principal - Estilo Portada */
 .header-principal { 
-    background: linear-gradient(135deg, var(--negro-cucuta) 0%, #333333 100%);
-    color: white; 
-    padding: 45px 40px; 
+    background: var(--card-bg);
+    color: var(--negro-cucuta); 
+    padding: 30px 40px; 
     text-align: center; 
     position: relative; 
-    border-bottom: 6px solid var(--rojo-cucuta);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
 }
-.header-principal h1 { margin: 0; font-size: 26px; text-transform: uppercase; font-weight: 800; letter-spacing: 1.5px; }
-.header-principal h3 { margin: 10px 0 0; font-size: 14px; font-weight: 400; color: #b3b3b3; letter-spacing: 1px; }
+.header-principal h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.header-principal h3 { margin: 5px 0 0; font-size: 14px; font-weight: 600; color: var(--text-muted); }
 
 .btn-ingresar-flotante {
-    position: absolute; top: 20px; right: 30px; color: white; text-decoration: none; font-size: 12px; border: 1px solid rgba(255,255,255,0.4); padding: 6px 12px; border-radius: 4px; font-weight: 600; transition: 0.3s;
+    position: absolute; top: 20px; right: 30px; color: var(--negro-cucuta); text-decoration: none; font-size: 13px; background: var(--hover-btn); padding: 8px 16px; border-radius: 6px; font-weight: 700; transition: 0.2s;
 }
-.btn-ingresar-flotante:hover { background: var(--rojo-cucuta); border-color: var(--rojo-cucuta); }
+.btn-ingresar-flotante:hover { background: #D8DADF; }
 
-/* Contenedor y Títulos */
-.contenedor-maestro { display: grid; grid-template-columns: 360px 1fr; gap: 40px; max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+/* Estructura a dos columnas */
+.contenedor-maestro { display: grid; grid-template-columns: 400px 1fr; gap: 25px; max-width: 1200px; margin: 0 auto 40px auto; padding: 0 20px; }
 @media (max-width: 900px) { .contenedor-maestro { grid-template-columns: 1fr; } }
 
-.titulo-seccion { font-size: 17px; color: var(--negro-cucuta); border-bottom: 3px solid var(--rojo-cucuta); padding-bottom: 8px; margin-top: 0; text-transform: uppercase; font-weight: 800; display: inline-block; margin-bottom: 25px;}
+.titulo-seccion { font-size: 16px; color: var(--text-muted); margin-top: 0; margin-bottom: 15px; font-weight: 700; }
 
-/* Tarjetas Base */
-.tarjeta-evento { 
-    background: var(--blanco); 
-    padding: 20px; 
+/* DISEÑO TIPO PUBLICACIÓN (FACEBOOK STYLE) */
+.post-social { 
+    background: var(--card-bg); 
+    border-radius: 12px; 
     margin-bottom: 20px; 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.06); 
-    transition: transform 0.3s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12); 
+    overflow: hidden;
 }
-.tarjeta-evento:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-.tarjeta-evento h3 { margin: 0 0 10px; font-size: 15px; color: var(--negro-cucuta); font-weight: 800; text-transform: uppercase;}
-.banner-publicidad { width: 100%; max-height: 200px; object-fit: cover; margin-bottom: 15px; border: 1px solid #eee; }
-
-/* VARIACIÓN 1: Tarjetas Institucionales (Cultura/Transmisiones) */
-.tarjeta-institucional { border-left: 5px solid var(--rojo-cucuta); border-radius: 4px; }
-.etiqueta-institucional { display: inline-block; background: var(--negro-cucuta); color: white; font-size: 10px; padding: 4px 10px; border-radius: 3px; margin-bottom: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
-
-/* VARIACIÓN 2: Tarjetas Deportivas (Aros Olímpicos) */
-.tarjeta-deporte { 
-    border-top: 5px solid; 
-    border-image: linear-gradient(to right, #0081C8 20%, #FCB131 40%, #000000 60%, #00A651 80%, #EE334E 100%) 1; 
-    border-radius: 0;
+.post-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 12px;
 }
-.etiqueta-deporte { 
-    display: inline-block; 
-    background: linear-gradient(to right, #0081C8, #FCB131, #000000, #00A651, #EE334E); 
-    color: white; 
-    font-size: 10px; 
-    padding: 4px 10px; 
-    margin-bottom: 15px; 
-    font-weight: 800; 
-    text-transform: uppercase; 
-    letter-spacing: 0.5px;
-    border-radius: 3px;
+.post-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--rojo-cucuta);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 18px;
+    flex-shrink: 0;
 }
+.avatar-deporte {
+    background: linear-gradient(135deg, #0081C8, #FCB131, #000000, #00A651, #EE334E);
+}
+.post-meta { display: flex; flex-direction: column; }
+.post-meta h3 { margin: 0; font-size: 15px; font-weight: 700; color: var(--text-main); line-height: 1.2;}
+.post-meta span { font-size: 13px; color: var(--text-muted); font-weight: 600; margin-top: 2px;}
 
-/* Botones de redes */
-.btn-link { display: block; text-align: center; padding: 10px; border-radius: 4px; text-decoration: none; color: white; font-size: 11px; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; transition: opacity 0.3s; }
-.btn-link:hover { opacity: 0.85; }
-.btn-youtube { background: #CC0000; }
-.btn-facebook { background: #1877F2; }
-.btn-tiktok { background: #000000; }
-.btn-x { background: #1A1A1A; border: 1px solid #444; } 
+.banner-publicidad { width: 100%; max-height: 250px; object-fit: cover; display: block; border-top: 1px solid #eee; border-bottom: 1px solid #eee;}
 
-/* Galería Limpia */
-.columna-galeria { background: var(--blanco); padding: 35px; box-shadow: 0 4px 8px rgba(0,0,0,0.06); border-top: 5px solid var(--negro-cucuta); }
-.album-contenedor { margin-bottom: 45px; border-bottom: 1px solid #eee; padding-bottom: 30px; }
-.album-contenedor:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.album-titulo { font-size: 18px; color: var(--negro-cucuta); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 8px; text-transform: uppercase;}
-.album-descripcion { font-size: 13px; color: #555; margin-bottom: 20px; }
+.post-actions {
+    padding: 12px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.btn-link { flex: 1; text-align: center; padding: 8px 12px; border-radius: 6px; text-decoration: none; color: var(--text-main); font-size: 13px; font-weight: 600; background: var(--hover-btn); transition: 0.2s; white-space: nowrap;}
+.btn-link:hover { background: #D8DADF; }
 
-/* Grilla de fotos cuadrada y corporativa */
-.grid-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
-.foto-item { overflow: hidden; aspect-ratio: 1; cursor: pointer; position: relative; border: 1px solid #ddd;}
-.foto-item::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(200,16,46,0); transition: background 0.3s; pointer-events: none;}
-.foto-item:hover::after { background: rgba(200,16,46,0.2); }
-.foto-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
-.foto-item:hover img { transform: scale(1.08); }
+/* DISEÑO TIPO YOUTUBE (GALERÍA) */
+.album-social { 
+    background: var(--card-bg); 
+    border-radius: 12px; 
+    padding: 24px; 
+    margin-bottom: 25px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12); 
+}
+.album-header { margin-bottom: 15px; }
+.album-titulo { font-size: 18px; color: var(--text-main); margin: 0 0 4px 0; font-weight: 700; }
+.album-descripcion { font-size: 14px; color: var(--text-muted); margin: 0; }
 
-.footer-desarrollo { text-align: center; padding: 25px; margin-top: 50px; font-size: 11px; color: #888; background: #111; color: white; font-weight: 600; letter-spacing: 0.5px; border-top: 3px solid var(--rojo-cucuta);}
+.grid-youtube { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.foto-item { border-radius: 12px; overflow: hidden; aspect-ratio: 16/10; cursor: pointer; position: relative; background: #000;}
+.foto-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.2s; opacity: 0.9;}
+.foto-item:hover img { opacity: 1; }
 
-/* VISOR DE FOTOS */
-.lightbox-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
+.footer-desarrollo { text-align: center; padding: 20px; font-size: 12px; color: var(--text-muted); font-weight: 600;}
+
+/* VISOR LIGHTBOX */
+.lightbox-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
 .lightbox-contenido { max-width: 90%; max-height: 90%; text-align: center; position: relative; }
-.lightbox-img { max-width: 100%; max-height: 90vh; box-shadow: 0 10px 30px rgba(0,0,0,0.8); object-fit: contain; border: 2px solid #333;}
-.lightbox-cerrar { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: 300; cursor: pointer; z-index: 10000; transition: color 0.3s; }
-.lightbox-cerrar:hover { color: var(--rojo-cucuta); }
-.lightbox-btn { cursor: pointer; position: absolute; top: 50%; width: 50px; height: 50px; margin-top: -25px; color: white; font-weight: bold; font-size: 20px; transition: 0.3s ease; border-radius: 0; background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); z-index: 10000; display: flex; justify-content: center; align-items: center; }
-.lightbox-btn:hover { background-color: var(--rojo-cucuta); border-color: var(--rojo-cucuta); }
-.lightbox-prev { left: 40px; }
-.lightbox-next { right: 40px; }
+.lightbox-img { max-width: 100%; max-height: 90vh; border-radius: 12px; object-fit: contain; }
+.lightbox-cerrar { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 35px; cursor: pointer; z-index: 10000; width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s;}
+.lightbox-cerrar:hover { background: rgba(255,255,255,0.4); }
+.lightbox-btn { cursor: pointer; position: absolute; top: 50%; width: 50px; height: 50px; margin-top: -25px; color: white; font-size: 24px; border-radius: 50%; background-color: rgba(255,255,255,0.2); border: none; z-index: 10000; display: flex; justify-content: center; align-items: center; transition: 0.2s;}
+.lightbox-btn:hover { background-color: rgba(255,255,255,0.4); }
+.lightbox-prev { left: 20px; }
+.lightbox-next { right: 20px; }
