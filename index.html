@@ -22,7 +22,6 @@
     </div>
 
     <header class="header-principal">
-        <!-- Logo Evento Izquierdo (Oculto si no hay) -->
         <div class="contenedor-logo-izq">
             <img src="" class="logo-inst" id="logo-izquierdo" style="display:none;">
         </div>
@@ -30,15 +29,17 @@
         <div class="header-textos">
             <h1>Portal Cultural y Deportivo</h1>
             <h3>Norte de Santander | San José de Cúcuta</h3>
-            <a href="login.html" id="btn-ingresar-discreto" class="btn-ingresar-flotante">⚙️ Acceso Administrativo</a>
         </div>
 
-        <!-- Logos Oficiales Derechos (Ocultos si no hay) -->
         <div class="contenedor-logos-der">
             <img src="" class="logo-inst" id="logo-derecho-1" style="display:none;">
             <img src="" class="logo-inst" id="logo-derecho-2" style="display:none;">
         </div>
     </header>
+
+    <div class="contenedor-boton-admin">
+        <a href="login.html" id="btn-ingresar-discreto" class="btn-ingresar-flotante">⚙️ Acceso Administrativo</a>
+    </div>
 
     <div class="contenedor-maestro">
         <aside class="columna-eventos">
@@ -214,7 +215,6 @@
             }
         });
 
-        // FUNCIÓN QUE CARGA LOS LOGOS DESDE SUPABASE
         async function cargarLogosInstitucionales() {
             const { data, error } = await clienteSupabase.from('configuracion').select('*').eq('id', 1).single();
             if (data && !error) {
