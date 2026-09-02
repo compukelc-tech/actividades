@@ -26,7 +26,7 @@
         .btn-youtube { background-color: #ff0000; }
         .btn-facebook { background-color: #1877f2; }
         .btn-tiktok { background-color: #000; }
-        .btn-x { background-color: #0f1419; } /* Color oscuro para X */
+        .btn-x { background-color: #0f1419; } 
         .columna-galeria { background: var(--color-tarjeta); padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .album-contenedor { margin-bottom: 35px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
         .album-titulo { font-size: 18px; color: #003366; margin-bottom: 5px; font-weight: bold; }
@@ -95,7 +95,6 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
-        // Variables globales para el carrusel
         let todasLasFotos = [];
         let indiceActual = 0;
 
@@ -106,8 +105,11 @@
             document.getElementById('info-usuario-activo').textContent = `Conectado: ${usuario.nombres} (${usuario.rol})`;
             document.getElementById('btn-ingresar-discreto').style.display = 'none';
 
+            // CORRECCIÓN: Mostrar el Panel Admin a TODOS los usuarios conectados
+            document.getElementById('link-panel-admin').style.display = 'inline';
+
+            // Mostrar botón de Nuevo Admin SOLO al superadmin
             if (usuario.rol === 'superadmin' || usuario.documento === '1090391929') {
-                document.getElementById('link-panel-admin').style.display = 'inline';
                 document.getElementById('link-registro').style.display = 'inline';
             }
         }
@@ -157,13 +159,12 @@
             }
 
             contenedor.innerHTML = '';
-            todasLasFotos = []; // Limpiamos el arreglo cada vez que cargamos
+            todasLasFotos = []; 
 
             albumes.forEach(album => {
                 let fotosHTML = '';
                 if (album.fotos_album && album.fotos_album.length > 0) {
                     album.fotos_album.forEach(foto => {
-                        // Guardar la foto en el arreglo global y obtener su índice
                         const indiceGlobal = todasLasFotos.length;
                         todasLasFotos.push(foto.url_foto);
 
@@ -202,7 +203,6 @@
 
         function cambiarImagen(direccion) {
             indiceActual += direccion;
-            // Si llega al final, vuelve a la primera. Si retrocede desde la primera, va a la última.
             if (indiceActual >= todasLasFotos.length) {
                 indiceActual = 0;
             } else if (indiceActual < 0) {
@@ -211,7 +211,6 @@
             document.getElementById('img-lightbox').src = todasLasFotos[indiceActual];
         }
 
-        // Eventos de teclado para facilitar la navegación del visor
         document.addEventListener('keydown', function(event) {
             if (document.getElementById('visorLightbox').style.display === 'flex') {
                 if (event.key === "Escape") cerrarLightbox();
@@ -220,7 +219,6 @@
             }
         });
 
-        // Inicializar cargas
         cargarEventosYPublicidad();
         cargarAlbumesGaleria();
     </script>
