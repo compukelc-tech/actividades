@@ -14,10 +14,12 @@
         .form-full { margin-bottom: 12px; }
         label { font-size: 12px; font-weight: bold; color: #003366; display: block; margin-bottom: 4px; }
         input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; font-size: 13px; }
-        button { width: 100%; padding: 12px; background: #003366; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 10px; }
-        button:hover { background: #002244; }
+        .fila-password { display: flex; gap: 5px; }
+        .btn-ver { background: #e0e0e0; color: #333; border: 1px solid #ccc; padding: 0 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .requisitos-clave { font-size: 11px; color: #d9534f; margin-top: 5px; margin-bottom: 15px; padding-left: 20px; }
+        .requisitos-clave li.cumple { color: #28a745; text-decoration: line-through; }
+        button[type="submit"] { width: 100%; padding: 12px; background: #003366; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 10px; }
         .link-volver { display: block; text-align: center; margin-top: 20px; font-size: 12px; color: #003366; text-decoration: none; }
-        .link-volver:hover { text-decoration: underline; }
         .footer-login { text-align: center; margin-top: 25px; font-size: 11px; color: #888; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
@@ -25,7 +27,7 @@
 
     <div class="formulario-contenedor">
         <h2>Solicitud de Acceso Administrativo</h2>
-        <p class="subtitulo">Complete el formulario. Su cuenta quedará en estado pendiente hasta ser autorizada por el Superadministrador.</p>
+        <p class="subtitulo">Complete el formulario. Su cuenta quedará pendiente de autorización.</p>
         
         <form id="form-registro" onsubmit="registrarUsuario(event)">
             
@@ -35,14 +37,8 @@
             </div>
 
             <div class="form-grid">
-                <div>
-                    <label>Nombres</label>
-                    <input type="text" id="reg-nombres" required>
-                </div>
-                <div>
-                    <label>Apellidos</label>
-                    <input type="text" id="reg-apellidos" required>
-                </div>
+                <div><label>Nombres</label><input type="text" id="reg-nombres" required></div>
+                <div><label>Apellidos</label><input type="text" id="reg-apellidos" required></div>
             </div>
 
             <div class="form-full">
@@ -72,26 +68,32 @@
             </div>
 
             <div class="form-grid">
-                <div>
-                    <label>Nombre del Lugar / Área</label>
-                    <input type="text" id="reg-lugar" required>
-                </div>
-                <div>
-                    <label>Cargo de quien registra</label>
-                    <input type="text" id="reg-cargo" required>
-                </div>
+                <div><label>Nombre del Lugar / Área</label><input type="text" id="reg-lugar" required></div>
+                <div><label>Cargo</label><input type="text" id="reg-cargo" required></div>
             </div>
 
             <div class="form-grid">
                 <div>
                     <label>Contraseña</label>
-                    <input type="password" id="reg-clave" required>
+                    <div class="fila-password">
+                        <input type="password" id="reg-clave" required onkeyup="validarSeguridadClave()">
+                        <button type="button" class="btn-ver" onclick="togglePassword('reg-clave')">Ver</button>
+                    </div>
                 </div>
                 <div>
                     <label>Confirmar Contraseña</label>
-                    <input type="password" id="reg-clave-conf" required>
+                    <div class="fila-password">
+                        <input type="password" id="reg-clave-conf" required>
+                        <button type="button" class="btn-ver" onclick="togglePassword('reg-clave-conf')">Ver</button>
+                    </div>
                 </div>
             </div>
+
+            <ul class="requisitos-clave" id="lista-requisitos">
+                <li id="req-longitud">Mínimo 8 caracteres</li>
+                <li id="req-mayuscula">Al menos una letra mayúscula</li>
+                <li id="req-numero">Al menos un número</li>
+            </ul>
 
             <button type="submit">Enviar Solicitud de Acceso</button>
         </form>
@@ -109,8 +111,36 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+        function togglePassword(idCampo) {
+            const campo = document.getElementById(idCampo);
+            campo.type = campo.type === 'password' ? 'text' : 'password';
+        }
+
+        let claveSegura = false;
+
+        function validarSeguridadClave() {
+            const valor = document.getElementById('reg-clave').value;
+            const reqLongitud = document.getElementById('req-longitud');
+            const reqMayuscula = document.getElementById('req-mayuscula');
+            const reqNumero = document.getElementById('req-numero');
+
+            let cumpleLong = valor.length >= 8;
+            let cumpleMayus = /[A-Z]/.test(valor);
+            let cumpleNum = /[0-9]/.test(valor);
+
+            reqLongitud.className = cumpleLong ? 'cumple' : '';
+            reqMayuscula.className = cumpleMayus ? 'cumple' : '';
+            reqNumero.className = cumpleNum ? 'cumple' : '';
+
+            claveSegura = cumpleLong && cumpleMayus && cumpleNum;
+        }
+
         async function registrarUsuario(event) {
             event.preventDefault(); 
+
+            if (!claveSegura) {
+                return alert("La contraseña no cumple con los requisitos mínimos de seguridad.");
+            }
 
             const documento = document.getElementById('reg-documento').value.trim();
             const nombres = document.getElementById('reg-nombres').value.trim();
@@ -124,33 +154,21 @@
             const claveConf = document.getElementById('reg-clave-conf').value;
 
             if (clave !== claveConf) {
-                return alert("Las contraseñas no coinciden. Por favor, verifíquelas.");
+                return alert("Las contraseñas no coinciden.");
             }
 
             const { error } = await clienteSupabase.from('perfiles_administrativos').insert([{
-                documento: documento,
-                nombres: nombres,
-                apellidos: apellidos,
-                correo: correo,
-                entidad_base: entidad,
-                tipo_dependencia: dependencia,
-                nombre_lugar: lugar,
-                cargo: cargo,
-                clave: clave,
-                rol: 'administrador', // Por defecto todos son administradores base
-                estado: 'pendiente'   // Obliga al superadmin a aprobarlos
+                documento: documento, nombres: nombres, apellidos: apellidos, correo: correo, 
+                entidad_base: entidad, tipo_dependencia: dependencia, nombre_lugar: lugar, 
+                cargo: cargo, clave: clave, rol: 'administrador', estado: 'pendiente'
             }]);
 
             if (error) {
-                if (error.code === '23505') {
-                    alert("Error: El documento ingresado ya se encuentra registrado en el sistema.");
-                } else {
-                    alert("Error al registrar solicitud: " + error.message);
-                }
-                return;
+                if (error.code === '23505') return alert("El documento ya se encuentra registrado.");
+                return alert("Error al registrar: " + error.message);
             }
 
-            alert("¡Solicitud enviada con éxito! Queda a la espera de autorización por parte del Superadministrador.");
+            alert("¡Solicitud enviada con éxito! Queda a la espera de autorización.");
             window.location.href = 'login.html';
         }
     </script>
