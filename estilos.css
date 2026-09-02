@@ -5,7 +5,7 @@
     --rojo-bandera: #D32F2F;       
     --amarillo-oro: #FFB300;       
     --negro-cucuta: #1A1A1A;
-    --gris-fondo: #Eef2f7; /* Un gris-azulado muy limpio para el fondo general */
+    --gris-fondo: #Eef2f7; 
     --blanco: #FFFFFF; 
     --text-main: #333333;
     --text-muted: #65676B;
@@ -14,14 +14,15 @@
 body { 
     font-family: 'Montserrat', sans-serif; 
     margin: 0; 
-    background: var(--gris-fondo); 
-    background-image: radial-gradient(circle at top right, rgba(0, 43, 92, 0.03), transparent 40%), 
-                      radial-gradient(circle at bottom left, rgba(211, 47, 47, 0.03), transparent 40%);
+    background-color: var(--gris-fondo); 
+    background-image: radial-gradient(circle at top right, rgba(0, 43, 92, 0.03), transparent 40%), radial-gradient(circle at bottom left, rgba(211, 47, 47, 0.03), transparent 40%);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     color: var(--text-main); 
     line-height: 1.5;
 }
 
-/* Franja tricolor superior */
 .franja-superior {
     height: 8px;
     width: 100%;
@@ -46,20 +47,16 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
-/* Columna Izquierda (Logo Evento) */
 .contenedor-logo-izq { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
 
-/* Centro (Textos) */
 .header-textos { text-align: center; flex: 2; min-width: 280px;}
 .header-textos h1 { margin: 0; font-size: 26px; font-weight: 800; color: var(--azul-institucional); text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
 .header-textos h3 { margin: 5px 0 0; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
 
-/* Columna Derecha (Logos + Botón) */
 .contenedor-derecho { flex: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; justify-content: center; }
 .contenedor-logos-der { display: flex; align-items: center; gap: 20px; }
 .logo-inst { max-height: 65px; width: auto; object-fit: contain; flex-shrink: 0; }
 
-/* Botón de Acceso (Ahora dentro de la columna derecha) */
 .btn-ingresar-flotante {
     display: inline-block;
     background: rgba(0, 43, 92, 0.05); 
