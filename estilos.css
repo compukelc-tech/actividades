@@ -3,27 +3,29 @@
     --negro-cucuta: #1A1A1A;
     --gris-fondo: #EBEFF2; 
     --blanco: #FFFFFF; 
+    --text-main: #050505;
+    --text-muted: #65676B;
 }
 
 body { 
     font-family: 'Montserrat', sans-serif; 
     margin: 0; 
     background: var(--gris-fondo); 
-    color: var(--negro-cucuta); 
+    color: var(--text-main); 
     line-height: 1.5;
 }
 
 /* Barra Superior */
-.barra-sesion { background-color: #000; color: white; padding: 10px 20px; display: flex; justify-content: flex-end; align-items: center; font-size: 13px; gap: 15px; flex-wrap: wrap;}
+.barra-sesion { background-color: var(--negro-cucuta); color: white; padding: 10px 20px; display: flex; justify-content: flex-end; align-items: center; font-size: 13px; gap: 15px; flex-wrap: wrap;}
 .barra-sesion a { color: #ccc; text-decoration: none; font-weight: 600; }
 .barra-sesion a:hover { color: white; }
 .btn-salir-menu { background: var(--rojo-cucuta); color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: 700; cursor: pointer;}
 
-/* Cabecera Principal (Corregida para celulares) */
+/* Cabecera Principal */
 .header-principal { 
     background: linear-gradient(135deg, var(--negro-cucuta) 0%, #333333 100%);
     color: white; 
-    padding: 60px 20px 30px 20px; /* Espacio extra arriba para que el botón no estorbe */
+    padding: 60px 20px 30px 20px; 
     text-align: center; 
     position: relative; 
     border-bottom: 5px solid var(--rojo-cucuta);
@@ -32,17 +34,7 @@ body {
 .header-principal h3 { margin: 10px 0 0; font-size: 13px; font-weight: 400; color: #ccc; }
 
 .btn-ingresar-flotante {
-    position: absolute; 
-    top: 15px; 
-    right: 15px; 
-    background: rgba(255,255,255,0.1); 
-    color: white; 
-    text-decoration: none; 
-    font-size: 12px; 
-    padding: 8px 15px; 
-    border-radius: 4px; 
-    border: 1px solid rgba(255,255,255,0.3);
-    font-weight: 600;
+    position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; font-size: 12px; padding: 8px 15px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.3); font-weight: 600;
 }
 .btn-ingresar-flotante:hover { background: var(--rojo-cucuta); border-color: var(--rojo-cucuta); }
 
@@ -52,14 +44,8 @@ body {
 
 .titulo-seccion { font-size: 18px; color: var(--negro-cucuta); border-bottom: 3px solid var(--rojo-cucuta); padding-bottom: 8px; margin-top: 0; text-transform: uppercase; font-weight: 800; display: inline-block; margin-bottom: 20px;}
 
-/* Estructura Muro (Post Social) pero Institucional */
-.post-social { 
-    background: var(--blanco); 
-    border-radius: 8px; 
-    margin-bottom: 25px; 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-    overflow: hidden;
-}
+/* Publicaciones / Feed */
+.post-social { background: var(--blanco); border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); overflow: hidden; }
 .tarjeta-institucional { border-top: 5px solid var(--rojo-cucuta); }
 .tarjeta-deporte { border-top: 5px solid; border-image: linear-gradient(to right, #0081C8 20%, #FCB131 40%, #000000 60%, #00A651 80%, #EE334E 100%) 1; }
 
@@ -67,7 +53,7 @@ body {
 .post-avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--rojo-cucuta); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);}
 .avatar-deporte { background: linear-gradient(135deg, #0081C8, #FCB131, #00A651, #EE334E); }
 .post-meta h3 { margin: 0; font-size: 15px; font-weight: 800; color: var(--negro-cucuta); text-transform: uppercase;}
-.post-meta span { font-size: 12px; color: #666; font-weight: 700; text-transform: uppercase;}
+.post-meta span { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;}
 
 .banner-publicidad { width: 100%; max-height: 250px; object-fit: cover; display: block; border-top: 1px solid #eee; border-bottom: 1px solid #eee;}
 
@@ -78,20 +64,42 @@ body {
 .btn-tiktok { background: #000000; }
 .btn-x { background: #333333; } 
 
-/* Galería tipo YouTube */
+/* Galería de Álbumes */
 .album-social { background: var(--blanco); border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-top: 5px solid var(--negro-cucuta); }
 .album-header { margin-bottom: 20px; }
 .album-titulo { font-size: 18px; color: var(--negro-cucuta); margin: 0 0 5px 0; font-weight: 800; text-transform: uppercase;}
-.album-descripcion { font-size: 13px; color: #555; margin: 0; }
+.album-descripcion { font-size: 13px; color: var(--text-muted); margin: 0; }
 
-.grid-youtube { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+/* Grilla optimizada a máximo 4 elementos por fila (3 fotos + 1 botón ver más) */
+.grid-youtube { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
 .foto-item { border-radius: 6px; overflow: hidden; aspect-ratio: 16/12; cursor: pointer; border: 1px solid #eee; background: #000;}
 .foto-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; opacity: 0.9;}
 .foto-item:hover img { transform: scale(1.05); opacity: 1;}
 
+/* Estilo para la tarjeta "+ X más" */
+.foto-mas-item { 
+    border-radius: 6px; 
+    overflow: hidden; 
+    aspect-ratio: 16/12; 
+    cursor: pointer; 
+    background: rgba(0, 0, 0, 0.82); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    color: white; 
+    font-weight: 800; 
+    text-align: center; 
+    transition: background 0.3s;
+    border: 1px solid #333;
+}
+.foto-mas-item:hover { background: var(--rojo-cucuta); }
+.foto-mas-item span { font-size: 16px; }
+.foto-mas-item small { font-size: 10px; font-weight: 600; text-transform: uppercase; margin-top: 2px; opacity: 0.9; }
+
 .footer-desarrollo { text-align: center; padding: 20px; font-size: 11px; color: white; background: #111; font-weight: 600; border-top: 3px solid var(--rojo-cucuta);}
 
-/* Visor */
+/* Visor Lightbox */
 .lightbox-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
 .lightbox-contenido { max-width: 90%; max-height: 90%; text-align: center; position: relative; }
 .lightbox-img { max-width: 100%; max-height: 90vh; border-radius: 4px; object-fit: contain; border: 2px solid #333; }
