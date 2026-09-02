@@ -16,39 +16,39 @@
 
     <div class="barra-sesion" id="barra-admin" style="display: none;">
         <span id="info-usuario-activo"></span>
-        <a href="admin.html" id="link-panel-admin" style="display: none;">⚙️ PANEL DE CONTROL</a>
-        <a href="registro.html" id="link-registro" style="display: none;">+ NUEVO ADMIN</a>
-        <button class="btn-salir-menu" onclick="cerrarSesion()">CERRAR SESIÓN</button>
+        <a href="admin.html" id="link-panel-admin" style="display: none;">⚙️ Panel</a>
+        <a href="registro.html" id="link-registro" style="display: none;">+ Nuevo Admin</a>
+        <button class="btn-salir-menu" onclick="cerrarSesion()">Salir</button>
     </div>
 
     <header class="header-principal">
-        <a href="login.html" id="btn-ingresar-discreto" class="btn-ingresar-flotante" title="Acceso Administrativo">ACCESO ADMINISTRATIVO</a>
+        <a href="login.html" id="btn-ingresar-discreto" class="btn-ingresar-flotante">Acceder</a>
         <h1>Portal Cultural y Deportivo</h1>
-        <h3>Gobernación de Norte de Santander | Alcaldía de San José de Cúcuta</h3>
+        <h3>Norte de Santander | San José de Cúcuta</h3>
     </header>
 
     <div class="contenedor-maestro">
         <aside class="columna-eventos">
-            <h2 class="titulo-seccion">Actividades y Transmisiones</h2>
+            <h2 class="titulo-seccion">Actualizaciones</h2>
             <div id="contenedor-transmisiones">
-                <div style="text-align: center; padding: 20px; color: #888;">
-                    <p style="font-size: 12px; margin: 0; font-weight: 600;">Cargando registros institucionales...</p>
+                <div style="text-align: center; padding: 20px; color: #65676B;">
+                    <p style="font-size: 13px; margin: 0; font-weight: 600;">Cargando feed...</p>
                 </div>
             </div>
         </aside>
 
         <main class="columna-galeria">
-            <h2 class="titulo-seccion">Archivo Fotográfico</h2>
+            <h2 class="titulo-seccion">Archivo Multimedia</h2>
             <div id="contenedor-galeria-albumes">
-                <div style="text-align: center; padding: 40px; color: #888;">
-                    <p style="font-size: 12px; margin: 0; font-weight: 600;">Cargando acervo multimedia...</p>
+                <div style="text-align: center; padding: 40px; color: #65676B;">
+                    <p style="font-size: 13px; margin: 0; font-weight: 600;">Cargando videos y fotos...</p>
                 </div>
             </div>
         </main>
     </div>
 
     <footer class="footer-desarrollo">
-        DESARROLLO TÉCNICO: COMPUKELC | COMPUKELC@HOTMAIL.COM | CEL. 3507973351
+        Plataforma gestionada por compukelc | compukelc@hotmail.com | cel. 3507973351
     </footer>
 
     <div id="visorLightbox" class="lightbox-modal">
@@ -72,7 +72,7 @@
         if (sesionGuardada) {
             const usuario = JSON.parse(sesionGuardada);
             document.getElementById('barra-admin').style.display = 'flex';
-            document.getElementById('info-usuario-activo').textContent = `ACTIVO: ${usuario.nombres.toUpperCase()} (${usuario.rol.toUpperCase()})`;
+            document.getElementById('info-usuario-activo').textContent = `${usuario.nombres} (${usuario.rol})`;
             document.getElementById('btn-ingresar-discreto').style.display = 'none';
             document.getElementById('link-panel-admin').style.display = 'inline';
 
@@ -90,29 +90,33 @@
             const contenedor = document.getElementById('contenedor-transmisiones');
             const { data, error } = await clienteSupabase.from('actividades').select('*').order('id', { ascending: false });
 
-            if (error || !data || data.length === 0) return contenedor.innerHTML = "<div style='text-align: center; padding: 20px; color: #888;'><p style='font-size: 12px; margin: 0;'>No hay registros activos.</p></div>";
+            if (error || !data || data.length === 0) return contenedor.innerHTML = "<div style='text-align: center; padding: 20px; color: #65676B;'><p style='font-size: 13px; margin: 0;'>No hay publicaciones recientes.</p></div>";
 
             contenedor.innerHTML = '';
             data.forEach(evento => {
                 let imagenBanner = evento.url_publicidad ? `<img src="${evento.url_publicidad}" class="banner-publicidad">` : '';
                 let botonesHTML = '';
                 
-                if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" class="btn-link btn-youtube">YouTube</a>`;
-                if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" class="btn-link btn-facebook">Facebook</a>`;
-                if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" class="btn-link btn-tiktok">TikTok</a>`;
-                if(evento.url_x) botonesHTML += `<a href="${evento.url_x}" target="_blank" class="btn-link btn-x">X</a>`;
+                if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" class="btn-link">YouTube</a>`;
+                if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" class="btn-link">Facebook</a>`;
+                if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" class="btn-link">TikTok</a>`;
+                if(evento.url_x) botonesHTML += `<a href="${evento.url_x}" target="_blank" class="btn-link">X</a>`;
 
-                // Condicional para aplicar el diseño Olímpico o el Rojinegro
                 let esDeporte = (evento.tipo === 'Deporte');
-                let claseTarjeta = esDeporte ? 'tarjeta-deporte' : 'tarjeta-institucional';
-                let claseEtiqueta = esDeporte ? 'etiqueta-deporte' : 'etiqueta-institucional';
+                let claseAvatar = esDeporte ? 'avatar-deporte' : '';
+                let letraAvatar = esDeporte ? 'O' : 'G'; // O de Olímpicos, G de Gobernación
 
                 contenedor.innerHTML += `
-                    <div class="tarjeta-evento ${claseTarjeta}">
-                        <h3>${evento.titulo || 'SIN TÍTULO'}</h3>
-                        <span class="etiqueta-tipo ${claseEtiqueta}">${evento.tipo || 'EVENTO'}</span>
+                    <div class="post-social">
+                        <div class="post-header">
+                            <div class="post-avatar ${claseAvatar}">${letraAvatar}</div>
+                            <div class="post-meta">
+                                <h3>${evento.titulo || 'Publicación sin título'}</h3>
+                                <span>${evento.tipo || 'Actualidad'}</span>
+                            </div>
+                        </div>
                         ${imagenBanner}
-                        <div>${botonesHTML}</div>
+                        <div class="post-actions">${botonesHTML}</div>
                     </div>
                 `;
             });
@@ -127,7 +131,7 @@
                 .order('id', { ascending: false });
 
             if (error || !albumes || albumes.length === 0) {
-                return contenedor.innerHTML = "<div style='text-align: center; padding: 40px; color: #888;'><p style='font-size: 12px; margin: 0;'>Archivo fotográfico vacío.</p></div>";
+                return contenedor.innerHTML = "<div style='text-align: center; padding: 40px; color: #65676B;'><p style='font-size: 13px; margin: 0;'>No hay álbumes creados.</p></div>";
             }
 
             contenedor.innerHTML = '';
@@ -142,17 +146,16 @@
                         fotosHTML += `<div class="foto-item" onclick="abrirLightbox(${indiceGlobal})"><img src="${foto.url_foto}" loading="lazy"></div>`;
                     });
                 } else {
-                    fotosHTML = `<p style="font-size:12px; color:#999; font-style: italic;">Álbum sin registros fotográficos.</p>`;
+                    fotosHTML = `<p style="font-size:13px; color:#65676B;">No hay contenido en este álbum.</p>`;
                 }
 
                 contenedor.innerHTML += `
-                    <div class="album-contenedor">
-                        <div class="album-titulo">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rojo-cucuta)" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                            ${album.titulo}
+                    <div class="album-social">
+                        <div class="album-header">
+                            <h3 class="album-titulo">${album.titulo}</h3>
+                            <p class="album-descripcion">${album.descripcion || ''}</p>
                         </div>
-                        <div class="album-descripcion">${album.descripcion || ''}</div>
-                        <div class="grid-fotos">${fotosHTML}</div>
+                        <div class="grid-youtube">${fotosHTML}</div>
                     </div>
                 `;
             });
