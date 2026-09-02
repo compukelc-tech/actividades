@@ -152,9 +152,9 @@
             <button class="btn-accion" onclick="publicarEventoConPublicidad()" style="margin-top: 10px;">Publicar Evento</button>
         </div>
 
-        <!-- SECCIÓN 5: LOGOS INSTITUCIONALES -->
+        <!-- SECCIÓN 5: LOGOS INSTITUCIONALES Y FONDO -->
         <div class="seccion-admin">
-            <h3>4. Configuración de Logos Oficiales (Cabecera)</h3>
+            <h3>4. Configuración Visual Oficial (Logos y Fondo)</h3>
             <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
                 <div style="background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #ddd;">
                     <label style="font-size: 12px; font-weight: bold; color: #004884;">Logo Izquierdo (Evento):</label>
@@ -170,6 +170,11 @@
                     <label style="font-size: 12px; font-weight: bold; color: #004884;">Logo Derecho 2 (Gobernación):</label>
                     <input type="file" id="file-logo-gobernacion" accept="image/*" style="margin-bottom: 10px; font-size: 11px;">
                     <button class="btn-accion" onclick="actualizarLogo('logo_gobernacion', 'file-logo-gobernacion')" style="background: #17a2b8;">Subir Logo Gobernación</button>
+                </div>
+                <div style="background: #e6f2ff; padding: 15px; border-radius: 6px; border: 1px solid #b3d7ff;">
+                    <label style="font-size: 12px; font-weight: bold; color: #004884;">Imagen de Fondo del Portal:</label>
+                    <input type="file" id="file-fondo-pantalla" accept="image/*" style="margin-bottom: 10px; font-size: 11px;">
+                    <button class="btn-accion" onclick="actualizarLogo('fondo_pantalla', 'file-fondo-pantalla')" style="background: #0056b3;">Subir Fondo General</button>
                 </div>
             </div>
         </div>
@@ -283,16 +288,18 @@
             });
         }
 
-        // FUNCION PARA SUBIR LOGOS A LA BASE DE DATOS
+        // FUNCIÓN MULTIUSO PARA SUBIR LOGOS Y AHORA EL FONDO
         async function actualizarLogo(columna, inputId) {
             const input = document.getElementById(inputId);
             if (input.files.length === 0) return alert("Selecciona una imagen primero.");
             
-            const archivo = await comprimirImagen(input.files[0], 0.9, 600); 
-            const ruta = `logos/${columna}_${Date.now()}.png`;
+            // Para el fondo usamos un tamaño máximo más grande (1600px) que los logos (600px)
+            const anchoDeseado = columna === 'fondo_pantalla' ? 1600 : 600;
+            const archivo = await comprimirImagen(input.files[0], 0.85, anchoDeseado); 
+            const ruta = `config/${columna}_${Date.now()}.png`;
 
             const { error: uploadErr } = await clienteSupabase.storage.from('galeria').upload(ruta, archivo);
-            if (uploadErr) return alert("Error al subir el escudo: " + uploadErr.message);
+            if (uploadErr) return alert("Error al subir el archivo: " + uploadErr.message);
 
             const url = clienteSupabase.storage.from('galeria').getPublicUrl(ruta).data.publicUrl;
 
@@ -301,7 +308,7 @@
             const { error: dbErr } = await clienteSupabase.from('configuracion').update(actualizacion).eq('id', 1);
 
             if (dbErr) return alert("Error al actualizar la base de datos: " + dbErr.message);
-            alert("¡Logo institucional guardado con éxito! Recarga la página pública para verlo.");
+            alert(`¡${columna === 'fondo_pantalla' ? 'Fondo de pantalla' : 'Logo institucional'} guardado con éxito! Recarga la página pública para verlo.`);
             input.value = '';
         }
 
