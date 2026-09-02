@@ -16,9 +16,9 @@
 
     <div class="barra-sesion" id="barra-admin" style="display: none;">
         <span id="info-usuario-activo"></span>
-        <a href="admin.html" id="link-panel-admin" style="display: none;">⚙️ Panel Admin</a>
+        <a href="admin.html" id="link-panel-admin" style="display: none;">⚙️ Panel</a>
         <a href="registro.html" id="link-registro" style="display: none;">+ Nuevo Admin</a>
-        <button class="btn-salir-menu" onclick="cerrarSesion()">Cerrar Sesión</button>
+        <button class="btn-salir-menu" onclick="cerrarSesion()">Salir</button>
     </div>
 
     <header class="header-principal">
@@ -141,10 +141,28 @@
             albumes.forEach(album => {
                 let fotosHTML = '';
                 if (album.fotos_album && album.fotos_album.length > 0) {
-                    album.fotos_album.forEach(foto => {
+                    const totalFotos = album.fotos_album.length;
+                    
+                    // Recorremos las fotos
+                    album.fotos_album.forEach((foto, index) => {
                         const indiceGlobal = todasLasFotos.length;
                         todasLasFotos.push(foto.url_foto);
-                        fotosHTML += `<div class="foto-item" onclick="abrirLightbox(${indiceGlobal})"><img src="${foto.url_foto}" loading="lazy"></div>`;
+
+                        // Si la foto está entre las primeras 3, la mostramos normalmente
+                        if (index < 3) {
+                            fotosHTML += `<div class="foto-item" onclick="abrirLightbox(${indiceGlobal})"><img src="${foto.url_foto}" loading="lazy"></div>`;
+                        } 
+                        // Si es exactamente la 4ta foto y hay más, creamos el botón compacto "+ X más"
+                        else if (index === 3) {
+                            const faltantes = totalFotos - 3;
+                            fotosHTML += `
+                                <div class="foto-mas-item" onclick="abrirLightbox(${indiceGlobal})">
+                                    <span>+${faltantes}</span>
+                                    <small>Ver más</small>
+                                </div>
+                            `;
+                        }
+                        // Las demás fotos se guardan en el array global para el visor pero no ensucian la pantalla principal
                     });
                 } else {
                     fotosHTML = `<p style="font-size:13px; color:#666;">No hay contenido en este álbum.</p>`;
