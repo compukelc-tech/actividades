@@ -16,10 +16,11 @@
         .badge-pendiente { background: #ffc107; color: #333; }
         .badge-autorizado { background: #28a745; color: white; }
         .badge-bloqueado { background: #dc3545; color: white; }
-        button { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; }
+        button { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; margin-right: 4px; margin-bottom: 4px; }
         .btn-autorizar { background: #28a745; color: white; }
         .btn-bloquear { background: #ffc107; color: #333; }
-        .btn-eliminar { background: #dc3545; color: white; margin-left: 5px; }
+        .btn-eliminar { background: #dc3545; color: white; }
+        .btn-restaurar { background: #17a2b8; color: white; }
         .seccion-admin { margin-top: 40px; padding-top: 20px; border-top: 2px solid #eee; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
@@ -27,6 +28,15 @@
         .btn-accion { background: #003366; color: white; padding: 12px; font-size: 13px; width: 100%; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-volver { background: #6c757d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 12px; display: inline-block; margin-bottom: 20px; }
         .caja-edicion { display: none; margin-top: 15px; padding: 15px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; }
+        .tabla-auditoria { max-height: 300px; overflow-y: auto; border: 1px solid #ddd; }
+        
+        /* Estilos para el Modal de Cambio de Clave */
+        .modal-overlay { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .modal-content h3 { margin-top: 0; color: #003366; }
+        .modal-content label { font-size: 12px; font-weight: bold; display: block; margin-top: 10px; margin-bottom: 5px; }
+        .modal-content input { width: 100%; padding: 8px; box-sizing: border-box; }
+        .modal-botones { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -35,6 +45,7 @@
         <h2>Panel de Control General</h2>
         <div>
             <span id="nombre-usuario-rol" style="font-weight: bold; margin-right: 15px;"></span>
+            <button onclick="abrirModalClave()" style="background: #28a745; color: white; margin-right: 10px;">🔑 Cambiar Mi Clave</button>
             <button onclick="cerrarSesion()" style="background: #cc0000; color: white;">Cerrar Sesión</button>
         </div>
     </header>
@@ -42,9 +53,9 @@
     <div class="container">
         <a href="index.html" class="btn-volver">← Volver al Portal Principal</a>
 
-        <!-- SECCIÓN 1: GESTIÓN DE USUARIOS -->
+        <!-- SECCIÓN 1: GESTIÓN DE USUARIOS (Solo Superadmin) -->
         <div id="contenedor-gestion-usuarios" style="display: none;">
-            <h3>Gestión de Usuarios (Superadmin)</h3>
+            <h3>Gestión de Usuarios y Claves (Superadmin)</h3>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
@@ -126,7 +137,7 @@
             <button class="btn-accion" onclick="publicarEventoConPublicidad()" style="margin-top: 10px;">Publicar Evento</button>
         </div>
 
-        <!-- SECCIÓN 5: GESTIONAR EVENTOS EXISTENTES (MODIFICAR O ELIMINAR) -->
+        <!-- SECCIÓN 5: GESTIONAR EVENTOS EXISTENTES -->
         <div class="seccion-admin">
             <h3>4. Modificar o Eliminar Eventos / Enlaces Publicados</h3>
             
@@ -164,6 +175,42 @@
                 </div>
             </div>
         </div>
+
+        <!-- SECCIÓN 6: AUDITORÍA DE ACCESOS (Solo Superadmin) -->
+        <div id="contenedor-auditoria" class="seccion-admin" style="display: none;">
+            <h3>5. Historial y Auditoría de Accesos al Sistema</h3>
+            <p style="font-size: 12px; color: #666;">Registro automático de ingresos a la plataforma.</p>
+            <div class="tabla-auditoria">
+                <table style="margin-top: 0;">
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Nombres</th>
+                            <th>Rol</th>
+                            <th>Fecha y Hora de Ingreso</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-historial"><tr><td colspan="4">Cargando historial...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CAMBIAR CLAVE PERSONALES -->
+    <div id="modal-clave" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Cambiar Mi Contraseña</h3>
+            <label>Nueva Contraseña (Mínimo 8 caracteres, 1 mayúscula, 1 número):</label>
+            <input type="password" id="nueva-clave-propia" placeholder="Ingrese nueva contraseña">
+            
+            <label>Confirmar Nueva Contraseña:</label>
+            <input type="password" id="conf-nueva-clave-propia" placeholder="Repita la contraseña">
+            
+            <div class="modal-botones">
+                <button onclick="cerrarModalClave()" style="background: #6c757d; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
+                <button onclick="guardarMiNuevaClave()" style="background: #003366; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">Guardar Cambio</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -183,8 +230,45 @@
 
         if (usuarioActual.rol === 'superadmin' || usuarioActual.documento === '1090391929') {
             document.getElementById('contenedor-gestion-usuarios').style.display = 'block';
+            document.getElementById('contenedor-auditoria').style.display = 'block';
             cargarUsuarios();
+            cargarAuditoria();
         }
+
+        // --- FUNCIONES DE CAMBIO DE CLAVE PROPIA ---
+        function abrirModalClave() {
+            document.getElementById('modal-clave').style.display = 'flex';
+            document.getElementById('nueva-clave-propia').value = '';
+            document.getElementById('conf-nueva-clave-propia').value = '';
+        }
+
+        function cerrarModalClave() {
+            document.getElementById('modal-clave').style.display = 'none';
+        }
+
+        async function guardarMiNuevaClave() {
+            const nueva = document.getElementById('nueva-clave-propia').value;
+            const conf = document.getElementById('conf-nueva-clave-propia').value;
+
+            if (nueva !== conf) return alert("Las contraseñas no coinciden.");
+            
+            // Validaciones de seguridad
+            if (nueva.length < 8 || !/[A-Z]/.test(nueva) || !/[0-9]/.test(nueva)) {
+                return alert("La contraseña debe tener mínimo 8 caracteres, al menos una mayúscula y un número.");
+            }
+
+            const { error } = await clienteSupabase.from('perfiles_administrativos')
+                .update({ clave: nueva })
+                .eq('documento', usuarioActual.documento);
+
+            if (error) {
+                alert("Error al actualizar la contraseña: " + error.message);
+            } else {
+                alert("¡Su contraseña ha sido actualizada con éxito!");
+                cerrarModalClave();
+            }
+        }
+        // ---------------------------------------------
 
         async function cargarUsuarios() {
             const tbody = document.getElementById('tabla-usuarios');
@@ -193,16 +277,48 @@
             tbody.innerHTML = '';
             data.forEach(user => {
                 let badge = user.estado === 'autorizado' ? 'badge-autorizado' : (user.estado === 'bloqueado' ? 'badge-bloqueado' : 'badge-pendiente');
-                let botones = user.rol !== 'superadmin' ? `
-                    ${user.estado !== 'autorizado' ? `<button class="btn-autorizar" onclick="cambiarEstado('${user.documento}', 'autorizado')">Autorizar</button>` : ''}
-                    ${user.estado !== 'bloqueado' ? `<button class="btn-bloquear" onclick="cambiarEstado('${user.documento}', 'bloqueado')">Bloquear</button>` : ''}
-                    <button class="btn-eliminar" onclick="eliminarUsuario('${user.documento}')">Eliminar</button>
-                ` : `<em>Superadmin</em>`;
+                
+                let botones = '';
+                if (user.rol !== 'superadmin') {
+                    botones += user.estado !== 'autorizado' ? `<button class="btn-autorizar" onclick="cambiarEstado('${user.documento}', 'autorizado')">Autorizar</button>` : '';
+                    botones += user.estado !== 'bloqueado' ? `<button class="btn-bloquear" onclick="cambiarEstado('${user.documento}', 'bloqueado')">Bloquear</button>` : '';
+                    botones += `<button class="btn-restaurar" onclick="restaurarClave('${user.documento}', '${user.nombres}')">Reset Clave</button>`;
+                    botones += `<button class="btn-eliminar" onclick="eliminarUsuario('${user.documento}')">Eliminar</button>`;
+                } else {
+                    botones = `<em>Superadmin</em>`;
+                }
+
                 tbody.innerHTML += `<tr><td>${user.documento}</td><td><strong>${user.nombres}</strong></td><td>${user.tipo_dependencia}</td><td><span class="badge ${badge}">${user.estado}</span></td><td>${botones}</td></tr>`;
             });
         }
+
         async function cambiarEstado(doc, estado) { await clienteSupabase.from('perfiles_administrativos').update({ estado: estado }).eq('documento', doc); cargarUsuarios(); }
         async function eliminarUsuario(doc) { if (!confirm("¿Eliminar usuario?")) return; await clienteSupabase.from('perfiles_administrativos').delete().eq('documento', doc); cargarUsuarios(); }
+
+        // Función para restaurar contraseñas manualmente (Superadmin)
+        async function restaurarClave(documento, nombreUsuario) {
+            const nuevaClave = prompt(`Ingrese la nueva contraseña genérica para ${nombreUsuario}:`);
+            if (!nuevaClave || nuevaClave.trim() === '') {
+                alert("Operación cancelada.");
+                return;
+            }
+
+            const { error } = await clienteSupabase.from('perfiles_administrativos').update({ clave: nuevaClave.trim() }).eq('documento', documento);
+            if (error) alert("Error al actualizar: " + error.message);
+            else alert(`Contraseña actualizada con éxito para ${nombreUsuario}. Al ingresar, recuérdele usar el botón de "Cambiar Mi Clave" para personalizarla.`);
+        }
+
+        async function cargarAuditoria() {
+            const tbody = document.getElementById('tabla-historial');
+            const { data, error } = await clienteSupabase.from('historial_accesos').select('*').order('fecha_hora', { ascending: false }).limit(50);
+            if (error || !data) return tbody.innerHTML = `<tr><td colspan="4">No hay registros aún.</td></tr>`;
+            
+            tbody.innerHTML = '';
+            data.forEach(reg => {
+                const fecha = new Date(reg.fecha_hora).toLocaleString('es-CO');
+                tbody.innerHTML += `<tr><td>${reg.documento}</td><td>${reg.nombres}</td><td>${reg.rol}</td><td>${fecha}</td></tr>`;
+            });
+        }
 
         async function cargarSelectAlbumes() {
             const select = document.getElementById('select-albumes');
@@ -230,24 +346,15 @@
             if (inputArchivos.files.length > 0) {
                 for (let i = 0; i < inputArchivos.files.length; i++) {
                     const archivo = inputArchivos.files[i];
-                    // Ruta limpia para evitar errores
                     const rutaStorage = `foto_${Date.now()}_${archivo.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
-                    
                     const { error: uploadError } = await clienteSupabase.storage.from('galeria').upload(rutaStorage, archivo);
-                    if (uploadError) {
-                        alert("Error al subir imagen a la nube: " + uploadError.message);
-                    } else {
+                    if (!uploadError) {
                         const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
-                        const { error: dbError } = await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
-                        if (dbError) {
-                            alert("Error al guardar foto en la base de datos: " + dbError.message);
-                        } else {
-                            subidasExitosas++;
-                        }
+                        await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
+                        subidasExitosas++;
                     }
                 }
             }
-            
             alert(`¡Álbum creado exitosamente! (${subidasExitosas} fotos guardadas)`);
             document.getElementById('album-titulo').value = '';
             document.getElementById('album-descripcion').value = '';
@@ -265,18 +372,11 @@
             for (let i = 0; i < inputArchivos.files.length; i++) {
                 const archivo = inputArchivos.files[i];
                 const rutaStorage = `foto_${Date.now()}_${archivo.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
-                
                 const { error: uploadError } = await clienteSupabase.storage.from('galeria').upload(rutaStorage, archivo);
-                if (uploadError) {
-                    alert("Error al subir foto: " + uploadError.message);
-                } else {
+                if (!uploadError) {
                     const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
-                    const { error: dbError } = await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
-                    if (dbError) {
-                        alert("Error de base de datos: " + dbError.message);
-                    } else {
-                        subidasExitosas++;
-                    }
+                    await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
+                    subidasExitosas++;
                 }
             }
             alert(`¡${subidasExitosas} fotos agregadas al álbum!`);
@@ -295,14 +395,12 @@
         async function cargarSelectEventos() {
             const select = document.getElementById('select-eventos');
             const { data, error } = await clienteSupabase.from('actividades').select('*').order('id', { ascending: false });
-            
             if (error || !data || data.length === 0) {
                 select.innerHTML = `<option value="">No hay eventos publicados</option>`;
                 eventosGlobales = [];
                 document.getElementById('caja-editar-evento').style.display = 'none';
                 return;
             }
-            
             eventosGlobales = data; 
             select.innerHTML = `<option value="">-- Seleccione un evento para modificar --</option>`;
             data.forEach(ev => { select.innerHTML += `<option value="${ev.id}">[${ev.tipo}] ${ev.titulo}</option>`; });
@@ -358,9 +456,7 @@
                 const archivo = inputPublicidad.files[0];
                 const rutaPub = `banner_${Date.now()}_${archivo.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
                 const { error: errorUpload } = await clienteSupabase.storage.from('galeria').upload(rutaPub, archivo);
-                if (errorUpload) {
-                    return alert("Error al subir el banner publicitario: " + errorUpload.message);
-                }
+                if (errorUpload) return alert("Error al subir el banner publicitario: " + errorUpload.message);
                 urlPublicidadFinal = clienteSupabase.storage.from('galeria').getPublicUrl(rutaPub).data.publicUrl;
             }
 
@@ -377,16 +473,6 @@
             document.getElementById('url-tiktok').value = '';
             document.getElementById('url-x').value = '';
             inputPublicidad.value = '';
-            cargarSelectEventos();
-        }
-
-        async function eliminarEventoSeleccionado() {
-            const eventoId = document.getElementById('select-eventos').value;
-            if (!eventoId) return alert("Seleccione el evento.");
-            if (!confirm("¿Está seguro de eliminar este evento?")) return;
-            await clienteSupabase.from('actividades').delete().eq('id', eventoId);
-            alert("Evento eliminado.");
-            document.getElementById('caja-editar-evento').style.display = 'none';
             cargarSelectEventos();
         }
 
