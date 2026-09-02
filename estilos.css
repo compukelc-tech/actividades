@@ -1,0 +1,101 @@
+:root { 
+    --color-primario: #003366; 
+    --color-secundario: #d9534f;
+    --color-acento: #ffcc00;
+    --color-fondo: #f0f2f5; 
+    --color-tarjeta: #ffffff; 
+}
+
+body { 
+    font-family: 'Montserrat', sans-serif; 
+    margin: 0; 
+    background: var(--color-fondo); 
+    color: #333; 
+    line-height: 1.6;
+}
+
+/* Barra superior de sesión más elegante */
+.barra-sesion { background-color: #001a33; color: white; padding: 12px 40px; display: flex; justify-content: flex-end; align-items: center; font-size: 13px; gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.barra-sesion a { color: var(--color-acento); text-decoration: none; font-weight: 600; transition: color 0.3s; }
+.barra-sesion a:hover { color: #fff; }
+.btn-salir-menu { background: var(--color-secundario); color: white; border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: background 0.3s; }
+.btn-salir-menu:hover { background: #c9302c; }
+
+/* Cabecera principal con degradado y profundidad */
+.header-principal { 
+    background: linear-gradient(135deg, #002244 0%, #004080 100%);
+    color: white; 
+    padding: 40px 40px; 
+    text-align: center; 
+    position: relative; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
+    border-bottom: 4px solid var(--color-acento);
+}
+.header-principal h1 { margin: 0; font-size: 28px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+.header-principal h3 { margin: 10px 0 0; font-size: 15px; font-weight: 400; color: #e0e0e0; letter-spacing: 0.5px; }
+
+.btn-ingresar-flotante {
+    position: absolute; top: 20px; right: 30px; color: white; text-decoration: none; font-size: 12px; background: rgba(255,255,255,0.15); padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); transition: all 0.3s; font-weight: 600;
+}
+.btn-ingresar-flotante:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+
+/* Contenedor principal con mejor distribución */
+.contenedor-maestro { display: grid; grid-template-columns: 360px 1fr; gap: 40px; max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+@media (max-width: 900px) { .contenedor-maestro { grid-template-columns: 1fr; } }
+
+.titulo-seccion { font-size: 18px; color: var(--color-primario); border-bottom: 3px solid var(--color-acento); padding-bottom: 10px; margin-top: 0; text-transform: uppercase; font-weight: 700; display: inline-block; margin-bottom: 25px;}
+
+/* Tarjetas de eventos con efecto Hover 3D */
+.tarjeta-evento { 
+    background: var(--color-tarjeta); 
+    border-radius: 12px; 
+    padding: 20px; 
+    margin-bottom: 20px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+    border-left: 5px solid var(--color-primario);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.tarjeta-evento:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.tarjeta-evento h3 { margin: 0 0 10px; font-size: 16px; color: var(--color-primario); font-weight: 700;}
+.etiqueta-tipo { display: inline-block; background: #e9ecef; font-size: 11px; padding: 4px 10px; border-radius: 15px; margin-bottom: 15px; color: #495057; font-weight: 700; text-transform: uppercase; border: 1px solid #dee2e6; }
+
+.banner-publicidad { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+/* Botones de redes más estilizados */
+.btn-link { display: block; text-align: center; padding: 10px; border-radius: 6px; text-decoration: none; color: white; font-size: 12px; font-weight: 700; margin-bottom: 8px; transition: opacity 0.3s, transform 0.2s; }
+.btn-link:hover { opacity: 0.9; transform: scale(1.02); }
+.btn-youtube { background: linear-gradient(90deg, #ff0000 0%, #cc0000 100%); }
+.btn-facebook { background: linear-gradient(90deg, #1877f2 0%, #145dbf 100%); }
+.btn-tiktok { background: linear-gradient(90deg, #000000 0%, #333333 100%); }
+.btn-x { background: linear-gradient(90deg, #0f1419 0%, #293440 100%); } 
+
+/* Galería con diseño limpio */
+.columna-galeria { background: var(--color-tarjeta); padding: 35px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.album-contenedor { margin-bottom: 45px; border-bottom: 1px solid #eee; padding-bottom: 30px; }
+.album-contenedor:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.album-titulo { font-size: 20px; color: var(--color-primario); margin-bottom: 8px; font-weight: 700; display: flex; align-items: center; gap: 8px;}
+.album-descripcion { font-size: 14px; color: #666; margin-bottom: 20px; font-weight: 400; }
+
+/* Grilla de fotos con bordes suaves */
+.grid-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+.foto-item { border-radius: 10px; overflow: hidden; aspect-ratio: 1; box-shadow: 0 3px 6px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative;}
+.foto-item::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0); transition: background 0.3s; pointer-events: none;}
+.foto-item:hover { transform: scale(1.05); box-shadow: 0 8px 15px rgba(0,0,0,0.2); z-index: 2;}
+.foto-item:hover::after { background: rgba(0,0,0,0.1); }
+.foto-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.footer-desarrollo { text-align: center; padding: 25px; margin-top: 50px; font-size: 12px; color: #fff; background: var(--color-primario); font-weight: 600; letter-spacing: 0.5px;}
+
+/* ESTILOS DEL VISOR DE FOTOS (LIGHTBOX) */
+.lightbox-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,20,40,0.95); justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+.lightbox-contenido { max-width: 90%; max-height: 90%; text-align: center; position: relative; }
+.lightbox-img { max-width: 100%; max-height: 90vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); object-fit: contain; }
+.lightbox-cerrar { position: absolute; top: 20px; right: 30px; color: white; font-size: 45px; font-weight: 300; cursor: pointer; z-index: 10000; transition: color 0.3s; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
+.lightbox-cerrar:hover { color: var(--color-secundario); }
+.lightbox-btn { cursor: pointer; position: absolute; top: 50%; width: 60px; height: 60px; margin-top: -30px; color: white; font-weight: bold; font-size: 24px; transition: 0.3s ease; border-radius: 50%; user-select: none; background-color: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); z-index: 10000; display: flex; justify-content: center; align-items: center; }
+.lightbox-btn:hover { background-color: rgba(255,255,255,0.3); transform: scale(1.1); }
+.lightbox-prev { left: 40px; }
+.lightbox-next { right: 40px; }
