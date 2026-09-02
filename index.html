@@ -22,7 +22,7 @@
     </div>
 
     <header class="header-principal">
-        <a href="login.html" id="btn-ingresar-discreto" class="btn-ingresar-flotante">Acceder</a>
+        <a href="login.html" id="btn-ingresar-discreto" class="btn-ingresar-flotante">Acceso Administrativo</a>
         <h1>Portal Cultural y Deportivo</h1>
         <h3>Norte de Santander | San José de Cúcuta</h3>
     </header>
@@ -31,17 +31,17 @@
         <aside class="columna-eventos">
             <h2 class="titulo-seccion">Actualizaciones</h2>
             <div id="contenedor-transmisiones">
-                <div style="text-align: center; padding: 20px; color: #65676B;">
-                    <p style="font-size: 13px; margin: 0; font-weight: 600;">Cargando feed...</p>
+                <div style="text-align: center; padding: 20px; color: #666;">
+                    <p style="font-size: 12px; margin: 0; font-weight: 600;">Cargando feed...</p>
                 </div>
             </div>
         </aside>
 
         <main class="columna-galeria">
-            <h2 class="titulo-seccion">Archivo Multimedia</h2>
+            <h2 class="titulo-seccion">Archivo Fotográfico</h2>
             <div id="contenedor-galeria-albumes">
-                <div style="text-align: center; padding: 40px; color: #65676B;">
-                    <p style="font-size: 13px; margin: 0; font-weight: 600;">Cargando videos y fotos...</p>
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <p style="font-size: 12px; margin: 0; font-weight: 600;">Cargando acervo multimedia...</p>
                 </div>
             </div>
         </main>
@@ -90,24 +90,25 @@
             const contenedor = document.getElementById('contenedor-transmisiones');
             const { data, error } = await clienteSupabase.from('actividades').select('*').order('id', { ascending: false });
 
-            if (error || !data || data.length === 0) return contenedor.innerHTML = "<div style='text-align: center; padding: 20px; color: #65676B;'><p style='font-size: 13px; margin: 0;'>No hay publicaciones recientes.</p></div>";
+            if (error || !data || data.length === 0) return contenedor.innerHTML = "<div style='text-align: center; padding: 20px; color: #666;'><p style='font-size: 13px; margin: 0;'>No hay publicaciones recientes.</p></div>";
 
             contenedor.innerHTML = '';
             data.forEach(evento => {
                 let imagenBanner = evento.url_publicidad ? `<img src="${evento.url_publicidad}" class="banner-publicidad">` : '';
                 let botonesHTML = '';
                 
-                if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" class="btn-link">YouTube</a>`;
-                if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" class="btn-link">Facebook</a>`;
-                if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" class="btn-link">TikTok</a>`;
-                if(evento.url_x) botonesHTML += `<a href="${evento.url_x}" target="_blank" class="btn-link">X</a>`;
+                if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" class="btn-link btn-youtube">YouTube</a>`;
+                if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" class="btn-link btn-facebook">Facebook</a>`;
+                if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" class="btn-link btn-tiktok">TikTok</a>`;
+                if(evento.url_x) botonesHTML += `<a href="${evento.url_x}" target="_blank" class="btn-link btn-x">X</a>`;
 
                 let esDeporte = (evento.tipo === 'Deporte');
                 let claseAvatar = esDeporte ? 'avatar-deporte' : '';
-                let letraAvatar = esDeporte ? 'O' : 'G'; // O de Olímpicos, G de Gobernación
+                let letraAvatar = esDeporte ? 'O' : 'G'; 
+                let claseTarjeta = esDeporte ? 'tarjeta-deporte' : 'tarjeta-institucional';
 
                 contenedor.innerHTML += `
-                    <div class="post-social">
+                    <div class="post-social ${claseTarjeta}">
                         <div class="post-header">
                             <div class="post-avatar ${claseAvatar}">${letraAvatar}</div>
                             <div class="post-meta">
@@ -131,7 +132,7 @@
                 .order('id', { ascending: false });
 
             if (error || !albumes || albumes.length === 0) {
-                return contenedor.innerHTML = "<div style='text-align: center; padding: 40px; color: #65676B;'><p style='font-size: 13px; margin: 0;'>No hay álbumes creados.</p></div>";
+                return contenedor.innerHTML = "<div style='text-align: center; padding: 40px; color: #666;'><p style='font-size: 13px; margin: 0;'>No hay álbumes creados.</p></div>";
             }
 
             contenedor.innerHTML = '';
@@ -146,7 +147,7 @@
                         fotosHTML += `<div class="foto-item" onclick="abrirLightbox(${indiceGlobal})"><img src="${foto.url_foto}" loading="lazy"></div>`;
                     });
                 } else {
-                    fotosHTML = `<p style="font-size:13px; color:#65676B;">No hay contenido en este álbum.</p>`;
+                    fotosHTML = `<p style="font-size:13px; color:#666;">No hay contenido en este álbum.</p>`;
                 }
 
                 contenedor.innerHTML += `
