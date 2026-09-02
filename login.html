@@ -2,29 +2,95 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Esta es la línea mágica que adapta el tamaño a la pantalla del celular -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - Portal Administrativo - compukelc</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 80vh; margin: 0; }
-        .formulario { width: 100%; max-width: 380px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background: #EBEFF2; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px; 
+            box-sizing: border-box; 
+        }
+        .formulario { 
+            width: 100%; 
+            max-width: 400px; 
+            background: white; 
+            padding: 40px 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            box-sizing: border-box; 
+            border-top: 5px solid #C8102E;
+        }
+        .logo-header { text-align: center; color: #1A1A1A; margin-bottom: 30px; }
+        .logo-header h2 { margin: 0; font-size: 22px; text-transform: uppercase; font-weight: 800; }
+        .logo-header p { margin: 5px 0 0; font-size: 13px; color: #666; font-weight: 600; }
+        
+        input { 
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 15px; 
+            box-sizing: border-box; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px; 
+        }
         .fila-password { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
         .fila-password input { margin-bottom: 0; }
-        button { width: 100%; padding: 12px; background: #003366; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .error { color: red; font-size: 12px; margin-bottom: 15px; display: none; text-align: center; }
-        .link-registro { display: block; text-align: center; margin-top: 15px; font-size: 12px; color: #003366; text-decoration: none; }
+        
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background: #1A1A1A; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            font-size: 14px; 
+            text-transform: uppercase;
+            transition: background 0.3s;
+        }
+        button:hover { background: #333333; }
+        
+        .btn-ver { 
+            background: #EBEFF2; 
+            color: #1A1A1A; 
+            width: auto; 
+            padding: 14px 15px; 
+            font-size: 12px; 
+            border: 1px solid #ccc;
+        }
+        .btn-ver:hover { background: #ddd; }
+        
+        .error { color: #C8102E; font-size: 13px; margin-bottom: 15px; display: none; text-align: center; font-weight: 600; }
+        .link-registro { display: block; text-align: center; margin-top: 25px; font-size: 13px; color: #1A1A1A; text-decoration: none; font-weight: 600; transition: color 0.3s;}
+        .link-registro:hover { color: #C8102E; text-decoration: underline; }
     </style>
 </head>
 <body>
 
     <div class="formulario">
-        <h2 style="text-align: center; color: #003366; margin-bottom: 25px;">Acceso Administrativo</h2>
+        <div class="logo-header">
+            <h2>Acceso Administrativo</h2>
+            <p>Portal Institucional</p>
+        </div>
         
         <input type="text" inputmode="numeric" id="documento-login" placeholder="Documento de Identidad" required>
         
         <div class="fila-password">
             <input type="password" id="clave-login" placeholder="Contraseña" required>
-            <button type="button" id="btn-ver-login" style="width: auto; padding: 10px;">Ver</button>
+            <button type="button" id="btn-ver-login" class="btn-ver">Ver</button>
         </div>
 
         <p id="mensaje-error-login" class="error"></p>
@@ -86,7 +152,6 @@
                     rol: data.rol
                 }));
 
-                alert(`¡Bienvenido, ${data.nombres}!`);
                 window.location.href = 'index.html';
 
             } catch (err) {
