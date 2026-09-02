@@ -14,7 +14,6 @@
 </head>
 <body>
 
-    <!-- Franja de color superior institucional -->
     <div class="franja-superior"></div>
 
     <div class="barra-sesion" id="barra-admin" style="display: none;">
@@ -25,18 +24,15 @@
     </div>
 
     <header class="header-principal">
-        <!-- Columna Izquierda: Logo Evento -->
         <div class="contenedor-logo-izq">
             <img src="" class="logo-inst" id="logo-izquierdo" style="display:none;">
         </div>
 
-        <!-- Columna Central: Textos -->
         <div class="header-textos">
             <h1>Portal Cultural y Deportivo</h1>
             <h3>Norte de Santander | San José de Cúcuta</h3>
         </div>
 
-        <!-- Columna Derecha: Logos Oficiales + Botón Admin -->
         <div class="contenedor-derecho">
             <div class="contenedor-logos-der">
                 <img src="" class="logo-inst" id="logo-derecho-1" style="display:none;">
@@ -220,6 +216,7 @@
             }
         });
 
+        // CARGA Y APLICACIÓN DE LOGOS + FONDO DE PANTALLA
         async function cargarLogosInstitucionales() {
             const { data, error } = await clienteSupabase.from('configuracion').select('*').eq('id', 1).single();
             if (data && !error) {
@@ -237,6 +234,9 @@
                     const imgDer2 = document.getElementById('logo-derecho-2');
                     imgDer2.src = data.logo_gobernacion;
                     imgDer2.style.display = 'block';
+                }
+                if (data.fondo_pantalla) {
+                    document.body.style.backgroundImage = `url('${data.fondo_pantalla}')`;
                 }
             }
         }
