@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración y Control - compukelc</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 0; color: #333; }
-        header { background: #003366; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        header { background: #003366; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .container { max-width: 1200px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         h2, h3 { color: #003366; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
@@ -23,6 +24,7 @@
         .btn-restaurar { background: #17a2b8; color: white; }
         .seccion-admin { margin-top: 40px; padding-top: 20px; border-top: 2px solid #eee; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
         input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
         textarea { resize: vertical; height: 70px; }
         .btn-accion { background: #003366; color: white; padding: 12px; font-size: 13px; width: 100%; cursor: pointer; border-radius: 4px; font-weight: bold; }
@@ -30,15 +32,13 @@
         .caja-edicion { display: none; margin-top: 15px; padding: 15px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; }
         .tabla-auditoria { max-height: 300px; overflow-y: auto; border: 1px solid #ddd; }
         
-        /* Modal Cambio de Clave */
         .modal-overlay { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .modal-content h3 { margin-top: 0; color: #003366; }
         .modal-content label { font-size: 12px; font-weight: bold; display: block; margin-top: 10px; margin-bottom: 5px; }
         .modal-content input { width: 100%; padding: 8px; box-sizing: border-box; }
         .modal-botones { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
-        /* Grilla fotos de álbumes */
         .grid-editar-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 15px; }
         .foto-edit-item { position: relative; border-radius: 6px; overflow: hidden; border: 1px solid #ccc; aspect-ratio: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
         .foto-edit-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -60,7 +60,7 @@
     <div class="container">
         <a href="index.html" class="btn-volver">← Volver al Portal Principal</a>
 
-        <!-- SECCIÓN 1: GESTIÓN DE USUARIOS (Solo Superadmin) -->
+        <!-- SECCIÓN 1: GESTIÓN DE USUARIOS -->
         <div id="contenedor-gestion-usuarios" style="display: none;">
             <h3>Gestión de Usuarios y Claves (Superadmin)</h3>
             <div style="overflow-x: auto;">
@@ -87,7 +87,7 @@
             
             <div class="form-grid">
                 <div>
-                    <label style="font-size: 12px; font-weight: bold;">Fotografías iniciales (Se comprimirán solas):</label>
+                    <label style="font-size: 12px; font-weight: bold;">Fotografías iniciales (Se comprimirán automáticamente):</label>
                     <input type="file" id="archivos-album" accept="image/*" multiple>
                 </div>
                 <div style="display: flex; align-items: flex-end;">
@@ -111,8 +111,8 @@
                     <input type="file" id="archivos-extra" accept="image/*" multiple>
                 </div>
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button class="btn-accion" onclick="agregarFotosAAlbum()" style="background: #28a745;">Agregar Fotos al Álbum</button>
+            <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                <button class="btn-accion" onclick="agregarFotosAAlbum()" style="background: #28a745; flex: 1;">Agregar Fotos al Álbum</button>
                 <button class="btn-accion" onclick="eliminarAlbumSeleccionado()" style="background: #dc3545; width: 250px;">Eliminar Álbum Completo</button>
             </div>
 
@@ -122,7 +122,7 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 4: PUBLICAR EVENTOS / PUBLICIDAD -->
+        <!-- SECCIÓN 4: PUBLICAR EVENTOS -->
         <div class="seccion-admin">
             <h3>3. Publicar Nuevo Evento, Transmisión o Publicidad</h3>
             <input type="text" id="titulo-evento" placeholder="Título del Evento o Anuncio Publicitario" style="margin-bottom: 15px;">
@@ -144,15 +144,39 @@
                     <option value="Deporte">Deporte</option>
                     <option value="Publicidad Institucional">Publicidad Institucional</option>
                 </select>
-                <input type="file" id="archivo-publicidad" accept="image/*">
+                <div>
+                    <label style="font-size: 11px; font-weight: bold; color: #666;">Banner Publicitario (Opcional):</label>
+                    <input type="file" id="archivo-publicidad" accept="image/*">
+                </div>
             </div>
             <button class="btn-accion" onclick="publicarEventoConPublicidad()" style="margin-top: 10px;">Publicar Evento</button>
         </div>
 
-        <!-- SECCIÓN 5: GESTIONAR O ELIMINAR EVENTOS / VIDEOS PUBLICADOS -->
+        <!-- SECCIÓN 5: LOGOS INSTITUCIONALES -->
         <div class="seccion-admin">
-            <h3>4. Modificar o Eliminar Eventos / Videos Publicados</h3>
-            
+            <h3>4. Configuración de Logos Oficiales (Cabecera)</h3>
+            <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                <div style="background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #ddd;">
+                    <label style="font-size: 12px; font-weight: bold; color: #004884;">Logo Izquierdo (Evento):</label>
+                    <input type="file" id="file-logo-evento" accept="image/*" style="margin-bottom: 10px; font-size: 11px;">
+                    <button class="btn-accion" onclick="actualizarLogo('logo_evento', 'file-logo-evento')" style="background: #17a2b8;">Subir Logo Izquierdo</button>
+                </div>
+                <div style="background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #ddd;">
+                    <label style="font-size: 12px; font-weight: bold; color: #004884;">Logo Derecho 1 (Alcaldía):</label>
+                    <input type="file" id="file-logo-alcaldia" accept="image/*" style="margin-bottom: 10px; font-size: 11px;">
+                    <button class="btn-accion" onclick="actualizarLogo('logo_alcaldia', 'file-logo-alcaldia')" style="background: #17a2b8;">Subir Logo Alcaldía</button>
+                </div>
+                <div style="background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #ddd;">
+                    <label style="font-size: 12px; font-weight: bold; color: #004884;">Logo Derecho 2 (Gobernación):</label>
+                    <input type="file" id="file-logo-gobernacion" accept="image/*" style="margin-bottom: 10px; font-size: 11px;">
+                    <button class="btn-accion" onclick="actualizarLogo('logo_gobernacion', 'file-logo-gobernacion')" style="background: #17a2b8;">Subir Logo Gobernación</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 6: MODIFICAR EVENTOS -->
+        <div class="seccion-admin">
+            <h3>5. Modificar o Eliminar Eventos / Videos Publicados</h3>
             <div class="form-grid">
                 <div>
                     <label style="font-size: 12px; font-weight: bold;">Seleccionar Evento / Video:</label>
@@ -188,39 +212,27 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 6: AUDITORÍA DE ACCESOS -->
+        <!-- SECCIÓN 7: AUDITORÍA -->
         <div id="contenedor-auditoria" class="seccion-admin" style="display: none;">
-            <h3>5. Historial y Auditoría de Accesos al Sistema</h3>
-            <p style="font-size: 12px; color: #666;">Registro automático de ingresos a la plataforma.</p>
+            <h3>6. Historial y Auditoría de Accesos al Sistema</h3>
             <div class="tabla-auditoria">
                 <table style="margin-top: 0;">
-                    <thead>
-                        <tr>
-                            <th>Documento</th>
-                            <th>Nombres</th>
-                            <th>Rol</th>
-                            <th>Fecha y Hora de Ingreso</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-historial"><tr><td colspan="4">Cargando historial...</td></tr></tbody>
+                    <thead><tr><th>Documento</th><th>Nombres</th><th>Rol</th><th>Fecha y Hora</th></tr></thead>
+                    <tbody id="tabla-historial"><tr><td colspan="4">Cargando...</td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CAMBIAR CLAVE -->
+    <!-- MODAL CAMBIO CLAVE -->
     <div id="modal-clave" class="modal-overlay">
         <div class="modal-content">
             <h3>Cambiar Mi Contraseña</h3>
-            <label>Nueva Contraseña (Mínimo 8 caracteres, 1 mayúscula, 1 número):</label>
-            <input type="password" id="nueva-clave-propia" placeholder="Ingrese nueva contraseña">
-            
-            <label>Confirmar Nueva Contraseña:</label>
+            <input type="password" id="nueva-clave-propia" placeholder="Nueva contraseña" style="margin-bottom:10px;">
             <input type="password" id="conf-nueva-clave-propia" placeholder="Repita la contraseña">
-            
             <div class="modal-botones">
                 <button onclick="cerrarModalClave()" style="background: #6c757d; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
-                <button onclick="guardarMiNuevaClave()" style="background: #003366; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">Guardar Cambio</button>
+                <button onclick="guardarMiNuevaClave()" style="background: #003366; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">Guardar</button>
             </div>
         </div>
     </div>
@@ -233,9 +245,7 @@
         let eventosGlobales = []; 
 
         const sesionGuardada = localStorage.getItem('sesion_activa');
-        if (!sesionGuardada) {
-            window.location.href = 'login.html';
-        }
+        if (!sesionGuardada) { window.location.href = 'login.html'; }
 
         const usuarioActual = JSON.parse(sesionGuardada);
         document.getElementById('nombre-usuario-rol').textContent = `${usuarioActual.nombres} (${usuarioActual.rol})`;
@@ -243,18 +253,12 @@
         if (usuarioActual.rol === 'superadmin' || usuarioActual.documento === '1090391929') {
             document.getElementById('contenedor-gestion-usuarios').style.display = 'block';
             document.getElementById('contenedor-auditoria').style.display = 'block';
-            cargarUsuarios();
-            cargarAuditoria();
+            cargarUsuarios(); cargarAuditoria();
         }
 
-        // =========================================================================
-        // MOTOR DE COMPRESIÓN (NUEVO)
-        // =========================================================================
         async function comprimirImagen(archivo, calidad = 0.75, anchoMax = 1200) {
             return new Promise((resolve, reject) => {
-                if (!archivo || !archivo.type.startsWith('image/')) {
-                    return resolve(archivo); 
-                }
+                if (!archivo || !archivo.type.startsWith('image/')) { return resolve(archivo); }
                 const reader = new FileReader();
                 reader.readAsDataURL(archivo);
                 reader.onload = (event) => {
@@ -262,62 +266,56 @@
                     img.src = event.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        if (width > anchoMax) {
-                            height = Math.round((height * anchoMax) / width);
-                            width = anchoMax;
-                        }
-                        canvas.width = width;
-                        canvas.height = height;
+                        let width = img.width, height = img.height;
+                        if (width > anchoMax) { height = Math.round((height * anchoMax) / width); width = anchoMax; }
+                        canvas.width = width; canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         canvas.toBlob((blob) => {
                             if (!blob) return reject(new Error("Falló compresión."));
-                            const archivoComprimido = new File([blob], archivo.name.replace(/\.[^/.]+$/, "") + ".jpg", {
-                                type: 'image/jpeg',
-                                lastModified: Date.now()
-                            });
+                            const archivoComprimido = new File([blob], archivo.name.replace(/\.[^/.]+$/, "") + ".png", { type: 'image/png', lastModified: Date.now() });
                             resolve(archivoComprimido);
-                        }, 'image/jpeg', calidad);
+                        }, 'image/png', calidad);
                     };
                     img.onerror = (error) => reject(error);
                 };
                 reader.onerror = (error) => reject(error);
             });
         }
-        // =========================================================================
 
-        function abrirModalClave() {
-            document.getElementById('modal-clave').style.display = 'flex';
-            document.getElementById('nueva-clave-propia').value = '';
-            document.getElementById('conf-nueva-clave-propia').value = '';
+        // FUNCION PARA SUBIR LOGOS A LA BASE DE DATOS
+        async function actualizarLogo(columna, inputId) {
+            const input = document.getElementById(inputId);
+            if (input.files.length === 0) return alert("Selecciona una imagen primero.");
+            
+            const archivo = await comprimirImagen(input.files[0], 0.9, 600); 
+            const ruta = `logos/${columna}_${Date.now()}.png`;
+
+            const { error: uploadErr } = await clienteSupabase.storage.from('galeria').upload(ruta, archivo);
+            if (uploadErr) return alert("Error al subir el escudo: " + uploadErr.message);
+
+            const url = clienteSupabase.storage.from('galeria').getPublicUrl(ruta).data.publicUrl;
+
+            const actualizacion = {};
+            actualizacion[columna] = url;
+            const { error: dbErr } = await clienteSupabase.from('configuracion').update(actualizacion).eq('id', 1);
+
+            if (dbErr) return alert("Error al actualizar la base de datos: " + dbErr.message);
+            alert("¡Logo institucional guardado con éxito! Recarga la página pública para verlo.");
+            input.value = '';
         }
 
-        function cerrarModalClave() {
-            document.getElementById('modal-clave').style.display = 'none';
-        }
+        function abrirModalClave() { document.getElementById('modal-clave').style.display = 'flex'; }
+        function cerrarModalClave() { document.getElementById('modal-clave').style.display = 'none'; }
 
         async function guardarMiNuevaClave() {
             const nueva = document.getElementById('nueva-clave-propia').value;
             const conf = document.getElementById('conf-nueva-clave-propia').value;
-
             if (nueva !== conf) return alert("Las contraseñas no coinciden.");
-            
-            if (nueva.length < 8 || !/[A-Z]/.test(nueva) || !/[0-9]/.test(nueva)) {
-                return alert("La contraseña debe tener mínimo 8 caracteres, al menos una mayúscula y un número.");
-            }
-
-            const { error } = await clienteSupabase.from('perfiles_administrativos')
-                .update({ clave: nueva })
-                .eq('documento', usuarioActual.documento);
-
-            if (error) {
-                alert("Error al actualizar la contraseña: " + error.message);
-            } else {
-                alert("¡Su contraseña ha sido actualizada con éxito!");
-                cerrarModalClave();
-            }
+            if (nueva.length < 8) return alert("La contraseña debe tener mínimo 8 caracteres.");
+            const { error } = await clienteSupabase.from('perfiles_administrativos').update({ clave: nueva }).eq('documento', usuarioActual.documento);
+            if (error) alert("Error: " + error.message);
+            else { alert("¡Su contraseña ha sido actualizada!"); cerrarModalClave(); }
         }
 
         async function cargarUsuarios() {
@@ -327,38 +325,22 @@
             tbody.innerHTML = '';
             data.forEach(user => {
                 let badge = user.estado === 'autorizado' ? 'badge-autorizado' : (user.estado === 'bloqueado' ? 'badge-bloqueado' : 'badge-pendiente');
-                
                 let botones = '';
                 if (user.rol !== 'superadmin') {
                     botones += user.estado !== 'autorizado' ? `<button class="btn-autorizar" onclick="cambiarEstado('${user.documento}', 'autorizado')">Autorizar</button>` : '';
                     botones += user.estado !== 'bloqueado' ? `<button class="btn-bloquear" onclick="cambiarEstado('${user.documento}', 'bloqueado')">Bloquear</button>` : '';
-                    botones += `<button class="btn-restaurar" onclick="restaurarClave('${user.documento}', '${user.nombres}')">Reset Clave</button>`;
                     botones += `<button class="btn-eliminar" onclick="eliminarUsuario('${user.documento}')">Eliminar</button>`;
-                } else {
-                    botones = `<em>Superadmin</em>`;
-                }
-
+                } else { botones = `<em>Superadmin</em>`; }
                 tbody.innerHTML += `<tr><td>${user.documento}</td><td><strong>${user.nombres}</strong></td><td>${user.tipo_dependencia}</td><td><span class="badge ${badge}">${user.estado}</span></td><td>${botones}</td></tr>`;
             });
         }
-
         async function cambiarEstado(doc, estado) { await clienteSupabase.from('perfiles_administrativos').update({ estado: estado }).eq('documento', doc); cargarUsuarios(); }
         async function eliminarUsuario(doc) { if (!confirm("¿Eliminar usuario?")) return; await clienteSupabase.from('perfiles_administrativos').delete().eq('documento', doc); cargarUsuarios(); }
-
-        async function restaurarClave(documento, nombreUsuario) {
-            const nuevaClave = prompt(`Ingrese la nueva contraseña genérica para ${nombreUsuario}:`);
-            if (!nuevaClave || nuevaClave.trim() === '') return;
-
-            const { error } = await clienteSupabase.from('perfiles_administrativos').update({ clave: nuevaClave.trim() }).eq('documento', documento);
-            if (error) alert("Error al actualizar: " + error.message);
-            else alert(`Contraseña actualizada con éxito para ${nombreUsuario}.`);
-        }
 
         async function cargarAuditoria() {
             const tbody = document.getElementById('tabla-historial');
             const { data, error } = await clienteSupabase.from('historial_accesos').select('*').order('fecha_hora', { ascending: false }).limit(50);
-            if (error || !data) return tbody.innerHTML = `<tr><td colspan="4">No hay registros aún.</td></tr>`;
-            
+            if (error || !data) return;
             tbody.innerHTML = '';
             data.forEach(reg => {
                 const fecha = new Date(reg.fecha_hora).toLocaleString('es-CO');
@@ -369,99 +351,39 @@
         async function cargarSelectAlbumes() {
             const select = document.getElementById('select-albumes');
             const { data, error } = await clienteSupabase.from('albumes_galeria').select('id, titulo').order('id', { ascending: false });
-            
-            document.getElementById('contenedor-fotos-album').style.display = 'none';
-
-            if (error || !data || data.length === 0) {
-                select.innerHTML = `<option value="">No hay álbumes creados</option>`;
-                return;
-            }
+            if (error || !data || data.length === 0) return select.innerHTML = `<option value="">No hay álbumes creados</option>`;
             select.innerHTML = `<option value="">-- Seleccione un álbum --</option>`;
             data.forEach(album => { select.innerHTML += `<option value="${album.id}">${album.titulo}</option>`; });
         }
 
         async function cargarFotosDelAlbumSeleccionado() {
             const albumId = document.getElementById('select-albumes').value;
-            const contenedor = document.getElementById('contenedor-fotos-album');
             const grilla = document.getElementById('grilla-fotos-editar');
-            
-            if (!albumId) { contenedor.style.display = 'none'; return; }
-            
-            contenedor.style.display = 'block';
+            if (!albumId) { document.getElementById('contenedor-fotos-album').style.display = 'none'; return; }
+            document.getElementById('contenedor-fotos-album').style.display = 'block';
             grilla.innerHTML = '<p style="font-size:12px; color:#666;">Cargando fotografías...</p>';
-            
             const { data, error } = await clienteSupabase.from('fotos_album').select('id, url_foto').eq('album_id', albumId);
-                
-            if (error || !data || data.length === 0) {
-                grilla.innerHTML = '<p style="font-size:12px; color:#666;">Este álbum no tiene fotos actualmente.</p>';
-                return;
-            }
-            
+            if (error || !data || data.length === 0) return grilla.innerHTML = '<p style="font-size:12px; color:#666;">Este álbum no tiene fotos.</p>';
             grilla.innerHTML = '';
-            data.forEach(foto => {
-                grilla.innerHTML += `
-                    <div class="foto-edit-item">
-                        <img src="${foto.url_foto}">
-                        <button class="btn-eliminar-foto" onclick="eliminarFotoEspecifica(${foto.id})" title="Eliminar esta foto">×</button>
-                    </div>
-                `;
-            });
+            data.forEach(foto => { grilla.innerHTML += `<div class="foto-edit-item"><img src="${foto.url_foto}"><button class="btn-eliminar-foto" onclick="eliminarFotoEspecifica(${foto.id})">×</button></div>`; });
         }
 
         async function eliminarFotoEspecifica(fotoId) {
             if (!confirm("¿Deseas eliminar esta fotografía?")) return;
-            const { error } = await clienteSupabase.from('fotos_album').delete().eq('id', fotoId);
-            if (error) alert("Error: " + error.message);
-            else cargarFotosDelAlbumSeleccionado();
+            await clienteSupabase.from('fotos_album').delete().eq('id', fotoId);
+            cargarFotosDelAlbumSeleccionado();
         }
 
-        // =========================================================================
-        // FUNCIONES MODIFICADAS PARA USAR EL COMPRESOR ANTES DE SUBIR
-        // =========================================================================
         async function crearAlbumYSubirFotos() {
             const titulo = document.getElementById('album-titulo').value.trim();
             const descripcion = document.getElementById('album-descripcion').value.trim();
             const inputArchivos = document.getElementById('archivos-album');
-
             if (!titulo) return alert("Ingrese el título del álbum.");
             const { data: albumData, error: albumError } = await clienteSupabase.from('albumes_galeria').insert([{ titulo: titulo, descripcion: descripcion }]).select().single();
-            if (albumError) return alert("Error al crear álbum: " + albumError.message);
-
+            if (albumError) return alert("Error al crear álbum.");
             const albumId = albumData.id;
-            if (inputArchivos.files.length > 0) {
-                for (let i = 0; i < inputArchivos.files.length; i++) {
-                    const archivoOriginal = inputArchivos.files[i];
-                    
-                    // COMPRIMIR FOTO ANTES DE SUBIRLA A SUPABASE
-                    const archivoComprimido = await comprimirImagen(archivoOriginal, 0.75, 1200);
-
-                    const rutaStorage = `foto_${Date.now()}_${archivoComprimido.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
-                    const { error: uploadError } = await clienteSupabase.storage.from('galeria').upload(rutaStorage, archivoComprimido);
-                    if (!uploadError) {
-                        const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
-                        await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
-                    }
-                }
-            }
-            alert("¡Álbum creado exitosamente!");
-            document.getElementById('album-titulo').value = '';
-            document.getElementById('album-descripcion').value = '';
-            inputArchivos.value = '';
-            cargarSelectAlbumes();
-        }
-
-        async function agregarFotosAAlbum() {
-            const albumId = document.getElementById('select-albumes').value;
-            const inputArchivos = document.getElementById('archivos-extra');
-            if (!albumId) return alert("Seleccione un álbum.");
-            if (inputArchivos.files.length === 0) return alert("Seleccione fotos.");
-
             for (let i = 0; i < inputArchivos.files.length; i++) {
-                const archivoOriginal = inputArchivos.files[i];
-                
-                // COMPRIMIR FOTO ANTES DE SUBIRLA A SUPABASE
-                const archivoComprimido = await comprimirImagen(archivoOriginal, 0.75, 1200);
-
+                const archivoComprimido = await comprimirImagen(inputArchivos.files[i], 0.75, 1200);
                 const rutaStorage = `foto_${Date.now()}_${archivoComprimido.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
                 const { error: uploadError } = await clienteSupabase.storage.from('galeria').upload(rutaStorage, archivoComprimido);
                 if (!uploadError) {
@@ -469,81 +391,44 @@
                     await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
                 }
             }
-            alert("¡Fotos agregadas con éxito!");
-            inputArchivos.value = '';
-            cargarFotosDelAlbumSeleccionado();
+            alert("¡Álbum creado exitosamente!"); inputArchivos.value = ''; cargarSelectAlbumes();
         }
 
-        async function publicarEventoConPublicidad() {
-            const titulo = document.getElementById('titulo-evento').value.trim();
-            const tipo = document.getElementById('tipo-evento').value;
-            const youtube = document.getElementById('url-youtube').value.trim();
-            const facebook = document.getElementById('url-facebook').value.trim();
-            const tiktok = document.getElementById('url-tiktok').value.trim();
-            const x_twitter = document.getElementById('url-x').value.trim();
-            const inputPublicidad = document.getElementById('archivo-publicidad');
-
-            if (!titulo) return alert("Ingrese el título del evento.");
-
-            let urlPublicidadFinal = null;
-            if (inputPublicidad.files.length > 0) {
-                const archivoOriginal = inputPublicidad.files[0];
-                
-                // COMPRIMIR EL BANNER PUBLICITARIO
-                const archivoComprimido = await comprimirImagen(archivoOriginal, 0.8, 1200);
-
-                const rutaPub = `banner_${Date.now()}_${archivoComprimido.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
-                const { error: errorUpload } = await clienteSupabase.storage.from('galeria').upload(rutaPub, archivoComprimido);
-                if (errorUpload) return alert("Error al subir el banner: " + errorUpload.message);
-                urlPublicidadFinal = clienteSupabase.storage.from('galeria').getPublicUrl(rutaPub).data.publicUrl;
+        async function agregarFotosAAlbum() {
+            const albumId = document.getElementById('select-albumes').value;
+            const inputArchivos = document.getElementById('archivos-extra');
+            if (!albumId || inputArchivos.files.length === 0) return alert("Seleccione álbum y fotos.");
+            for (let i = 0; i < inputArchivos.files.length; i++) {
+                const archivoComprimido = await comprimirImagen(inputArchivos.files[i], 0.75, 1200);
+                const rutaStorage = `foto_${Date.now()}_${archivoComprimido.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
+                const { error: uploadError } = await clienteSupabase.storage.from('galeria').upload(rutaStorage, archivoComprimido);
+                if (!uploadError) {
+                    const urlPublica = clienteSupabase.storage.from('galeria').getPublicUrl(rutaStorage).data.publicUrl;
+                    await clienteSupabase.from('fotos_album').insert([{ album_id: albumId, url_foto: urlPublica }]);
+                }
             }
-
-            const { error } = await clienteSupabase.from('actividades').insert([{
-                titulo: titulo, tipo: tipo, url_youtube: youtube, url_facebook: facebook, url_tiktok: tiktok, url_x: x_twitter, url_publicidad: urlPublicidadFinal
-            }]);
-
-            if (error) return alert("Error en base de datos: " + error.message);
-            alert("Evento/Video publicado con éxito.");
-            
-            document.getElementById('titulo-evento').value = '';
-            document.getElementById('url-youtube').value = '';
-            document.getElementById('url-facebook').value = '';
-            document.getElementById('url-tiktok').value = '';
-            document.getElementById('url-x').value = '';
-            inputPublicidad.value = '';
-            cargarSelectEventos();
+            alert("¡Fotos agregadas!"); inputArchivos.value = ''; cargarFotosDelAlbumSeleccionado();
         }
-        // =========================================================================
 
         async function eliminarAlbumSeleccionado() {
             const albumId = document.getElementById('select-albumes').value;
-            if (!albumId) return alert("Seleccione un álbum.");
-            if (!confirm("¿Eliminar este álbum y TODAS sus fotos?")) return;
+            if (!confirm("¿Eliminar álbum?")) return;
             await clienteSupabase.from('albumes_galeria').delete().eq('id', albumId);
-            alert("Álbum eliminado.");
             cargarSelectAlbumes();
         }
 
         async function cargarSelectEventos() {
             const select = document.getElementById('select-eventos');
             const { data, error } = await clienteSupabase.from('actividades').select('*').order('id', { ascending: false });
-            if (error || !data || data.length === 0) {
-                select.innerHTML = `<option value="">No hay eventos publicados</option>`;
-                eventosGlobales = [];
-                document.getElementById('caja-editar-evento').style.display = 'none';
-                return;
-            }
+            if (error || !data || data.length === 0) return;
             eventosGlobales = data; 
             select.innerHTML = `<option value="">-- Seleccione un evento o video --</option>`;
             data.forEach(ev => { select.innerHTML += `<option value="${ev.id}">[${ev.tipo}] ${ev.titulo}</option>`; });
         }
 
         function cargarDatosEventoEdicion() {
-            const idSeleccionado = document.getElementById('select-eventos').value;
-            const cajaEdicion = document.getElementById('caja-editar-evento');
-            if (!idSeleccionado) { cajaEdicion.style.display = 'none'; return; }
-
-            const evento = eventosGlobales.find(ev => ev.id == idSeleccionado);
+            const id = document.getElementById('select-eventos').value;
+            const evento = eventosGlobales.find(ev => ev.id == id);
             if (evento) {
                 document.getElementById('edit-titulo-evento').value = evento.titulo || '';
                 document.getElementById('edit-url-youtube').value = evento.url_youtube || '';
@@ -551,50 +436,42 @@
                 document.getElementById('edit-url-tiktok').value = evento.url_tiktok || '';
                 document.getElementById('edit-url-x').value = evento.url_x || '';
                 document.getElementById('edit-tipo-evento').value = evento.tipo || 'Transmisión en Vivo';
-                cajaEdicion.style.display = 'block';
+                document.getElementById('caja-editar-evento').style.display = 'block';
             }
         }
 
         async function guardarCambiosEvento() {
-            const idSeleccionado = document.getElementById('select-eventos').value;
-            const actualizaciones = {
-                titulo: document.getElementById('edit-titulo-evento').value.trim(),
-                url_youtube: document.getElementById('edit-url-youtube').value.trim(),
-                url_facebook: document.getElementById('edit-url-facebook').value.trim(),
-                url_tiktok: document.getElementById('edit-url-tiktok').value.trim(),
-                url_x: document.getElementById('edit-url-x').value.trim(),
-                tipo: document.getElementById('edit-tipo-evento').value
-            };
-            const { error } = await clienteSupabase.from('actividades').update(actualizaciones).eq('id', idSeleccionado);
-            if (error) return alert("Error: " + error.message);
-            alert("Evento/Video actualizado con éxito.");
-            document.getElementById('caja-editar-evento').style.display = 'none';
-            cargarSelectEventos();
+            const id = document.getElementById('select-eventos').value;
+            const actualizaciones = { titulo: document.getElementById('edit-titulo-evento').value.trim(), url_youtube: document.getElementById('edit-url-youtube').value.trim(), url_facebook: document.getElementById('edit-url-facebook').value.trim(), url_tiktok: document.getElementById('edit-url-tiktok').value.trim(), url_x: document.getElementById('edit-url-x').value.trim(), tipo: document.getElementById('edit-tipo-evento').value };
+            await clienteSupabase.from('actividades').update(actualizaciones).eq('id', id);
+            alert("Evento actualizado."); document.getElementById('caja-editar-evento').style.display = 'none'; cargarSelectEventos();
         }
 
         async function eliminarEventoSeleccionado() {
-            const idSeleccionado = document.getElementById('select-eventos').value;
-            if (!idSeleccionado) return alert("Seleccione un evento o video para eliminar.");
-            
-            if (!confirm("¿Estás completamente seguro de eliminar esta publicación, enlaces y su publicidad asociada?")) return;
+            const id = document.getElementById('select-eventos').value;
+            if (!confirm("¿Eliminar este evento?")) return;
+            await clienteSupabase.from('actividades').delete().eq('id', id);
+            alert("Evento eliminado."); document.getElementById('caja-editar-evento').style.display = 'none'; cargarSelectEventos();
+        }
 
-            const { error } = await clienteSupabase.from('actividades').delete().eq('id', idSeleccionado);
-            if (error) {
-                alert("Error al eliminar: " + error.message);
-            } else {
-                alert("Publicación eliminada correctamente.");
-                document.getElementById('caja-editar-evento').style.display = 'none';
-                cargarSelectEventos();
+        async function publicarEventoConPublicidad() {
+            const titulo = document.getElementById('titulo-evento').value.trim();
+            if (!titulo) return alert("Ingrese título.");
+            let urlPublicidadFinal = null;
+            const inputPub = document.getElementById('archivo-publicidad');
+            if (inputPub.files.length > 0) {
+                const comp = await comprimirImagen(inputPub.files[0], 0.8, 1200);
+                const ruta = `banner_${Date.now()}.png`;
+                await clienteSupabase.storage.from('galeria').upload(ruta, comp);
+                urlPublicidadFinal = clienteSupabase.storage.from('galeria').getPublicUrl(ruta).data.publicUrl;
             }
+            await clienteSupabase.from('actividades').insert([{ titulo: titulo, tipo: document.getElementById('tipo-evento').value, url_youtube: document.getElementById('url-youtube').value.trim(), url_facebook: document.getElementById('url-facebook').value.trim(), url_tiktok: document.getElementById('url-tiktok').value.trim(), url_x: document.getElementById('url-x').value.trim(), url_publicidad: urlPublicidadFinal }]);
+            alert("Evento publicado."); cargarSelectEventos();
         }
 
-        function cerrarSesion() {
-            localStorage.removeItem('sesion_activa');
-            window.location.href = 'login.html';
-        }
+        function cerrarSesion() { localStorage.removeItem('sesion_activa'); window.location.href = 'login.html'; }
 
-        cargarSelectAlbumes();
-        cargarSelectEventos();
+        cargarSelectAlbumes(); cargarSelectEventos();
     </script>
 </body>
 </html>
