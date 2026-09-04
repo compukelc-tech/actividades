@@ -38,7 +38,14 @@
                 <img src="" class="logo-inst" id="logo-derecho-1" style="display:none;">
                 <img src="" class="logo-inst" id="logo-derecho-2" style="display:none;">
             </div>
-            <a href="login.html" id="btn-ingresar-discreto" class="btn-ingresar-flotante">⚙️ Acceso Admin</a>
+            
+            <div class="contenedor-botones-admin">
+                <a href="registro_usuarios.html" id="btn-registro-usuarios" class="btn-registro-animado">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" alt="Logo Registro" class="icono-registro">
+                    Registro de Usuarios
+                </a>
+                <a href="login.html" id="btn-ingresar-discreto" class="btn-ingresar-flotante">⚙️ Acceso Admin</a>
+            </div>
         </div>
     </header>
 
@@ -216,7 +223,6 @@
             }
         });
 
-        // CARGA Y APLICACIÓN DE LOGOS + FONDO DE PANTALLA
         async function cargarLogosInstitucionales() {
             const { data, error } = await clienteSupabase.from('configuracion').select('*').eq('id', 1).single();
             if (data && !error) {
