@@ -88,7 +88,9 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
-        // VERIFICACIÓN DE SESIÓN
+        let todasLasFotos = [];
+        let indiceActual = 0;
+
         const sesionGuardada = localStorage.getItem('sesion_activa');
         if (sesionGuardada) {
             const usuario = JSON.parse(sesionGuardada);
@@ -96,11 +98,131 @@
             document.getElementById('info-usuario-activo').textContent = `${usuario.nombres} (${usuario.rol})`;
             document.getElementById('btn-ingresar-discreto').style.display = 'none';
             document.getElementById('link-panel-admin').style.display = 'inline';
+
             if (usuario.rol === 'superadmin' || usuario.documento === '1090391929') {
                 document.getElementById('link-registro').style.display = 'inline';
             }
         }
-        function cerrarSesion() { localStorage.removeItem('sesion_activa'); window.location.reload(); }
+
+        function cerrarSesion() {
+            localStorage.removeItem('sesion_activa');
+            window.location.reload();
+        }
+
+        async function cargarEventosYPublicidad() {
+            const contenedor = document.getElementById('contenedor-transmisiones');
+            const { data, error } = await clienteSupabase.from('actividades').select('*').order('id', { ascending: false });
+
+            if (error || !data || data.length === 0) return contenedor.innerHTML = "<div style='text-align: center; padding: 20px; color: #666;'><p style='font-size: 13px; margin: 0;'>No hay publicaciones recientes.</p></div>";
+
+            contenedor.innerHTML = '';
+            data.forEach(evento => {
+                let imagenBanner = evento.url_publicidad ? `<img src="${evento.url_publicidad}" class="banner-publicidad">` : '';
+                let botonesHTML = '';
+                
+                if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" class="btn-link btn-youtube">YouTube</a>`;
+                if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" class="btn-link btn-facebook">Facebook</a>`;
+                if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" class="btn-link btn-tiktok">TikTok</a>`;
+                if(evento.url_x) botonesHTML += `<a href="${evento.url_x}" target="_blank" class="btn-link btn-x">X</a>`;
+
+                let esDeporte = (evento.tipo === 'Deporte');
+                let claseAvatar = esDeporte ? 'avatar-deporte' : '';
+                let letraAvatar = esDeporte ? 'O' : 'G'; 
+                let claseTarjeta = esDeporte ? 'tarjeta-deporte' : 'tarjeta-institucional';
+
+                contenedor.innerHTML += `
+                    <div class="post-social ${claseTarjeta}">
+                        <div class="post-header">
+                            <div class="post-avatar ${claseAvatar}">${letraAvatar}</div>
+                            <div class="post-meta">
+                                <h3>${evento.titulo || 'Publicación sin título'}</h3>
+                                <span>${evento.tipo || 'Actualidad'}</span>
+                            </div>
+                        </div>
+                        ${imagenBanner}
+                        <div class="post-actions">${botonesHTML}</div>
+                    </div>
+                `;
+            });
+        }
+
+        async function cargarAlbumesGaleria() {
+            const contenedor = document.getElementById('contenedor-galeria-albumes');
+            
+            const { data: albumes, error } = await clienteSupabase
+                .from('albumes_galeria')
+                .select('*, fotos_album(*)')
+                .order('id', { ascending: false });
+
+            if (error || !albumes || albumes.length === 0) {
+                return contenedor.innerHTML = "<div style='text-align: center; padding: 40px; color: #666;'><p style='font-size: 13px; margin: 0;'>No hay álbumes creados.</p></div>";
+            }
+
+            contenedor.innerHTML = '';
+            todasLasFotos = []; 
+
+            albumes.forEach(album => {
+                let fotosHTML = '';
+                if (album.fotos_album && album.fotos_album.length > 0) {
+                    const totalFotos = album.fotos_album.length;
+                    
+                    album.fotos_album.forEach((foto, index) => {
+                        const indiceGlobal = todasLasFotos.length;
+                        todasLasFotos.push(foto.url_foto);
+
+                        if (index < 3) {
+                            fotosHTML += `<div class="foto-item" onclick="abrirLightbox(${indiceGlobal})"><img src="${foto.url_foto}" loading="lazy"></div>`;
+                        } 
+                        else if (index === 3) {
+                            const faltantes = totalFotos - 3;
+                            fotosHTML += `
+                                <div class="foto-mas-item" onclick="abrirLightbox(${indiceGlobal})">
+                                    <span>+${faltantes}</span>
+                                    <small>Ver más</small>
+                                </div>
+                            `;
+                        }
+                    });
+                } else {
+                    fotosHTML = `<p style="font-size:13px; color:#666;">No hay contenido en este álbum.</p>`;
+                }
+
+                contenedor.innerHTML += `
+                    <div class="album-social">
+                        <div class="album-header">
+                            <h3 class="album-titulo">${album.titulo}</h3>
+                            <p class="album-descripcion">${album.descripcion || ''}</p>
+                        </div>
+                        <div class="grid-youtube">${fotosHTML}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function abrirLightbox(indice) {
+            indiceActual = indice;
+            document.getElementById('img-lightbox').src = todasLasFotos[indiceActual];
+            document.getElementById('visorLightbox').style.display = 'flex';
+        }
+
+        function cerrarLightbox() {
+            document.getElementById('visorLightbox').style.display = 'none';
+        }
+
+        function cambiarImagen(direccion) {
+            indiceActual += direccion;
+            if (indiceActual >= todasLasFotos.length) indiceActual = 0;
+            else if (indiceActual < 0) indiceActual = todasLasFotos.length - 1;
+            document.getElementById('img-lightbox').src = todasLasFotos[indiceActual];
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (document.getElementById('visorLightbox').style.display === 'flex') {
+                if (event.key === "Escape") cerrarLightbox();
+                if (event.key === "ArrowRight") cambiarImagen(1);
+                if (event.key === "ArrowLeft") cambiarImagen(-1);
+            }
+        });
 
         // CARGA DINÁMICA DE CONFIGURACIONES AVANZADAS
         async function cargarLogosInstitucionales() {
@@ -134,7 +256,7 @@
                     imgDer2.style.display = 'block';
                 }
 
-                // 3. Tamaños Individuales de Logos (Adaptación estática)
+                // 3. Tamaños Individuales de Logos
                 if (data.tamano_logo_evento) document.getElementById('logo-izquierdo').style.height = data.tamano_logo_evento + 'px';
                 if (data.tamano_logo_alcaldia) document.getElementById('logo-derecho-1').style.height = data.tamano_logo_alcaldia + 'px';
                 if (data.tamano_logo_gobernacion) document.getElementById('logo-derecho-2').style.height = data.tamano_logo_gobernacion + 'px';
@@ -156,6 +278,10 @@
                 }
             }
         }
+
+        // AQUÍ ESTABAN LAS FUNCIONES FALTANTES
+        cargarEventosYPublicidad();
+        cargarAlbumesGaleria();
         cargarLogosInstitucionales();
     </script>
 </body>
