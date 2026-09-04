@@ -35,6 +35,7 @@ body {
 .barra-sesion a:hover { color: white; }
 .btn-salir-menu { background: var(--rojo-bandera); color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: 700; cursor: pointer;}
 
+/* CABECERA FIJA (Sticky) */
 .header-principal { 
     background: var(--blanco);
     padding: 25px 20px; 
@@ -44,7 +45,9 @@ body {
     border-bottom: 4px solid var(--rojo-bandera);
     flex-wrap: wrap;
     gap: 15px;
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
@@ -84,7 +87,7 @@ body {
 
 @media (max-width: 900px) { 
     .contenedor-maestro { grid-template-columns: 1fr; } 
-    .header-principal { flex-direction: column; justify-content: center;}
+    .header-principal { flex-direction: column; justify-content: center; padding-top: 20px;}
     .contenedor-logo-izq { justify-content: center; order: 2; margin-top: 15px; width: 100%;}
     .header-textos { order: 1; width: 100%; }
     .contenedor-derecho { align-items: center; order: 3; margin-top: 15px; width: 100%; }
@@ -157,7 +160,7 @@ body {
 .lightbox-next { right: 10px; }
 
 /* =========================================
-   BOTÓN FLOTANTE REGISTRO (CON ANIMACIONES AVANZADAS)
+   BOTÓN FLOTANTE REGISTRO
 ========================================= */
 .btn-flotante-registro {
     position: fixed;
@@ -168,7 +171,7 @@ body {
     align-items: center;
     text-decoration: none;
     z-index: 9999;
-    animation: flotar-arriba-abajo 3s ease-in-out infinite; /* Contenedor flotante */
+    animation: flotar-arriba-abajo 3s ease-in-out infinite;
 }
 
 .btn-flotante-circulo {
@@ -176,12 +179,12 @@ body {
     height: 60px;
     border-radius: 50%;
     background: var(--rojo-bandera);
-    border: 3px solid var(--blanco); /* Borde blanco para resaltar */
+    border: 3px solid var(--blanco);
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden; 
-    animation: ondas-radar 1.5s infinite; /* Efecto de pulso más notorio */
+    animation: ondas-radar 1.5s infinite;
     transition: transform 0.3s ease;
     z-index: 1;
 }
@@ -190,12 +193,11 @@ body {
     width: 100%;  
     height: 100%; 
     object-fit: cover; 
-    animation: rotacion-lenta 12s linear infinite; /* Movimiento constante de la imagen */
+    animation: rotacion-lenta 12s linear infinite; 
 }
 
-/* Placa de texto mejorada */
 .btn-flotante-texto {
-    margin-top: -12px; /* Superpone el texto sobre el círculo */
+    margin-top: -12px;
     background: linear-gradient(90deg, var(--azul-institucional), #004080);
     color: var(--amarillo-oro);
     font-size: 11px;
@@ -221,7 +223,6 @@ body {
     border-color: var(--azul-institucional);
 }
 
-/* ANIMACIONES KEYFRAMES */
 @keyframes flotar-arriba-abajo {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-8px); }
@@ -236,6 +237,6 @@ body {
 
 @keyframes rotacion-lenta {
     0% { transform: rotate(0deg) scale(1); }
-    50% { transform: rotate(180deg) scale(1.15); } /* Hace un zoom in lento mientras gira */
+    50% { transform: rotate(180deg) scale(1.15); }
     100% { transform: rotate(360deg) scale(1); }
 }
