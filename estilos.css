@@ -53,9 +53,11 @@ body {
 .header-textos h1 { margin: 0; font-size: 26px; font-weight: 800; color: var(--azul-institucional); text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
 .header-textos h3 { margin: 5px 0 0; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
 
-.contenedor-derecho { flex: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; justify-content: center; }
+.contenedor-derecho { flex: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; justify-content: center; }
 .contenedor-logos-der { display: flex; align-items: center; gap: 20px; }
 .logo-inst { max-height: 65px; width: auto; object-fit: contain; flex-shrink: 0; }
+
+.contenedor-botones-admin { display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
 
 .btn-ingresar-flotante {
     display: inline-block;
@@ -63,7 +65,7 @@ body {
     color: var(--azul-institucional); 
     text-decoration: none; 
     font-size: 10px; 
-    padding: 5px 15px; 
+    padding: 6px 15px; 
     border-radius: 15px; 
     border: 1px solid var(--azul-institucional);
     font-weight: 800; 
@@ -77,6 +79,51 @@ body {
     box-shadow: 0 4px 8px rgba(0, 43, 92, 0.2);
 }
 
+/* Botón Animado de Registro */
+.btn-registro-animado {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(45deg, var(--amarillo-oro), #FF9800);
+    color: var(--azul-institucional);
+    text-decoration: none;
+    font-size: 10px;
+    padding: 6px 15px;
+    border-radius: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(255, 179, 0, 0.4);
+    animation: latido-registro 2s infinite;
+    transition: all 0.3s ease;
+    border: 1px solid var(--amarillo-oro);
+}
+
+.icono-registro {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+    animation: vibracion-icono 3s infinite alternate ease-in-out;
+}
+
+@keyframes latido-registro {
+    0% { transform: scale(1); box-shadow: 0 4px 10px rgba(255, 179, 0, 0.4); }
+    50% { transform: scale(1.05); box-shadow: 0 6px 18px rgba(255, 179, 0, 0.6); }
+    100% { transform: scale(1); box-shadow: 0 4px 10px rgba(255, 179, 0, 0.4); }
+}
+
+@keyframes vibracion-icono {
+    0% { transform: rotate(-15deg); }
+    100% { transform: rotate(15deg); }
+}
+
+.btn-registro-animado:hover {
+    background: var(--azul-institucional);
+    color: var(--blanco);
+    border-color: var(--azul-institucional);
+    animation: none;
+    transform: translateY(-2px);
+}
+
 .contenedor-maestro { display: grid; grid-template-columns: 350px 1fr; gap: 30px; max-width: 1200px; margin: 40px auto; padding: 0 15px; }
 
 @media (max-width: 900px) { 
@@ -85,6 +132,7 @@ body {
     .contenedor-logo-izq { justify-content: center; order: 2; margin-top: 15px; width: 100%;}
     .header-textos { order: 1; width: 100%; }
     .contenedor-derecho { align-items: center; order: 3; margin-top: 15px; width: 100%; }
+    .contenedor-botones-admin { justify-content: center; }
 }
 
 .titulo-seccion { font-size: 16px; color: var(--blanco); background: var(--azul-institucional); padding: 8px 20px; border-radius: 6px; margin-top: 0; text-transform: uppercase; font-weight: 800; display: inline-block; margin-bottom: 25px; box-shadow: 0 3px 6px rgba(0,43,92,0.2);}
