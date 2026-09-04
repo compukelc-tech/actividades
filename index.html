@@ -70,8 +70,8 @@
     </footer>
 
     <a href="registro_usuarios.html" class="btn-flotante-registro">
-        <div class="btn-flotante-circulo">
-            <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" alt="Registro">
+        <div class="btn-flotante-circulo" id="btn-flotante-circulo-reg">
+            <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" alt="Registro" id="img-icono-registro-flotante">
         </div>
         <span class="btn-flotante-texto">Registro</span>
     </a>
@@ -245,7 +245,17 @@
                     imgDer2.style.display = 'block';
                 }
                 if (data.fondo_pantalla) {
-                    document.body.style.backgroundImage = `url('${data.fondo_pantalla}')`;
+                    // Forzamos la regla de fondo de nuevo por si acaso, cubriendo toda la pantalla
+                    document.body.style.background = `url('${data.fondo_pantalla}') no-repeat center center fixed`;
+                    document.body.style.backgroundSize = 'cover';
+                }
+                if (data.icono_registro) {
+                    document.getElementById('img-icono-registro-flotante').src = data.icono_registro;
+                }
+                if (data.tamano_icono_registro) {
+                    const circulo = document.getElementById('btn-flotante-circulo-reg');
+                    circulo.style.width = data.tamano_icono_registro + 'px';
+                    circulo.style.height = data.tamano_icono_registro + 'px';
                 }
             }
         }
