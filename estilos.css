@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');
 
 :root { 
     --azul-institucional: #002B5C; 
@@ -15,7 +15,11 @@ body {
     font-family: 'Montserrat', sans-serif; 
     margin: 0; 
     background-color: var(--gris-fondo); 
-    background-image: radial-gradient(circle at top right, rgba(0, 43, 92, 0.03), transparent 40%), radial-gradient(circle at bottom left, rgba(211, 47, 47, 0.03), transparent 40%);
+    /* Fondos radiales más vibrantes e intensos */
+    background-image: 
+        radial-gradient(circle at top right, rgba(0, 43, 92, 0.08), transparent 50%), 
+        radial-gradient(circle at bottom left, rgba(211, 47, 47, 0.08), transparent 50%),
+        radial-gradient(circle at center, rgba(255, 179, 0, 0.04), transparent 50%);
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -35,10 +39,10 @@ body {
 .barra-sesion a:hover { color: white; }
 .btn-salir-menu { background: var(--rojo-bandera); color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: 700; cursor: pointer;}
 
-/* CABECERA FIJA (Sticky) */
+/* CABECERA FIJA Y MEJORADA */
 .header-principal { 
-    background: var(--blanco);
-    padding: 25px 20px; 
+    background: linear-gradient(135deg, #ffffff 0%, #f4f6f9 100%);
+    padding: 30px 20px; /* Más espacio para logos grandes */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -48,18 +52,46 @@ body {
     position: sticky;
     top: 0;
     z-index: 1000;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }
 
 .contenedor-logo-izq { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
 
+/* TEXTOS DE CABECERA VIBRANTES Y MÁS GRANDES */
 .header-textos { text-align: center; flex: 2; min-width: 280px;}
-.header-textos h1 { margin: 0; font-size: 26px; font-weight: 800; color: var(--azul-institucional); text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
-.header-textos h3 { margin: 5px 0 0; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+.header-textos h1 { 
+    margin: 0; 
+    font-size: 34px; /* Aumentado considerablemente */
+    font-weight: 900; 
+    background: linear-gradient(90deg, var(--azul-institucional), #0056b3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+    filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.1));
+}
+.header-textos h3 { 
+    margin: 8px 0 0; 
+    font-size: 16px; /* Aumentado de 13px a 16px */
+    font-weight: 800; 
+    color: var(--rojo-bandera); /* Más vivo que el gris anterior */
+    text-transform: uppercase; 
+    letter-spacing: 2px;
+}
 
-.contenedor-derecho { flex: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; justify-content: center; }
+.contenedor-derecho { flex: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 15px; justify-content: center; }
 .contenedor-logos-der { display: flex; align-items: center; gap: 20px; }
-.logo-inst { max-height: 65px; width: auto; object-fit: contain; flex-shrink: 0; }
+
+/* LOGOS MÁS GRANDES Y DESTACADOS */
+.logo-inst { 
+    max-height: 95px; /* Aumentado de 65px a 95px */
+    width: auto; 
+    object-fit: contain; 
+    flex-shrink: 0; 
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    transition: transform 0.3s ease;
+}
+.logo-inst:hover { transform: scale(1.05); }
 
 .contenedor-botones-admin { display: flex; justify-content: flex-end; align-items: center; }
 
@@ -68,10 +100,10 @@ body {
     background: rgba(0, 43, 92, 0.05); 
     color: var(--azul-institucional); 
     text-decoration: none; 
-    font-size: 10px; 
-    padding: 6px 15px; 
-    border-radius: 15px; 
-    border: 1px solid var(--azul-institucional);
+    font-size: 11px; 
+    padding: 8px 18px; 
+    border-radius: 20px; 
+    border: 2px solid var(--azul-institucional);
     font-weight: 800; 
     text-transform: uppercase;
     transition: all 0.3s ease;
@@ -79,8 +111,8 @@ body {
 .btn-ingresar-flotante:hover { 
     background: var(--azul-institucional); 
     color: var(--blanco);
-    transform: translateY(-1px); 
-    box-shadow: 0 4px 8px rgba(0, 43, 92, 0.2);
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 10px rgba(0, 43, 92, 0.2);
 }
 
 .contenedor-maestro { display: grid; grid-template-columns: 350px 1fr; gap: 30px; max-width: 1200px; margin: 40px auto; padding: 0 15px; }
@@ -90,13 +122,16 @@ body {
     .header-principal { flex-direction: column; justify-content: center; padding-top: 20px;}
     .contenedor-logo-izq { justify-content: center; order: 2; margin-top: 15px; width: 100%;}
     .header-textos { order: 1; width: 100%; }
+    .header-textos h1 { font-size: 24px; }
+    .header-textos h3 { font-size: 13px; }
+    .logo-inst { max-height: 75px; } /* Tamaño adaptado a móviles pero sigue siendo grande */
     .contenedor-derecho { align-items: center; order: 3; margin-top: 15px; width: 100%; }
 }
 
 .titulo-seccion { font-size: 16px; color: var(--blanco); background: var(--azul-institucional); padding: 8px 20px; border-radius: 6px; margin-top: 0; text-transform: uppercase; font-weight: 800; display: inline-block; margin-bottom: 25px; box-shadow: 0 3px 6px rgba(0,43,92,0.2);}
 
-.post-social { background: var(--blanco); border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); overflow: hidden; transition: transform 0.2s;}
-.post-social:hover { transform: translateY(-3px); }
+.post-social { background: var(--blanco); border-radius: 8px; margin-bottom: 25px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); overflow: hidden; transition: transform 0.2s;}
+.post-social:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12);}
 .tarjeta-institucional { border-top: 5px solid; border-image: linear-gradient(to right, var(--azul-institucional) 33%, var(--amarillo-oro) 33%, var(--amarillo-oro) 66%, var(--rojo-bandera) 66%) 1; }
 .tarjeta-deporte { border-top: 5px solid; border-image: linear-gradient(to right, #0081C8 20%, #FCB131 40%, #000000 60%, #00A651 80%, #EE334E 100%) 1; }
 
@@ -109,14 +144,15 @@ body {
 .banner-publicidad { width: 100%; max-height: 250px; object-fit: cover; display: block; border-top: 1px solid #eee; border-bottom: 1px solid #eee;}
 
 .post-actions { padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; background: #fcfcfc;}
-.btn-link { flex: 1; text-align: center; padding: 10px; border-radius: 4px; text-decoration: none; color: white; font-size: 12px; font-weight: 800; text-transform: uppercase; min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.15);}
+.btn-link { flex: 1; text-align: center; padding: 10px; border-radius: 4px; text-decoration: none; color: white; font-size: 12px; font-weight: 800; text-transform: uppercase; min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: opacity 0.2s;}
+.btn-link:hover { opacity: 0.85; }
 .btn-youtube { background: #CC0000; }
 .btn-facebook { background: #1877F2; }
 .btn-tiktok { background: #000000; }
 .btn-x { background: #333333; } 
 
-.album-social { background: var(--blanco); border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-top: 5px solid var(--azul-institucional); transition: transform 0.2s;}
-.album-social:hover { transform: translateY(-3px); }
+.album-social { background: var(--blanco); border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-top: 5px solid var(--azul-institucional); transition: transform 0.2s;}
+.album-social:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12);}
 .album-header { margin-bottom: 20px; }
 .album-titulo { font-size: 18px; color: var(--azul-institucional); margin: 0 0 5px 0; font-weight: 800; text-transform: uppercase;}
 .album-descripcion { font-size: 13px; color: var(--text-muted); margin: 0; }
@@ -159,9 +195,7 @@ body {
 .lightbox-prev { left: 10px; }
 .lightbox-next { right: 10px; }
 
-/* =========================================
-   BOTÓN FLOTANTE REGISTRO
-========================================= */
+/* BOTÓN FLOTANTE REGISTRO */
 .btn-flotante-registro {
     position: fixed;
     bottom: 25px;
