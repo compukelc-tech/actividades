@@ -1,213 +1,266 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Portal Multimedia Institucional - compukelc</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
 
-:root { 
-    --azul-institucional: #002B5C; 
-    --rojo-bandera: #D32F2F;       
-    --amarillo-oro: #FFB300;       
-    --negro-cucuta: #1A1A1A;
-    --gris-fondo: #Eef2f7; 
-    --blanco: #FFFFFF; 
-    --text-main: #333333;
-    --text-muted: #65676B;
-}
+    <div class="franja-superior"></div>
 
-body { 
-    font-family: 'Montserrat', sans-serif; 
-    margin: 0; 
-    background-color: var(--gris-fondo); 
-    background-image: radial-gradient(circle at top right, rgba(0, 43, 92, 0.03), transparent 40%), radial-gradient(circle at bottom left, rgba(211, 47, 47, 0.03), transparent 40%);
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    color: var(--text-main); 
-    line-height: 1.5;
-}
+    <div class="barra-sesion" id="barra-admin" style="display: none;">
+        <span id="info-usuario-activo"></span>
+        <a href="admin.html" id="link-panel-admin" style="display: none;">⚙️ Panel Admin</a>
+        <a href="registro.html" id="link-registro" style="display: none;">+ Nuevo Admin</a>
+        <button class="btn-salir-menu" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </div>
 
-.franja-superior {
-    height: 8px;
-    width: 100%;
-    background: linear-gradient(to right, var(--azul-institucional) 33%, var(--amarillo-oro) 33%, var(--amarillo-oro) 66%, var(--rojo-bandera) 66%);
-}
+    <header class="header-principal">
+        <div class="contenedor-logo-izq">
+            <img src="" class="logo-inst" id="logo-izquierdo" style="display:none;">
+        </div>
 
-.barra-sesion { background-color: var(--negro-cucuta); color: white; padding: 10px 20px; display: flex; justify-content: flex-end; align-items: center; font-size: 13px; gap: 15px; flex-wrap: wrap;}
-.barra-sesion a { color: #ccc; text-decoration: none; font-weight: 600; }
-.barra-sesion a:hover { color: white; }
-.btn-salir-menu { background: var(--rojo-bandera); color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: 700; cursor: pointer;}
+        <div class="header-textos">
+            <h1>Portal Cultural y Deportivo</h1>
+            <h3>Norte de Santander | San José de Cúcuta</h3>
+        </div>
 
-.header-principal { 
-    background: var(--blanco);
-    padding: 25px 20px; 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 4px solid var(--rojo-bandera);
-    flex-wrap: wrap;
-    gap: 15px;
-    position: relative;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
+        <div class="contenedor-derecho">
+            <div class="contenedor-logos-der">
+                <img src="" class="logo-inst" id="logo-derecho-1" style="display:none;">
+                <img src="" class="logo-inst" id="logo-derecho-2" style="display:none;">
+            </div>
+            
+            <div class="contenedor-botones-admin">
+                <a href="login.html" id="btn-ingresar-discreto" class="btn-ingresar-flotante">⚙️ Acceso Admin</a>
+            </div>
+        </div>
+    </header>
 
-.contenedor-logo-izq { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
+    <div class="contenedor-maestro">
+        <aside class="columna-eventos">
+            <h2 class="titulo-seccion">Actualizaciones</h2>
+            <div id="contenedor-transmisiones">
+                <div style="text-align: center; padding: 20px; color: #666;">
+                    <p style="font-size: 12px; margin: 0; font-weight: 600;">Cargando feed...</p>
+                </div>
+            </div>
+        </aside>
 
-.header-textos { text-align: center; flex: 2; min-width: 280px;}
-.header-textos h1 { margin: 0; font-size: 26px; font-weight: 800; color: var(--azul-institucional); text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
-.header-textos h3 { margin: 5px 0 0; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        <main class="columna-galeria">
+            <h2 class="titulo-seccion">Archivo Fotográfico</h2>
+            <div id="contenedor-galeria-albumes">
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <p style="font-size: 12px; margin: 0; font-weight: 600;">Cargando acervo multimedia...</p>
+                </div>
+            </div>
+        </main>
+    </div>
 
-.contenedor-derecho { flex: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; justify-content: center; }
-.contenedor-logos-der { display: flex; align-items: center; gap: 20px; }
-.logo-inst { max-height: 65px; width: auto; object-fit: contain; flex-shrink: 0; }
+    <footer class="footer-desarrollo">
+        Plataforma gestionada por compukelc | compukelc@hotmail.com | cel. 3507973351
+    </footer>
 
-.contenedor-botones-admin { display: flex; justify-content: flex-end; align-items: center; }
+    <a href="registro_usuarios.html" class="btn-flotante-registro">
+        <div class="btn-flotante-circulo" id="btn-flotante-circulo-reg">
+            <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" alt="Registro" id="img-icono-registro-flotante">
+        </div>
+        <span class="btn-flotante-texto">Registro</span>
+    </a>
 
-.btn-ingresar-flotante {
-    display: inline-block;
-    background: rgba(0, 43, 92, 0.05); 
-    color: var(--azul-institucional); 
-    text-decoration: none; 
-    font-size: 10px; 
-    padding: 6px 15px; 
-    border-radius: 15px; 
-    border: 1px solid var(--azul-institucional);
-    font-weight: 800; 
-    text-transform: uppercase;
-    transition: all 0.3s ease;
-}
-.btn-ingresar-flotante:hover { 
-    background: var(--azul-institucional); 
-    color: var(--blanco);
-    transform: translateY(-1px); 
-    box-shadow: 0 4px 8px rgba(0, 43, 92, 0.2);
-}
+    <div id="visorLightbox" class="lightbox-modal">
+        <span class="lightbox-cerrar" onclick="cerrarLightbox()">&times;</span>
+        <button class="lightbox-btn lightbox-prev" onclick="cambiarImagen(-1)">&#10094;</button>
+        <div class="lightbox-contenido">
+            <img id="img-lightbox" class="lightbox-img" src="">
+        </div>
+        <button class="lightbox-btn lightbox-next" onclick="cambiarImagen(1)">&#10095;</button>
+    </div>
 
-.contenedor-maestro { display: grid; grid-template-columns: 350px 1fr; gap: 30px; max-width: 1200px; margin: 40px auto; padding: 0 15px; }
+    <script>
+        const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
+        const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
-@media (max-width: 900px) { 
-    .contenedor-maestro { grid-template-columns: 1fr; } 
-    .header-principal { flex-direction: column; justify-content: center;}
-    .contenedor-logo-izq { justify-content: center; order: 2; margin-top: 15px; width: 100%;}
-    .header-textos { order: 1; width: 100%; }
-    .contenedor-derecho { align-items: center; order: 3; margin-top: 15px; width: 100%; }
-}
+        let todasLasFotos = [];
+        let indiceActual = 0;
 
-.titulo-seccion { font-size: 16px; color: var(--blanco); background: var(--azul-institucional); padding: 8px 20px; border-radius: 6px; margin-top: 0; text-transform: uppercase; font-weight: 800; display: inline-block; margin-bottom: 25px; box-shadow: 0 3px 6px rgba(0,43,92,0.2);}
+        const sesionGuardada = localStorage.getItem('sesion_activa');
+        if (sesionGuardada) {
+            const usuario = JSON.parse(sesionGuardada);
+            document.getElementById('barra-admin').style.display = 'flex';
+            document.getElementById('info-usuario-activo').textContent = `${usuario.nombres} (${usuario.rol})`;
+            document.getElementById('btn-ingresar-discreto').style.display = 'none';
+            document.getElementById('link-panel-admin').style.display = 'inline';
 
-.post-social { background: var(--blanco); border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); overflow: hidden; transition: transform 0.2s;}
-.post-social:hover { transform: translateY(-3px); }
-.tarjeta-institucional { border-top: 5px solid; border-image: linear-gradient(to right, var(--azul-institucional) 33%, var(--amarillo-oro) 33%, var(--amarillo-oro) 66%, var(--rojo-bandera) 66%) 1; }
-.tarjeta-deporte { border-top: 5px solid; border-image: linear-gradient(to right, #0081C8 20%, #FCB131 40%, #000000 60%, #00A651 80%, #EE334E 100%) 1; }
+            if (usuario.rol === 'superadmin' || usuario.documento === '1090391929') {
+                document.getElementById('link-registro').style.display = 'inline';
+            }
+        }
 
-.post-header { display: flex; align-items: center; padding: 15px; gap: 12px; }
-.post-avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--rojo-bandera); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);}
-.avatar-deporte { background: linear-gradient(135deg, #0081C8, #FCB131, #00A651, #EE334E); }
-.post-meta h3 { margin: 0; font-size: 15px; font-weight: 800; color: var(--azul-institucional); text-transform: uppercase;}
-.post-meta span { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;}
+        function cerrarSesion() {
+            localStorage.removeItem('sesion_activa');
+            window.location.reload();
+        }
 
-.banner-publicidad { width: 100%; max-height: 250px; object-fit: cover; display: block; border-top: 1px solid #eee; border-bottom: 1px solid #eee;}
+        async function cargarEventosYPublicidad() {
+            const contenedor = document.getElementById('contenedor-transmisiones');
+            const { data, error } = await clienteSupabase.from('actividades').select('*').order('id', { ascending: false });
 
-.post-actions { padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; background: #fcfcfc;}
-.btn-link { flex: 1; text-align: center; padding: 10px; border-radius: 4px; text-decoration: none; color: white; font-size: 12px; font-weight: 800; text-transform: uppercase; min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.15);}
-.btn-youtube { background: #CC0000; }
-.btn-facebook { background: #1877F2; }
-.btn-tiktok { background: #000000; }
-.btn-x { background: #333333; } 
+            if (error || !data || data.length === 0) return contenedor.innerHTML = "<div style='text-align: center; padding: 20px; color: #666;'><p style='font-size: 13px; margin: 0;'>No hay publicaciones recientes.</p></div>";
 
-.album-social { background: var(--blanco); border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-top: 5px solid var(--azul-institucional); transition: transform 0.2s;}
-.album-social:hover { transform: translateY(-3px); }
-.album-header { margin-bottom: 20px; }
-.album-titulo { font-size: 18px; color: var(--azul-institucional); margin: 0 0 5px 0; font-weight: 800; text-transform: uppercase;}
-.album-descripcion { font-size: 13px; color: var(--text-muted); margin: 0; }
+            contenedor.innerHTML = '';
+            data.forEach(evento => {
+                let imagenBanner = evento.url_publicidad ? `<img src="${evento.url_publicidad}" class="banner-publicidad">` : '';
+                let botonesHTML = '';
+                
+                if(evento.url_youtube) botonesHTML += `<a href="${evento.url_youtube}" target="_blank" class="btn-link btn-youtube">YouTube</a>`;
+                if(evento.url_facebook) botonesHTML += `<a href="${evento.url_facebook}" target="_blank" class="btn-link btn-facebook">Facebook</a>`;
+                if(evento.url_tiktok) botonesHTML += `<a href="${evento.url_tiktok}" target="_blank" class="btn-link btn-tiktok">TikTok</a>`;
+                if(evento.url_x) botonesHTML += `<a href="${evento.url_x}" target="_blank" class="btn-link btn-x">X</a>`;
 
-.grid-youtube { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
-.foto-item { border-radius: 6px; overflow: hidden; aspect-ratio: 16/12; cursor: pointer; border: 1px solid #eee; background: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
-.foto-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; opacity: 0.9;}
-.foto-item:hover img { transform: scale(1.05); opacity: 1;}
+                let esDeporte = (evento.tipo === 'Deporte');
+                let claseAvatar = esDeporte ? 'avatar-deporte' : '';
+                let letraAvatar = esDeporte ? 'O' : 'G'; 
+                let claseTarjeta = esDeporte ? 'tarjeta-deporte' : 'tarjeta-institucional';
 
-.foto-mas-item { 
-    border-radius: 6px; 
-    overflow: hidden; 
-    aspect-ratio: 16/12; 
-    cursor: pointer; 
-    background: rgba(0, 43, 92, 0.9);
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    color: white; 
-    font-weight: 800; 
-    text-align: center; 
-    transition: background 0.3s; 
-    border: 1px solid var(--azul-institucional);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.foto-mas-item:hover { background: var(--rojo-bandera); }
-.foto-mas-item span { font-size: 16px; }
-.foto-mas-item small { font-size: 10px; font-weight: 600; text-transform: uppercase; margin-top: 2px; opacity: 0.9; }
+                contenedor.innerHTML += `
+                    <div class="post-social ${claseTarjeta}">
+                        <div class="post-header">
+                            <div class="post-avatar ${claseAvatar}">${letraAvatar}</div>
+                            <div class="post-meta">
+                                <h3>${evento.titulo || 'Publicación sin título'}</h3>
+                                <span>${evento.tipo || 'Actualidad'}</span>
+                            </div>
+                        </div>
+                        ${imagenBanner}
+                        <div class="post-actions">${botonesHTML}</div>
+                    </div>
+                `;
+            });
+        }
 
-.footer-desarrollo { text-align: center; padding: 25px; font-size: 12px; color: white; background: var(--azul-institucional); font-weight: 600; border-top: 5px solid var(--rojo-bandera);}
+        async function cargarAlbumesGaleria() {
+            const contenedor = document.getElementById('contenedor-galeria-albumes');
+            
+            const { data: albumes, error } = await clienteSupabase
+                .from('albumes_galeria')
+                .select('*, fotos_album(*)')
+                .order('id', { ascending: false });
 
-.lightbox-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
-.lightbox-contenido { max-width: 90%; max-height: 90%; text-align: center; position: relative; }
-.lightbox-img { max-width: 100%; max-height: 90vh; border-radius: 4px; object-fit: contain; border: 2px solid #333; }
-.lightbox-cerrar { position: absolute; top: 15px; right: 20px; color: #fff; font-size: 35px; cursor: pointer; z-index: 10000; transition: 0.2s;}
-.lightbox-cerrar:hover { color: var(--rojo-bandera); }
-.lightbox-btn { cursor: pointer; position: absolute; top: 50%; width: 40px; height: 50px; margin-top: -25px; color: white; font-size: 24px; background-color: rgba(255,255,255,0.1); border: none; z-index: 10000; transition: 0.2s;}
-.lightbox-btn:hover { background-color: var(--rojo-bandera); }
-.lightbox-prev { left: 10px; }
-.lightbox-next { right: 10px; }
+            if (error || !albumes || albumes.length === 0) {
+                return contenedor.innerHTML = "<div style='text-align: center; padding: 40px; color: #666;'><p style='font-size: 13px; margin: 0;'>No hay álbumes creados.</p></div>";
+            }
 
-/* Botón Flotante Redondo Inferior Derecho */
-.btn-flotante-registro {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    z-index: 9999;
-}
+            contenedor.innerHTML = '';
+            todasLasFotos = []; 
 
-.btn-flotante-circulo {
-    width: 60px; /* Tamaño por defecto, será sobreescrito por JS */
-    height: 60px;
-    border-radius: 50%;
-    background: var(--rojo-bandera);
-    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: latido-flotante 2s infinite;
-    transition: transform 0.3s ease, background 0.3s ease;
-}
+            albumes.forEach(album => {
+                let fotosHTML = '';
+                if (album.fotos_album && album.fotos_album.length > 0) {
+                    const totalFotos = album.fotos_album.length;
+                    
+                    album.fotos_album.forEach((foto, index) => {
+                        const indiceGlobal = todasLasFotos.length;
+                        todasLasFotos.push(foto.url_foto);
 
-.btn-flotante-circulo img {
-    width: 60%;
-    height: 60%;
-    object-fit: contain;
-    /* Se quitó el filtro invert para que el logo subido conserve sus colores reales */
-}
+                        if (index < 3) {
+                            fotosHTML += `<div class="foto-item" onclick="abrirLightbox(${indiceGlobal})"><img src="${foto.url_foto}" loading="lazy"></div>`;
+                        } 
+                        else if (index === 3) {
+                            const faltantes = totalFotos - 3;
+                            fotosHTML += `
+                                <div class="foto-mas-item" onclick="abrirLightbox(${indiceGlobal})">
+                                    <span>+${faltantes}</span>
+                                    <small>Ver más</small>
+                                </div>
+                            `;
+                        }
+                    });
+                } else {
+                    fotosHTML = `<p style="font-size:13px; color:#666;">No hay contenido en este álbum.</p>`;
+                }
 
-.btn-flotante-texto {
-    margin-top: 8px;
-    background: var(--negro-cucuta);
-    color: var(--blanco);
-    font-size: 10px;
-    font-weight: 800;
-    padding: 4px 10px;
-    border-radius: 12px;
-    text-transform: uppercase;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
+                contenedor.innerHTML += `
+                    <div class="album-social">
+                        <div class="album-header">
+                            <h3 class="album-titulo">${album.titulo}</h3>
+                            <p class="album-descripcion">${album.descripcion || ''}</p>
+                        </div>
+                        <div class="grid-youtube">${fotosHTML}</div>
+                    </div>
+                `;
+            });
+        }
 
-.btn-flotante-registro:hover .btn-flotante-circulo {
-    transform: scale(1.1);
-    background: var(--azul-institucional);
-    animation: none;
-    box-shadow: 0 4px 15px rgba(0, 43, 92, 0.5);
-}
+        function abrirLightbox(indice) {
+            indiceActual = indice;
+            document.getElementById('img-lightbox').src = todasLasFotos[indiceActual];
+            document.getElementById('visorLightbox').style.display = 'flex';
+        }
 
-@keyframes latido-flotante {
-    0% { transform: scale(1); box-shadow: 0 4px 10px rgba(211, 47, 47, 0.4); }
-    50% { transform: scale(1.08); box-shadow: 0 6px 20px rgba(211, 47, 47, 0.7); }
-    100% { transform: scale(1); box-shadow: 0 4px 10px rgba(211, 47, 47, 0.4); }
-}
+        function cerrarLightbox() {
+            document.getElementById('visorLightbox').style.display = 'none';
+        }
+
+        function cambiarImagen(direccion) {
+            indiceActual += direccion;
+            if (indiceActual >= todasLasFotos.length) indiceActual = 0;
+            else if (indiceActual < 0) indiceActual = todasLasFotos.length - 1;
+            document.getElementById('img-lightbox').src = todasLasFotos[indiceActual];
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (document.getElementById('visorLightbox').style.display === 'flex') {
+                if (event.key === "Escape") cerrarLightbox();
+                if (event.key === "ArrowRight") cambiarImagen(1);
+                if (event.key === "ArrowLeft") cambiarImagen(-1);
+            }
+        });
+
+        async function cargarLogosInstitucionales() {
+            const { data, error } = await clienteSupabase.from('configuracion').select('*').eq('id', 1).single();
+            if (data && !error) {
+                if (data.logo_evento) {
+                    const imgIzq = document.getElementById('logo-izquierdo');
+                    imgIzq.src = data.logo_evento;
+                    imgIzq.style.display = 'block';
+                }
+                if (data.logo_alcaldia) {
+                    const imgDer1 = document.getElementById('logo-derecho-1');
+                    imgDer1.src = data.logo_alcaldia;
+                    imgDer1.style.display = 'block';
+                }
+                if (data.logo_gobernacion) {
+                    const imgDer2 = document.getElementById('logo-derecho-2');
+                    imgDer2.src = data.logo_gobernacion;
+                    imgDer2.style.display = 'block';
+                }
+                if (data.fondo_pantalla) {
+                    document.body.style.backgroundImage = `url('${data.fondo_pantalla}')`;
+                }
+                if (data.icono_registro) {
+                    document.getElementById('img-icono-registro-flotante').src = data.icono_registro;
+                }
+                if (data.tamano_icono_registro) {
+                    const circulo = document.getElementById('btn-flotante-circulo-reg');
+                    circulo.style.width = data.tamano_icono_registro + 'px';
+                    circulo.style.height = data.tamano_icono_registro + 'px';
+                }
+            }
+        }
+
+        cargarEventosYPublicidad();
+        cargarAlbumesGaleria();
+        cargarLogosInstitucionales();
+    </script>
+</body>
+</html>
