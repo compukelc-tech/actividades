@@ -168,7 +168,7 @@ body {
 }
 
 .btn-flotante-circulo {
-    width: 60px;
+    width: 60px; /* Tamaño por defecto, será sobreescrito por JS */
     height: 60px;
     border-radius: 50%;
     background: var(--rojo-bandera);
@@ -181,10 +181,10 @@ body {
 }
 
 .btn-flotante-circulo img {
-    width: 30px;
-    height: 30px;
+    width: 60%;
+    height: 60%;
     object-fit: contain;
-    filter: brightness(0) invert(1);
+    /* Se quitó el filtro invert para que el logo subido conserve sus colores reales */
 }
 
 .btn-flotante-texto {
