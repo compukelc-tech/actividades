@@ -156,7 +156,9 @@ body {
 .lightbox-prev { left: 10px; }
 .lightbox-next { right: 10px; }
 
-/* Botón Flotante Redondo Inferior Derecho */
+/* =========================================
+   BOTÓN FLOTANTE REGISTRO (CON ANIMACIONES AVANZADAS)
+========================================= */
 .btn-flotante-registro {
     position: fixed;
     bottom: 25px;
@@ -166,6 +168,7 @@ body {
     align-items: center;
     text-decoration: none;
     z-index: 9999;
+    animation: flotar-arriba-abajo 3s ease-in-out infinite; /* Contenedor flotante */
 }
 
 .btn-flotante-circulo {
@@ -173,42 +176,66 @@ body {
     height: 60px;
     border-radius: 50%;
     background: var(--rojo-bandera);
-    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4);
+    border: 3px solid var(--blanco); /* Borde blanco para resaltar */
     display: flex;
     justify-content: center;
     align-items: center;
-    animation: latido-flotante 2s infinite;
-    transition: transform 0.3s ease, background 0.3s ease;
-    overflow: hidden; /* Asegura que la imagen no se desborde del círculo */
+    overflow: hidden; 
+    animation: ondas-radar 1.5s infinite; /* Efecto de pulso más notorio */
+    transition: transform 0.3s ease;
+    z-index: 1;
 }
 
 .btn-flotante-circulo img {
-    width: 100%;  /* La imagen llena todo el círculo */
-    height: 100%; /* La imagen llena todo el círculo */
-    object-fit: cover; /* Evita que se distorsione, llenando perfectamente */
+    width: 100%;  
+    height: 100%; 
+    object-fit: cover; 
+    animation: rotacion-lenta 12s linear infinite; /* Movimiento constante de la imagen */
 }
 
+/* Placa de texto mejorada */
 .btn-flotante-texto {
-    margin-top: 8px;
-    background: var(--negro-cucuta);
-    color: var(--blanco);
-    font-size: 10px;
-    font-weight: 800;
-    padding: 4px 10px;
-    border-radius: 12px;
+    margin-top: -12px; /* Superpone el texto sobre el círculo */
+    background: linear-gradient(90deg, var(--azul-institucional), #004080);
+    color: var(--amarillo-oro);
+    font-size: 11px;
+    font-weight: 900;
+    padding: 6px 16px;
+    border-radius: 20px;
     text-transform: uppercase;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    letter-spacing: 1px;
+    border: 2px solid var(--blanco);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    z-index: 2;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.btn-flotante-registro:hover {
+    animation: none;
+    transform: scale(1.1);
 }
 
 .btn-flotante-registro:hover .btn-flotante-circulo {
-    transform: scale(1.1);
-    background: var(--azul-institucional);
     animation: none;
-    box-shadow: 0 4px 15px rgba(0, 43, 92, 0.5);
+    box-shadow: 0 4px 20px rgba(0, 43, 92, 0.6);
+    border-color: var(--azul-institucional);
 }
 
-@keyframes latido-flotante {
-    0% { transform: scale(1); box-shadow: 0 4px 10px rgba(211, 47, 47, 0.4); }
-    50% { transform: scale(1.08); box-shadow: 0 6px 20px rgba(211, 47, 47, 0.7); }
-    100% { transform: scale(1); box-shadow: 0 4px 10px rgba(211, 47, 47, 0.4); }
+/* ANIMACIONES KEYFRAMES */
+@keyframes flotar-arriba-abajo {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes ondas-radar {
+    0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(211, 47, 47, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+}
+
+@keyframes rotacion-lenta {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.15); } /* Hace un zoom in lento mientras gira */
+    100% { transform: rotate(360deg) scale(1); }
 }
