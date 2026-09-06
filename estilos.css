@@ -117,55 +117,48 @@ body {
 
 .contenedor-maestro { display: grid; grid-template-columns: 350px 1fr; gap: 30px; max-width: 1200px; margin: 30px auto; padding: 0 15px; }
 
-/* REGLAS RESPONSIVAS MÓVIL OPTIMIZADAS */
+/* REGLAS RESPONSIVAS MÓVIL CORREGIDAS Y CENTRADAS */
 @media (max-width: 900px) { 
-    .contenedor-maestro { grid-template-columns: 1fr; margin: 15px auto; padding: 0 10px; } 
+    .contenedor-maestro { 
+        grid-template-columns: 1fr; 
+        margin: 15px auto; 
+        padding: 0 10px; 
+    } 
     
     .header-principal { 
+        display: flex;
         flex-direction: column; 
-        justify-content: center; 
         align-items: center; 
+        justify-content: center; 
         padding: 20px 15px; 
         text-align: center; 
         gap: 15px;
     }
 
-    /* 1. Los logos institucionales de la derecha van primero arriba ordenados en fila horizontal */
+    .contenedor-logo-izq, 
+    .header-textos, 
     .contenedor-derecho { 
-        order: 1; 
-        width: 100%; 
-        align-items: center; 
-        flex-direction: row;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
-        gap: 15px;
+        text-align: center;
     }
-    
+
     .contenedor-logos-der { 
         display: flex;
         flex-direction: row;
         justify-content: center;
         align-items: center;
         gap: 15px;
+        width: 100%;
     }
 
-    /* 2. El título y subtítulo quedan centrados debajo de los logos */
-    .header-textos { 
-        order: 2; 
-        width: 100%; 
-    }
-
-    /* 3. El logo izquierdo (evento) se posiciona abajo de los textos */
-    .contenedor-logo-izq { 
-        order: 3; 
-        justify-content: center; 
-        width: 100%; 
-    }
-
-    /* 4. El botón de acceso admin se ubica al final de la cabecera */
     .contenedor-botones-admin { 
-        order: 4;
-        justify-content: center; 
-        width: 100%; 
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
 }
 
