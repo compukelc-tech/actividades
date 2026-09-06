@@ -28,13 +28,10 @@
         textarea { resize: vertical; height: 70px; }
         .btn-accion { background: #003366; color: white; padding: 12px; font-size: 13px; width: 100%; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-volver { background: #6c757d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 12px; display: inline-block; margin-bottom: 20px; }
-        .caja-edicion { display: none; margin-top: 15px; padding: 15px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; }
         .caja-herramienta { background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #ddd; }
         .grid-editar-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 15px; }
         .foto-edit-item { position: relative; border-radius: 6px; overflow: hidden; border: 1px solid #ccc; aspect-ratio: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
         .foto-edit-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .btn-eliminar-foto { position: absolute; top: 5px; right: 5px; background: rgba(220, 53, 69, 0.9); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.3); transition: 0.2s;}
-        .btn-eliminar-foto:hover { background: #c82333; transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -50,10 +47,33 @@
     <div class="container">
         <a href="index.html" class="btn-volver">← Volver al Portal Principal</a>
 
-        <!-- NUEVA SECCIÓN: GESTIÓN DE PERSONAL EDUCATIVO -->
-        <div style="margin-bottom: 40px;">
-            <h3>Gestión de Personal Educativo (Registros Públicos)</h3>
-            <p style="font-size: 12px; color: #666;">Autorice o bloquee el acceso del personal registrado a través del portal público.</p>
+        <!-- TABLA 1: GESTIÓN DE ADMINISTRADORES (Visible solo para el Superadmin 1090391929) -->
+        <div id="contenedor-seccion-admins" style="margin-bottom: 40px; display: none;">
+            <h3>Gestión de Administradores (Acceso al Panel)</h3>
+            <p style="font-size: 12px; color: #666;">Control exclusivo de cuentas con permisos de administración.</p>
+            <div style="overflow-x: auto;">
+                <table id="tabla-administradores">
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Nombres y Apellidos</th>
+                            <th>Correo / Cargo</th>
+                            <th>Rol / Entidad</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-tabla-admins">
+                        <tr><td colspan="6" style="text-align: center;">Cargando administradores...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TABLA 2: GESTIÓN DE PERSONAL EDUCATIVO (Visible para todos los admins) -->
+        <div class="seccion-admin" style="margin-top:0; border-top:none; padding-top:0;">
+            <h3>Gestión de Personal Educativo (Registros del Portal)</h3>
+            <p style="font-size: 12px; color: #666;">Personal registrado a través del formulario público.</p>
             <div style="overflow-x: auto;">
                 <table id="tabla-personal-educativo">
                     <thead>
@@ -159,12 +179,66 @@
 
         const sesionGuardada = localStorage.getItem('sesion_activa');
         if (!sesionGuardada) { window.location.href = 'login.html'; }
-        else {
-            const usuario = JSON.parse(sesionGuardada);
-            document.getElementById('nombre-usuario-rol').textContent = `${usuario.nombres} (${usuario.rol})`;
+        
+        const usuario = JSON.parse(sesionGuardada);
+        document.getElementById('nombre-usuario-rol').textContent = `${usuario.nombres} (${usuario.rol})`;
+
+        // RESTRICCIÓN DE SEGURIDAD: Solo el Superadmin (1090391929) puede ver y gestionar administradores
+        if (usuario.documento === '1090391929') {
+            document.getElementById('contenedor-seccion-admins').style.display = 'block';
+            cargarAdministradores();
         }
 
-        // CARGAR LISTA DE PERSONAL EDUCATIVO PENDIENTE Y REGISTRADO
+        // 1. CARGAR ADMINISTRADORES (Solo Superadmin)
+        async function cargarAdministradores() {
+            const tbody = document.getElementById('cuerpo-tabla-admins');
+            const { data, error } = await clienteSupabase.from('perfiles_administrativos').select('*').order('id', { ascending: false });
+
+            if (error || !data || data.length === 0) {
+                return tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #666;">No hay administradores registrados.</td></tr>`;
+            }
+
+            tbody.innerHTML = '';
+            data.forEach(a => {
+                let badgeClase = a.estado === 'autorizado' ? 'badge-autorizado' : (a.estado === 'bloqueado' ? 'badge-bloqueado' : 'badge-pendiente');
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>CC:</strong> ${a.documento}</td>
+                        <td>${a.nombres} ${a.apellidos}</td>
+                        <td>${a.correo} <br><small style="color:#666;">${a.cargo || ''}</small></td>
+                        <td>${a.rol} <br><small style="color:#666;">${a.entidad_base || ''}</small></td>
+                        <td><span class="badge ${badgeClase}">${a.estado || 'pendiente'}</span></td>
+                        <td>
+                            ${a.estado !== 'autorizado' ? `<button class="btn-autorizar" onclick="cambiarEstadoAdmin('${a.documento}', 'autorizado')">Autorizar</button>` : ''}
+                            ${a.estado !== 'bloqueado' ? `<button class="btn-bloquear" onclick="cambiarEstadoAdmin('${a.documento}', 'bloqueado')">Bloquear</button>` : ''}
+                            <button class="btn-eliminar" onclick="eliminarAdmin('${a.documento}')">Eliminar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function cambiarEstadoAdmin(documento, nuevoEstado) {
+            const { error } = await clienteSupabase.from('perfiles_administrativos').update({ estado: nuevoEstado }).eq('documento', documento);
+            if (error) alert("Error: " + error.message);
+            else {
+                alert(`Administrador ${nuevoEstado} con éxito.`);
+                cargarAdministradores();
+            }
+        }
+
+        async function eliminarAdmin(documento) {
+            if(!confirm("¿Está seguro de eliminar este administrador?")) return;
+            const { error } = await clienteSupabase.from('perfiles_administrativos').delete().eq('documento', documento);
+            if(error) alert("Error: " + error.message);
+            else {
+                alert("Administrador eliminado.");
+                cargarAdministradores();
+            }
+        }
+
+        // 2. CARGAR PERSONAL EDUCATIVO (Visible para todos los administradores autorizados)
         async function cargarPersonalEducativo() {
             const tbody = document.getElementById('cuerpo-tabla-personal');
             const { data, error } = await clienteSupabase.from('personal_educativo').select('*').order('id', { ascending: false });
@@ -198,7 +272,7 @@
             const { error } = await clienteSupabase.from('personal_educativo').update({ estado: nuevoEstado }).eq('documento', documento);
             if (error) alert("Error al actualizar estado: " + error.message);
             else {
-                alert(`Usuario ${nuevoEstado} con éxito.`);
+                alert(`Personal ${nuevoEstado} con éxito.`);
                 cargarPersonalEducativo();
             }
         }
@@ -213,7 +287,7 @@
             }
         }
 
-        // Funciones de configuración visual y eventos ya existentes
+        // Configuración visual
         async function cargarConfiguracionAvanzada() {
             const { data } = await clienteSupabase.from('configuracion').select('*').eq('id', 1).single();
             if(data) {
@@ -240,7 +314,7 @@
 
         function cerrarSesion() { localStorage.removeItem('sesion_activa'); window.location.href = 'login.html'; }
 
-        // Inicializar cargas al abrir el panel
+        // Inicializar cargas de personal para cualquier admin
         cargarPersonalEducativo();
         cargarConfiguracionAvanzada();
     </script>
