@@ -43,7 +43,7 @@ body {
 .barra-sesion a:hover { color: white; }
 .btn-salir-menu { background: var(--rojo-bandera); color: white; border: none; padding: 4px 10px; border-radius: 4px; font-weight: 700; cursor: pointer;}
 
-/* CABECERA ESCRITORIO (PC) */
+/* CABECERA GENERAL (Controlada por tu panel admin) */
 .header-principal { 
     background: linear-gradient(135deg, #ffffff 0%, #f4f6f9 100%);
     padding: 15px 25px; 
@@ -61,6 +61,7 @@ body {
 
 .contenedor-logo-izq { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
 .header-textos { text-align: center; flex: 2; min-width: 250px;}
+
 .header-textos h1 { 
     margin: 0; 
     font-weight: 900; 
@@ -69,22 +70,21 @@ body {
     -webkit-text-fill-color: transparent;
     text-transform: uppercase; 
     letter-spacing: 1px;
-    font-size: 26px;
 }
+
 .header-textos h3 { 
     margin: 4px 0 0; 
     font-weight: 800; 
     color: var(--rojo-bandera);
     text-transform: uppercase; 
     letter-spacing: 1px;
-    font-size: 13px;
 }
 
 .contenedor-derecho { flex: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; justify-content: center; }
 .contenedor-logos-der { display: flex; align-items: center; gap: 10px; }
 
+/* Los logos usan el tamaño dinámico en píxeles que asigne el admin.html */
 .logo-inst { 
-    max-height: 50px;
     width: auto; 
     object-fit: contain; 
     flex-shrink: 0; 
@@ -113,7 +113,7 @@ body {
 
 .contenedor-maestro { display: grid; grid-template-columns: 350px 1fr; gap: 25px; max-width: 1200px; margin: 25px auto; padding: 0 15px; }
 
-/* REGLAS RESPONSIVAS MÓVIL OPTIMIZADAS */
+/* REGLAS RESPONSIVAS MÓVIL LIMPIAS (Sin pisar los valores del Admin) */
 @media (max-width: 900px) { 
     .contenedor-maestro { 
         grid-template-columns: 1fr; 
@@ -123,7 +123,10 @@ body {
     
     .header-principal { 
         padding: 12px 10px; 
-        gap: 8px;
+        gap: 12px;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
 
     .contenedor-logo-izq, .contenedor-derecho {
@@ -132,18 +135,14 @@ body {
         flex-direction: row;
         justify-content: center;
         align-items: center;
-        gap: 12px;
+        gap: 15px;
         flex: none;
     }
 
     .contenedor-logos-der {
         display: flex;
         flex-direction: row;
-        gap: 12px;
-    }
-
-    .logo-inst {
-        max-height: 38px !important;
+        gap: 15px;
     }
 
     .header-textos { 
@@ -152,23 +151,10 @@ body {
         padding: 2px 0;
     }
 
-    .header-textos h1 { 
-        font-size: 18px !important;
-    }
-    
-    .header-textos h3 { 
-        font-size: 10px !important;
-    }
-
     .contenedor-botones-admin { 
         width: 100%;
         display: flex;
         justify-content: center;
-    }
-
-    .btn-ingresar-flotante {
-        padding: 4px 10px;
-        font-size: 9px;
     }
 }
 
@@ -229,7 +215,7 @@ body {
 .lightbox-prev { left: 10px; }
 .lightbox-next { right: 10px; }
 
-/* BOTÓN FLOTANTE DE REGISTRO PERFECTAMENTE PROPORCIONADO */
+/* BOTÓN FLOTANTE DE REGISTRO (Proporcionado y controlado) */
 .btn-flotante-registro {
     position: fixed;
     bottom: 15px;
@@ -255,8 +241,8 @@ body {
 }
 
 .btn-flotante-circulo img {
-    width: 100%;  
-    height: 100%; 
+    width: 100% !important;  
+    height: 100% !important; 
     object-fit: cover; 
     animation: rotacion-lenta 15s linear infinite; 
 }
