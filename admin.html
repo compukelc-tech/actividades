@@ -192,13 +192,13 @@
             cargarAdministradores();
         }
 
-        // FUNCIÓN DE AUDITORÍA INMUTABLE MINUTO A MINUTO
+        // FUNCIÓN DE AUDITORÍA INMUTABLE MINUTO A MINUTO (CORREGIDA PARA EVITAR BLOQUEO CORS)
         async function reportarMinuta(tipoAccion, usuarioAfectado, detalleAccion) {
             try {
                 await fetch(urlGoogleAppsScript, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({
                         accion: "minuta",
                         tipo: tipoAccion,
