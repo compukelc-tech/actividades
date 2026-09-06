@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="estilos.css">
 
     <style>
-        .fondo-registro { background-color: #f4f7f6; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+        .fondo-registro { background-color: #f4f7f6; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box; }
         .tarjeta-registro { background: var(--blanco); width: 100%; max-width: 850px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; border-top: 6px solid var(--rojo-bandera); }
         .cabecera-registro { background: linear-gradient(135deg, var(--azul-institucional), #004080); padding: 30px; text-align: center; color: white; }
         .cabecera-registro h2 { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 22px; }
@@ -35,6 +35,15 @@
         
         .campo-condicional { display: none; animation: aparecer 0.4s ease forwards; background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid var(--amarillo-oro); margin-top: 15px;}
         @keyframes aparecer { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .fondo-registro { padding: 10px 5px; }
+            .cuerpo-registro { padding: 15px; }
+            .fila-doble, .fila-triple, .fila-cuadruple {
+                grid-template-columns: 1fr !important;
+                gap: 0px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -121,7 +130,7 @@
                         </div>
                     </div>
 
-                    <!-- SECCIÓN 3: SEGURIDAD Y SALUD (4 campos distribuidos equitativamente) -->
+                    <!-- SECCIÓN 3: SEGURIDAD Y SALUD -->
                     <div class="seccion-form">
                         <h3>3. Seguridad y Bienestar</h3>
                         
@@ -237,12 +246,10 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN SUPABASE
         const supabaseUrl = 'https://wcdxgzopaghmcqqvbluk.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // LÓGICA DE CAMPOS CONDICIONALES LABORALES
         function mostrarCamposVinculacion() {
             const rol = document.getElementById('reg-rol').value;
             const contenedor = document.getElementById('campos-dinamicos-laborales');
@@ -256,7 +263,6 @@
             contEscalafon.style.display = 'none';
 
             if (!rol) return;
-
             contenedor.style.display = 'block';
 
             if (rol === 'Docente' || rol === 'Directivo Docente') {
@@ -290,7 +296,6 @@
             }
         }
 
-        // GOOGLE SHEETS NUEVA (Con la URL proporcionada)
         const urlGoogleSheetsCSV = "https://docs.google.com/spreadsheets/d/1Y0jIu7j5r-pOItt2RCcoJC9kWeH1qyjCUf-gT2XgFPc/export?format=csv";
         let directorioData = {};
 
@@ -353,7 +358,6 @@
             }
         }
 
-        // ENVÍO DE DATOS A SUPABASE Y GOOGLE SHEETS
         async function procesarRegistro(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-submit');
@@ -368,11 +372,6 @@
             btn.disabled = true;
             btn.textContent = "Guardando perfil y sincronizando...";
 
-            // Concatenar nombre y parentesco en un formato limpio para Supabase (ej: "María Pérez - Madre")
-            const nombreEmergencia = document.getElementById('reg-contacto-nombre').value.trim();
-            const parentescoEmergencia = document.getElementById('reg-contacto-parentesco').value.trim();
-            const contactoEmergenciaCompleto = `${nombreEmergencia} (${parentescoEmergencia})`;
-
             const payload = {
                 tipo_documento: document.getElementById('reg-tipo-doc').value,
                 documento: document.getElementById('reg-documento').value,
@@ -385,7 +384,8 @@
                 telefono: document.getElementById('reg-telefono').value,
                 email_personal: document.getElementById('reg-email-per').value,
                 email_institucional: document.getElementById('reg-email-inst').value,
-                contacto_emergencia: contactoEmergenciaCompleto,
+                contacto_emergencia_nombre: document.getElementById('reg-contacto-nombre').value.trim(),
+                contacto_emergencia_parentesco: document.getElementById('reg-contacto-parentesco').value.trim(),
                 telefono_emergencia: document.getElementById('reg-telefono-emg').value,
                 grupo_sanguineo: document.getElementById('reg-rh').value,
                 condiciones_salud: document.getElementById('reg-salud').value,
@@ -400,7 +400,6 @@
             };
 
             try {
-                // 1. Guardar en Supabase
                 const { error: errorSupabase } = await clienteSupabase.from('personal_educativo').insert([payload]);
                 
                 if (errorSupabase) {
@@ -408,8 +407,8 @@
                     throw new Error("Fallo en Supabase: " + errorSupabase.message);
                 }
 
-                // 2. Enviar copia a Google Sheets vía Apps Script (Asegúrate de actualizar tu URL aquí si cambió)
-                const urlGoogleAppsScript = "AQUI_TU_URL_DE_APPS_SCRIPT"; 
+                // URL de Apps Script integrada correctamente
+                const urlGoogleAppsScript = "https://script.google.com/macros/s/AKfycbwOq5BaggiiDas9I85xq1rU_PQ7_qjLcwMa73syaj274bAO3Mg7fTLrnj-BmYAaJI8hmA/exec"; 
                 
                 await fetch(urlGoogleAppsScript, {
                     method: 'POST',
