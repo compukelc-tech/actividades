@@ -1,0 +1,53 @@
+async function procesarRegistro(event) {
+    event.preventDefault();
+    const btn = document.getElementById('btn-submit');
+    
+    const doc = document.getElementById('reg-documento').value.trim();
+    const nombres = document.getElementById('reg-nombres').value.trim();
+    const rol = document.getElementById('reg-rol').value;
+    const muni = document.getElementById('reg-municipio').value;
+    const inst = document.getElementById('reg-institucion').value;
+    const clave1 = document.getElementById('reg-clave1').value;
+    const clave2 = document.getElementById('reg-clave2').value;
+
+    // Detectar qué campo de vinculación se llenó según el rol
+    let tipoVinculacion = "";
+    if (rol === 'Docente' || rol === 'Directivo Docente') {
+        tipoVinculacion = document.getElementById('tipo-vinculacion-docente').value;
+    } else if (rol === 'Administrativo') {
+        tipoVinculacion = document.getElementById('tipo-vinculacion-admin').value;
+    } else if (rol === 'Contratista') {
+        tipoVinculacion = document.getElementById('tipo-vinculacion-contrato').value;
+    }
+
+    if(clave1 && clave1 !== clave2) {
+        return alert("Las contraseñas no coinciden. Por favor, verifique.");
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Procesando...";
+
+    // Enviar a la nueva tabla independiente
+    const { error } = await clienteSupabase.from('personal_educativo').insert([{
+        documento: doc,
+        nombres: nombres,
+        rol: rol,
+        tipo_vinculacion: tipoVinculacion,
+        municipio: muni,
+        institucion: inst,
+        clave: clave1,
+        estado: 'pendiente'
+    }]);
+
+    if (error) {
+        alert("Hubo un error al registrar: " + error.message);
+        btn.disabled = false;
+        btn.textContent = "Registrar mis datos en el Directorio";
+    } else {
+        alert(`¡Registro completado con éxito, ${nombres}!\n\nSus datos han sido enviados correctamente al directorio institucional.`);
+        document.getElementById('formulario-registro').reset();
+        mostrarCamposVinculacion(); // Oculta los campos condicionales nuevamente
+        btn.disabled = false;
+        btn.textContent = "Registrar mis datos en el Directorio";
+    }
+}
