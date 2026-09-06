@@ -3,137 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Personal Educativo - compukelc</title>
+    <title>Registro Integral de Personal - compukelc</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="estilos.css">
 
     <style>
-        .fondo-registro { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
-        .tarjeta-registro { background: var(--blanco); width: 100%; max-width: 600px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; border-top: 6px solid var(--rojo-bandera); }
+        .fondo-registro { background-color: #f4f7f6; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+        .tarjeta-registro { background: var(--blanco); width: 100%; max-width: 800px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; border-top: 6px solid var(--rojo-bandera); }
         .cabecera-registro { background: linear-gradient(135deg, var(--azul-institucional), #004080); padding: 30px; text-align: center; color: white; }
         .cabecera-registro h2 { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 22px; }
         .cabecera-registro p { margin: 10px 0 0; font-size: 13px; opacity: 0.9; }
         .cuerpo-registro { padding: 30px; }
+        
+        .seccion-form { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px dashed #eee; }
+        .seccion-form h3 { color: var(--azul-institucional); font-size: 16px; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; }
+        
         .grupo-input { margin-bottom: 20px; }
-        .grupo-input label { display: block; font-size: 12px; font-weight: 700; color: var(--azul-institucional); margin-bottom: 8px; text-transform: uppercase;}
-        .input-form { width: 100%; padding: 12px 15px; border: 2px solid #e1e5eb; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 14px; color: var(--text-main); box-sizing: border-box; transition: border-color 0.3s; }
+        .grupo-input label { display: block; font-size: 12px; font-weight: 700; color: #444; margin-bottom: 8px; text-transform: uppercase;}
+        .input-form { width: 100%; padding: 12px 15px; border: 2px solid #e1e5eb; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 14px; color: var(--text-main); box-sizing: border-box; transition: border-color 0.3s; background: #fff;}
         .input-form:focus { border-color: var(--rojo-bandera); outline: none; }
+        
         .fila-doble { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .btn-registrar { width: 100%; background: var(--rojo-bandera); color: white; border: none; padding: 15px; font-size: 15px; font-weight: 800; text-transform: uppercase; border-radius: 6px; cursor: pointer; transition: background 0.3s, transform 0.2s; margin-top: 10px; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); }
+        .fila-triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        
+        .btn-registrar { width: 100%; background: var(--rojo-bandera); color: white; border: none; padding: 18px; font-size: 16px; font-weight: 800; text-transform: uppercase; border-radius: 6px; cursor: pointer; transition: background 0.3s, transform 0.2s; margin-top: 10px; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); }
         .btn-registrar:hover { background: #b71c1c; transform: translateY(-2px); }
         .btn-registrar:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none;}
-        .enlace-volver { display: block; text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-muted); text-decoration: none; font-weight: 600;}
-        .enlace-volver:hover { color: var(--azul-institucional); text-decoration: underline; }
-        .loader-sheets { font-size: 11px; color: #ff9800; font-weight: bold; float: right; margin-top: -25px; margin-right: 5px; position: relative; z-index: 2;}
         
-        /* Animación suave para los campos condicionales */
-        .campo-condicional { display: none; animation: aparecer 0.4s ease forwards; background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid var(--amarillo-oro); margin-bottom: 20px;}
+        .campo-condicional { display: none; animation: aparecer 0.4s ease forwards; background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid var(--amarillo-oro); margin-top: 15px;}
         @keyframes aparecer { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="franja-superior"></div>
-
     <div class="fondo-registro">
         <div class="tarjeta-registro">
             <div class="cabecera-registro">
                 <h2>Directorio Educativo Público</h2>
-                <p>Norte de Santander - Registro de Personal</p>
+                <p>Norte de Santander - Registro Integral de Personal</p>
             </div>
             
             <div class="cuerpo-registro">
                 <form id="formulario-registro" onsubmit="procesarRegistro(event)">
                     
-                    <div class="fila-doble">
-                        <div class="grupo-input">
-                            <label>Número de Documento</label>
-                            <input type="number" id="reg-documento" class="input-form" placeholder="Ej: 1090..." required>
+                    <!-- SECCIÓN 1: DATOS PERSONALES -->
+                    <div class="seccion-form">
+                        <h3>1. Datos Personales</h3>
+                        <div class="fila-doble">
+                            <div class="grupo-input">
+                                <label>Nombres Completos</label>
+                                <input type="text" id="reg-nombres" class="input-form" required>
+                            </div>
+                            <div class="grupo-input">
+                                <label>Apellidos Completos</label>
+                                <input type="text" id="reg-apellidos" class="input-form" required>
+                            </div>
                         </div>
-                        <div class="grupo-input">
-                            <label>Nombres y Apellidos</label>
-                            <input type="text" id="reg-nombres" class="input-form" placeholder="Nombres completos" required>
+
+                        <div class="fila-triple">
+                            <div class="grupo-input">
+                                <label>Tipo Doc.</label>
+                                <select id="reg-tipo-doc" class="input-form" required>
+                                    <option value="CC">Cédula de Ciudadanía</option>
+                                    <option value="CE">Cédula de Extranjería</option>
+                                    <option value="PEP">PEP / PPT</option>
+                                </select>
+                            </div>
+                            <div class="grupo-input">
+                                <label>Número de Documento</label>
+                                <input type="number" id="reg-documento" class="input-form" required>
+                            </div>
+                            <div class="grupo-input">
+                                <label>Año Expedición</label>
+                                <input type="number" id="reg-anio-exp" class="input-form" placeholder="Ej: 2010" required>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="grupo-input">
-                        <label>Rol Funcional (Define su tipo de vinculación)</label>
-                        <select id="reg-rol" class="input-form" onchange="mostrarCamposVinculacion()" required>
-                            <option value="">-- Seleccione su cargo --</option>
-                            <option value="Docente">Docente</option>
-                            <option value="Directivo Docente">Directivo Docente (Rector/Coordinador)</option>
-                            <option value="Administrativo">Personal Administrativo</option>
-                            <option value="Contratista">Contratista Externo / Apoyo</option>
-                        </select>
-                    </div>
-
-                    <!-- 1. Para Docentes y Directivos -->
-                    <div id="condicional-docente" class="campo-condicional">
-                        <label>Tipo de Nombramiento Docente</label>
-                        <select id="tipo-vinculacion-docente" class="input-form">
-                            <option value="">-- Seleccione nombramiento --</option>
-                            <option value="En Propiedad (Carrera Docente)">En Propiedad (Carrera Docente)</option>
-                            <option value="En Período de Prueba">En Período de Prueba</option>
-                            <option value="Provisional">Provisional</option>
-                            <option value="Etnoeducador">Etnoeducador</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-
-                    <!-- 2. Para Administrativos -->
-                    <div id="condicional-administrativo" class="campo-condicional">
-                        <label>Tipo de Nombramiento Administrativo</label>
-                        <select id="tipo-vinculacion-admin" class="input-form">
-                            <option value="">-- Seleccione nombramiento --</option>
-                            <option value="Carrera Administrativa">Carrera Administrativa</option>
-                            <option value="Provisionalidad">Provisionalidad</option>
-                            <option value="Libre Nombramiento y Remoción">Libre Nombramiento y Remoción</option>
-                            <option value="Período de Prueba">Período de Prueba</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-
-                    <!-- 3. Para Contratistas -->
-                    <div id="condicional-contrato" class="campo-condicional">
-                        <label>Tipo de Contrato (Ley 80)</label>
-                        <select id="tipo-vinculacion-contrato" class="input-form">
-                            <option value="">-- Seleccione contrato --</option>
-                            <option value="Prestación de Servicios Profesionales">Prestación de Servicios Profesionales</option>
-                            <option value="Prestación de Apoyo a la Gestión">Prestación de Apoyo a la Gestión</option>
-                            <option value="Contrato de Obra / Consultoría">Contrato de Obra / Consultoría</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-
-                    <div class="fila-doble">
-                        <div class="grupo-input">
-                            <label>Municipio <span id="indicador-carga" class="loader-sheets">Cargando...</span></label>
-                            <select id="reg-municipio" class="input-form" onchange="actualizarInstituciones()" required disabled>
-                                <option value="">Esperando datos...</option>
-                            </select>
-                        </div>
-                        <div class="grupo-input">
-                            <label>Institución Educativa</label>
-                            <select id="reg-institucion" class="input-form" required disabled>
-                                <option value="">Seleccione Municipio</option>
-                            </select>
+                        <div class="fila-doble">
+                            <div class="grupo-input">
+                                <label>Fecha de Nacimiento</label>
+                                <input type="date" id="reg-nacimiento" class="input-form" required>
+                            </div>
+                            <div class="grupo-input">
+                                <label>Sexo</label>
+                                <select id="reg-sexo" class="input-form" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="Femenino">Femenino</option>
+                                    <option value="Masculino">Masculino</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="fila-doble">
+                    <!-- SECCIÓN 2: CONTACTO -->
+                    <div class="seccion-form">
+                        <h3>2. Datos de Contacto</h3>
                         <div class="grupo-input">
-                            <label>Crear Contraseña (Opcional)</label>
-                            <input type="password" id="reg-clave1" class="input-form" placeholder="Mínimo 8 caracteres">
+                            <label>Dirección de Residencia (Municipio, Barrio, Dirección)</label>
+                            <input type="text" id="reg-direccion" class="input-form" placeholder="Ej: Cúcuta, San Luis, Calle 1 #2-3" required>
                         </div>
-                        <div class="grupo-input">
-                            <label>Confirmar Contraseña</label>
-                            <input type="password" id="reg-clave2" class="input-form" placeholder="Repita la clave">
+                        <div class="fila-triple">
+                            <div class="grupo-input">
+                                <label>Teléfono Celular</label>
+                                <input type="tel" id="reg-telefono" class="input-form" required>
+                            </div>
+                            <div class="grupo-input">
+                                <label>Email Personal</label>
+                                <input type="email" id="reg-email-per" class="input-form" required>
+                            </div>
+                            <div class="grupo-input">
+                                <label>Email Institucional</label>
+                                <input type="email" id="reg-email-inst" class="input-form">
+                            </div>
                         </div>
                     </div>
 
-                    <button type="submit" id="btn-submit" class="btn-registrar" style="background:#002B5C;">Registrar mis datos en el Directorio</button>
+                    <!-- SECCIÓN 3: SEGURIDAD Y SALUD -->
+                    <div class="seccion-form">
+                        <h3>3. Seguridad y Bienestar</h3>
+                        <div class="fila-triple">
+                            <div class="grupo-input">
+                                <label>Contacto Emergencia (Nombre y Parentesco)</label>
+                                <input type="text" id="reg-contacto-emg" class="input-form" placeholder="Ej: María Pérez (Madre)" required>
+                            </div>
+                            <div class="grupo-input">
+                                <label>Teléfono Emergencia</label>
+                                <input type="tel" id="reg-telefono-emg" class="input-form" required>
+                            </div>
+                            <div class="grupo-input">
+                                <label>Grupo Sanguíneo / RH</label>
+                                <select id="reg-rh" class="input-form" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="O+">O+</option><option value="O-">O-</option>
+                                    <option value="A+">A+</option><option value="A-">A-</option>
+                                    <option value="B+">B+</option><option value="B-">B-</option>
+                                    <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grupo-input">
+                            <label>Condiciones de salud o requerimientos de accesibilidad física (Indique "Ninguna" si no aplica)</label>
+                            <textarea id="reg-salud" class="input-form" rows="2" placeholder="Alergias severas, condiciones médicas importantes, etc." required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 4: PERFIL LABORAL -->
+                    <div class="seccion-form">
+                        <h3>4. Perfil Institucional</h3>
+                        
+                        <div class="fila-doble">
+                            <div class="grupo-input">
+                                <label>Rol Funcional</label>
+                                <select id="reg-rol" class="input-form" onchange="mostrarCamposVinculacion()" required>
+                                    <option value="">-- Seleccione su cargo --</option>
+                                    <option value="Docente">Docente</option>
+                                    <option value="Directivo Docente">Directivo Docente</option>
+                                    <option value="Administrativo">Personal Administrativo</option>
+                                    <option value="Contratista">Contratista Externo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Condicionales de Nombramiento -->
+                        <div id="campos-dinamicos-laborales" class="campo-condicional">
+                            <div class="fila-doble">
+                                <div class="grupo-input">
+                                    <label id="label-vinculacion">Tipo de Vinculación</label>
+                                    <select id="reg-vinculacion" class="input-form"></select>
+                                </div>
+                                <div class="grupo-input" id="contenedor-anio-nom" style="display:none;">
+                                    <label>Año de Nombramiento / Ingreso</label>
+                                    <input type="number" id="reg-anio-nom" class="input-form" placeholder="Ej: 2015">
+                                </div>
+                            </div>
+                            <div class="fila-doble" id="contenedor-escalafon" style="display:none;">
+                                <div class="grupo-input">
+                                    <label>Decreto Estatuto Docente</label>
+                                    <select id="reg-decreto" class="input-form">
+                                        <option value="">Seleccione...</option>
+                                        <option value="2277 de 1979">2277 de 1979</option>
+                                        <option value="1278 de 2002">1278 de 2002</option>
+                                        <option value="Etnoeducador">Régimen Etnoeducador</option>
+                                        <option value="Provisional">No aplica (Provisional)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ubicación con Buscador Inteligente -->
+                        <div class="fila-doble" style="margin-top:20px;">
+                            <div class="grupo-input">
+                                <label>Municipio <span id="indicador-carga" style="color:#ff9800; font-size:11px; float:right;">Cargando BD...</span></label>
+                                <select id="reg-municipio" class="input-form" onchange="actualizarInstituciones()" required disabled>
+                                    <option value="">Esperando datos...</option>
+                                </select>
+                            </div>
+                            <div class="grupo-input">
+                                <label>Institución Educativa (Escriba para filtrar)</label>
+                                <input type="text" id="reg-institucion" class="input-form" list="lista-instituciones" placeholder="Busque su colegio..." autocomplete="off" required disabled>
+                                <datalist id="lista-instituciones"></datalist>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 5: CLAVE -->
+                    <div class="seccion-form" style="border:none;">
+                        <h3>5. Datos de Acceso</h3>
+                        <div class="fila-doble">
+                            <div class="grupo-input">
+                                <label>Crear Contraseña (Mínimo 8 caracteres)</label>
+                                <input type="password" id="reg-clave1" class="input-form" required minlength="8">
+                            </div>
+                            <div class="grupo-input">
+                                <label>Confirmar Contraseña</label>
+                                <input type="password" id="reg-clave2" class="input-form" required minlength="8">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-submit" class="btn-registrar">Registrar Datos Oficiales</button>
                 </form>
             </div>
         </div>
@@ -145,136 +235,172 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // LÓGICA DE CAMPOS CONDICIONALES
+        // LÓGICA DE CAMPOS CONDICIONALES LABORALES
         function mostrarCamposVinculacion() {
             const rol = document.getElementById('reg-rol').value;
-            
-            const divs = ['condicional-docente', 'condicional-administrativo', 'condicional-contrato'];
-            const selects = ['tipo-vinculacion-docente', 'tipo-vinculacion-admin', 'tipo-vinculacion-contrato'];
-            
-            divs.forEach(id => document.getElementById(id).style.display = 'none');
-            selects.forEach(id => document.getElementById(id).required = false);
+            const contenedor = document.getElementById('campos-dinamicos-laborales');
+            const selectVinc = document.getElementById('reg-vinculacion');
+            const contAnio = document.getElementById('contenedor-anio-nom');
+            const contEscalafon = document.getElementById('contenedor-escalafon');
+
+            selectVinc.innerHTML = '<option value="">-- Seleccione nombramiento --</option>';
+            contenedor.style.display = 'none';
+            contAnio.style.display = 'none';
+            contEscalafon.style.display = 'none';
+
+            if (!rol) return;
+
+            contenedor.style.display = 'block';
 
             if (rol === 'Docente' || rol === 'Directivo Docente') {
-                document.getElementById('condicional-docente').style.display = 'block';
-                document.getElementById('tipo-vinculacion-docente').required = true;
+                selectVinc.innerHTML += `
+                    <option value="En Propiedad (Carrera Docente)">En Propiedad (Carrera Docente)</option>
+                    <option value="En Período de Prueba">En Período de Prueba</option>
+                    <option value="Provisional">Provisional</option>
+                    <option value="Etnoeducador">Etnoeducador</option>
+                    <option value="Otro">Otro</option>
+                `;
+                contAnio.style.display = 'block';
+                contEscalafon.style.display = 'block';
             } 
             else if (rol === 'Administrativo') {
-                document.getElementById('condicional-administrativo').style.display = 'block';
-                document.getElementById('tipo-vinculacion-admin').required = true;
+                selectVinc.innerHTML += `
+                    <option value="Carrera Administrativa">Carrera Administrativa</option>
+                    <option value="Provisionalidad">Provisionalidad</option>
+                    <option value="Libre Nombramiento y Remoción">Libre Nombramiento y Remoción</option>
+                    <option value="Período de Prueba">Período de Prueba</option>
+                    <option value="Otro">Otro</option>
+                `;
+                contAnio.style.display = 'block';
             } 
             else if (rol === 'Contratista') {
-                document.getElementById('condicional-contrato').style.display = 'block';
-                document.getElementById('tipo-vinculacion-contrato').required = true;
+                selectVinc.innerHTML += `
+                    <option value="Prestación de Servicios Profesionales">Prestación de Servicios Profesionales</option>
+                    <option value="Prestación de Apoyo a la Gestión">Prestación de Apoyo a la Gestión</option>
+                    <option value="Contrato de Obra / Consultoría">Contrato de Obra / Consultoría</option>
+                    <option value="Otro">Otro</option>
+                `;
             }
         }
 
-        // LÓGICA GOOGLE SHEETS
+        // GOOGLE SHEETS & FILTRADO INTELIGENTE
         const urlGoogleSheetsCSV = "https://docs.google.com/spreadsheets/d/1Y0jIu7j5r-pOItt2RCcoJC9kWeH1qyjCUf-gT2XgFPc/export?format=csv";
         let directorioData = {};
 
         function interpretarCSV(texto) {
-            let p = '', fila = [''], datosRetorno = [fila], i = 0, r = 0, s = !0, l;
+            let p = '', fila = [''], datos = [fila], i = 0, r = 0, s = !0, l;
             for (let l of texto) {
                 if ('"' === l) { if (s && l === p) fila[i] += l; s = !s; } 
                 else if (',' === l && s) l = fila[++i] = '';
-                else if ('\n' === l && s) { if ('\r' === p) fila[i] = fila[i].slice(0, -1); fila = datosRetorno[++r] = [l = '']; i = 0; } 
+                else if ('\n' === l && s) { if ('\r' === p) fila[i] = fila[i].slice(0, -1); fila = datos[++r] = [l = '']; i = 0; } 
                 else fila[i] += l; p = l;
             }
-            return datosRetorno;
+            return datos;
         }
 
         async function cargarDirectorioGoogleSheets() {
             try {
-                const respuesta = await fetch(urlGoogleSheetsCSV);
-                const textoCsv = await respuesta.text();
-                const matrizDatos = interpretarCSV(textoCsv);
+                const res = await fetch(urlGoogleSheetsCSV);
+                const txt = await res.text();
+                const matriz = interpretarCSV(txt);
                 
-                for(let i = 1; i < matrizDatos.length; i++) {
-                    if(matrizDatos[i].length >= 2) {
-                        let municipio = matrizDatos[i][0].trim();
-                        let institucion = matrizDatos[i][1].trim();
-                        if(municipio && institucion) {
-                            if(!directorioData[municipio]) directorioData[municipio] = [];
-                            if(!directorioData[municipio].includes(institucion)) directorioData[municipio].push(institucion);
+                for(let i = 1; i < matriz.length; i++) {
+                    if(matriz[i].length >= 2) {
+                        let muni = matriz[i][0].trim();
+                        let inst = matriz[i][1].trim();
+                        if(muni && inst) {
+                            if(!directorioData[muni]) directorioData[muni] = [];
+                            if(!directorioData[muni].includes(inst)) directorioData[muni].push(inst);
                         }
                     }
                 }
                 const selectMuni = document.getElementById('reg-municipio');
                 selectMuni.innerHTML = '<option value="">-- Seleccione Municipio --</option>';
-                Object.keys(directorioData).sort().forEach(muni => {
-                    const opt = document.createElement('option'); opt.value = muni; opt.textContent = muni; selectMuni.appendChild(opt);
+                Object.keys(directorioData).sort().forEach(m => {
+                    selectMuni.innerHTML += `<option value="${m}">${m}</option>`;
                 });
                 document.getElementById('indicador-carga').style.display = 'none';
                 selectMuni.disabled = false;
             } catch (error) {
-                console.error("Error Sheets:", error);
-                document.getElementById('indicador-carga').textContent = "Error de conexión";
+                console.error("Error BD:", error);
+                document.getElementById('indicador-carga').textContent = "Error BD";
                 document.getElementById('indicador-carga').style.color = "red";
             }
         }
 
         function actualizarInstituciones() {
             const muni = document.getElementById('reg-municipio').value;
-            const selectInst = document.getElementById('reg-institucion');
-            selectInst.innerHTML = '<option value="">-- Seleccione Institución --</option>';
+            const inputInst = document.getElementById('reg-institucion');
+            const dataList = document.getElementById('lista-instituciones');
+            
+            inputInst.value = ''; // Limpiar campo
+            dataList.innerHTML = '';
+            
             if(muni && directorioData[muni]) {
                 directorioData[muni].sort().forEach(inst => {
-                    const opt = document.createElement('option'); opt.value = inst; opt.textContent = inst; selectInst.appendChild(opt);
+                    dataList.innerHTML += `<option value="${inst}">`;
                 });
-                selectInst.disabled = false;
-            } else { selectInst.disabled = true; }
+                inputInst.disabled = false;
+            } else {
+                inputInst.disabled = true;
+            }
         }
 
+        // ENVÍO DE DATOS A SUPABASE
         async function procesarRegistro(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-submit');
             
-            const doc = document.getElementById('reg-documento').value.trim();
-            const nombres = document.getElementById('reg-nombres').value.trim();
-            const rol = document.getElementById('reg-rol').value;
-            const muni = document.getElementById('reg-municipio').value;
-            const inst = document.getElementById('reg-institucion').value;
             const clave1 = document.getElementById('reg-clave1').value;
             const clave2 = document.getElementById('reg-clave2').value;
 
-            let tipoVinculacion = "";
-            if (rol === 'Docente' || rol === 'Directivo Docente') {
-                tipoVinculacion = document.getElementById('tipo-vinculacion-docente').value;
-            } else if (rol === 'Administrativo') {
-                tipoVinculacion = document.getElementById('tipo-vinculacion-admin').value;
-            } else if (rol === 'Contratista') {
-                tipoVinculacion = document.getElementById('tipo-vinculacion-contrato').value;
-            }
-
-            if(clave1 && clave1 !== clave2) {
-                return alert("Las contraseñas no coinciden. Por favor, verifique.");
+            if(clave1 !== clave2) {
+                return alert("Las contraseñas no coinciden.");
             }
 
             btn.disabled = true;
-            btn.textContent = "Procesando...";
+            btn.textContent = "Guardando perfil...";
 
-            const { error } = await clienteSupabase.from('personal_educativo').insert([{
-                documento: doc,
-                nombres: nombres,
-                rol: rol,
-                tipo_vinculacion: tipoVinculacion,
-                municipio: muni,
-                institucion: inst,
+            const payload = {
+                tipo_documento: document.getElementById('reg-tipo-doc').value,
+                documento: document.getElementById('reg-documento').value,
+                nombres: document.getElementById('reg-nombres').value,
+                apellidos: document.getElementById('reg-apellidos').value,
+                anio_expedicion: document.getElementById('reg-anio-exp').value || null,
+                fecha_nacimiento: document.getElementById('reg-nacimiento').value || null,
+                sexo: document.getElementById('reg-sexo').value,
+                direccion: document.getElementById('reg-direccion').value,
+                telefono: document.getElementById('reg-telefono').value,
+                email_personal: document.getElementById('reg-email-per').value,
+                email_institucional: document.getElementById('reg-email-inst').value,
+                contacto_emergencia: document.getElementById('reg-contacto-emg').value,
+                telefono_emergencia: document.getElementById('reg-telefono-emg').value,
+                grupo_sanguineo: document.getElementById('reg-rh').value,
+                condiciones_salud: document.getElementById('reg-salud').value,
+                rol: document.getElementById('reg-rol').value,
+                tipo_vinculacion: document.getElementById('reg-vinculacion').value || null,
+                anio_nombramiento: document.getElementById('reg-anio-nom').value || null,
+                decreto_escalafon: document.getElementById('reg-decreto').value || null,
+                municipio: document.getElementById('reg-municipio').value,
+                institucion: document.getElementById('reg-institucion').value,
                 clave: clave1,
                 estado: 'pendiente'
-            }]);
+            };
+
+            const { error } = await clienteSupabase.from('personal_educativo').insert([payload]);
 
             if (error) {
-                alert("Hubo un error al registrar: " + error.message);
+                if(error.code === '23505') alert("Error: El número de documento ya se encuentra registrado.");
+                else alert("Hubo un error al registrar: " + error.message);
+                
                 btn.disabled = false;
-                btn.textContent = "Registrar mis datos en el Directorio";
+                btn.textContent = "Registrar Datos Oficiales";
             } else {
-                alert(`¡Registro completado con éxito, ${nombres}!\n\nSus datos han sido enviados correctamente al directorio institucional.`);
+                alert(`¡Registro completado con éxito!\n\nLos datos han sido enviados al directorio de compukelc.`);
                 document.getElementById('formulario-registro').reset();
                 mostrarCamposVinculacion(); 
                 btn.disabled = false;
-                btn.textContent = "Registrar mis datos en el Directorio";
+                btn.textContent = "Registrar Datos Oficiales";
             }
         }
 
