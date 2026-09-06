@@ -11,7 +11,7 @@
 
     <style>
         .fondo-registro { background-color: #f4f7f6; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
-        .tarjeta-registro { background: var(--blanco); width: 100%; max-width: 800px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; border-top: 6px solid var(--rojo-bandera); }
+        .tarjeta-registro { background: var(--blanco); width: 100%; max-width: 850px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; border-top: 6px solid var(--rojo-bandera); }
         .cabecera-registro { background: linear-gradient(135deg, var(--azul-institucional), #004080); padding: 30px; text-align: center; color: white; }
         .cabecera-registro h2 { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 22px; }
         .cabecera-registro p { margin: 10px 0 0; font-size: 13px; opacity: 0.9; }
@@ -27,6 +27,7 @@
         
         .fila-doble { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .fila-triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .fila-cuadruple { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
         
         .btn-registrar { width: 100%; background: var(--rojo-bandera); color: white; border: none; padding: 18px; font-size: 16px; font-weight: 800; text-transform: uppercase; border-radius: 6px; cursor: pointer; transition: background 0.3s, transform 0.2s; margin-top: 10px; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); }
         .btn-registrar:hover { background: #b71c1c; transform: translateY(-2px); }
@@ -73,11 +74,11 @@
                             </div>
                             <div class="grupo-input">
                                 <label>Número de Documento</label>
-                                <input type="number" id="reg-documento" class="input-form" required>
+                                <input type="text" inputmode="numeric" pattern="[0-9]*" id="reg-documento" class="input-form" placeholder="Sin puntos ni espacios" required>
                             </div>
                             <div class="grupo-input">
                                 <label>Año Expedición</label>
-                                <input type="number" id="reg-anio-exp" class="input-form" placeholder="Ej: 2010" required>
+                                <input type="text" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" id="reg-anio-exp" class="input-form" placeholder="Ej: 2010" required>
                             </div>
                         </div>
 
@@ -107,7 +108,7 @@
                         <div class="fila-triple">
                             <div class="grupo-input">
                                 <label>Teléfono Celular</label>
-                                <input type="tel" id="reg-telefono" class="input-form" required>
+                                <input type="text" inputmode="numeric" pattern="[0-9]*" id="reg-telefono" class="input-form" required>
                             </div>
                             <div class="grupo-input">
                                 <label>Email Personal</label>
@@ -120,17 +121,22 @@
                         </div>
                     </div>
 
-                    <!-- SECCIÓN 3: SEGURIDAD Y SALUD -->
+                    <!-- SECCIÓN 3: SEGURIDAD Y SALUD (4 campos distribuidos equitativamente) -->
                     <div class="seccion-form">
                         <h3>3. Seguridad y Bienestar</h3>
-                        <div class="fila-triple">
+                        
+                        <div class="fila-cuadruple">
                             <div class="grupo-input">
-                                <label>Contacto Emergencia (Nombre y Parentesco)</label>
-                                <input type="text" id="reg-contacto-emg" class="input-form" placeholder="Ej: María Pérez (Madre)" required>
+                                <label>Nombre Contacto Emergencia</label>
+                                <input type="text" id="reg-contacto-nombre" class="input-form" placeholder="Ej: María Pérez" required>
                             </div>
                             <div class="grupo-input">
-                                <label>Teléfono Emergencia</label>
-                                <input type="tel" id="reg-telefono-emg" class="input-form" required>
+                                <label>Parentesco</label>
+                                <input type="text" id="reg-contacto-parentesco" class="input-form" placeholder="Ej: Madre / Cónyuge" required>
+                            </div>
+                            <div class="grupo-input">
+                                <label>Teléfono de Emergencia</label>
+                                <input type="text" inputmode="numeric" pattern="[0-9]*" id="reg-telefono-emg" class="input-form" required>
                             </div>
                             <div class="grupo-input">
                                 <label>Grupo Sanguíneo / RH</label>
@@ -143,6 +149,7 @@
                                 </select>
                             </div>
                         </div>
+
                         <div class="grupo-input">
                             <label>Condiciones de salud o requerimientos de accesibilidad física (Indique "Ninguna" si no aplica)</label>
                             <textarea id="reg-salud" class="input-form" rows="2" placeholder="Alergias severas, condiciones médicas importantes, etc." required></textarea>
@@ -175,7 +182,7 @@
                                 </div>
                                 <div class="grupo-input" id="contenedor-anio-nom" style="display:none;">
                                     <label>Año de Nombramiento / Ingreso</label>
-                                    <input type="number" id="reg-anio-nom" class="input-form" placeholder="Ej: 2015">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" id="reg-anio-nom" class="input-form" placeholder="Ej: 2015">
                                 </div>
                             </div>
                             <div class="fila-doble" id="contenedor-escalafon" style="display:none;">
@@ -283,7 +290,7 @@
             }
         }
 
-        // GOOGLE SHEETS & FILTRADO INTELIGENTE
+        // GOOGLE SHEETS NUEVA (Con la URL proporcionada)
         const urlGoogleSheetsCSV = "https://docs.google.com/spreadsheets/d/1Y0jIu7j5r-pOItt2RCcoJC9kWeH1qyjCUf-gT2XgFPc/export?format=csv";
         let directorioData = {};
 
@@ -333,7 +340,7 @@
             const inputInst = document.getElementById('reg-institucion');
             const dataList = document.getElementById('lista-instituciones');
             
-            inputInst.value = ''; // Limpiar campo
+            inputInst.value = '';
             dataList.innerHTML = '';
             
             if(muni && directorioData[muni]) {
@@ -346,7 +353,7 @@
             }
         }
 
-        // ENVÍO DE DATOS A SUPABASE
+        // ENVÍO DE DATOS A SUPABASE Y GOOGLE SHEETS
         async function procesarRegistro(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-submit');
@@ -359,7 +366,12 @@
             }
 
             btn.disabled = true;
-            btn.textContent = "Guardando perfil...";
+            btn.textContent = "Guardando perfil y sincronizando...";
+
+            // Concatenar nombre y parentesco en un formato limpio para Supabase (ej: "María Pérez - Madre")
+            const nombreEmergencia = document.getElementById('reg-contacto-nombre').value.trim();
+            const parentescoEmergencia = document.getElementById('reg-contacto-parentesco').value.trim();
+            const contactoEmergenciaCompleto = `${nombreEmergencia} (${parentescoEmergencia})`;
 
             const payload = {
                 tipo_documento: document.getElementById('reg-tipo-doc').value,
@@ -373,7 +385,7 @@
                 telefono: document.getElementById('reg-telefono').value,
                 email_personal: document.getElementById('reg-email-per').value,
                 email_institucional: document.getElementById('reg-email-inst').value,
-                contacto_emergencia: document.getElementById('reg-contacto-emg').value,
+                contacto_emergencia: contactoEmergenciaCompleto,
                 telefono_emergencia: document.getElementById('reg-telefono-emg').value,
                 grupo_sanguineo: document.getElementById('reg-rh').value,
                 condiciones_salud: document.getElementById('reg-salud').value,
@@ -387,18 +399,32 @@
                 estado: 'pendiente'
             };
 
-            const { error } = await clienteSupabase.from('personal_educativo').insert([payload]);
-
-            if (error) {
-                if(error.code === '23505') alert("Error: El número de documento ya se encuentra registrado.");
-                else alert("Hubo un error al registrar: " + error.message);
+            try {
+                // 1. Guardar en Supabase
+                const { error: errorSupabase } = await clienteSupabase.from('personal_educativo').insert([payload]);
                 
-                btn.disabled = false;
-                btn.textContent = "Registrar Datos Oficiales";
-            } else {
-                alert(`¡Registro completado con éxito!\n\nLos datos han sido enviados al directorio de compukelc.`);
+                if (errorSupabase) {
+                    if(errorSupabase.code === '23505') throw new Error("El número de documento ya está registrado.");
+                    throw new Error("Fallo en Supabase: " + errorSupabase.message);
+                }
+
+                // 2. Enviar copia a Google Sheets vía Apps Script (Asegúrate de actualizar tu URL aquí si cambió)
+                const urlGoogleAppsScript = "AQUI_TU_URL_DE_APPS_SCRIPT"; 
+                
+                await fetch(urlGoogleAppsScript, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                alert(`¡Registro completado con éxito!\n\nLos datos han sido enviados al directorio y respaldados correctamente.`);
                 document.getElementById('formulario-registro').reset();
                 mostrarCamposVinculacion(); 
+
+            } catch (error) {
+                alert("Error: " + error.message);
+            } finally {
                 btn.disabled = false;
                 btn.textContent = "Registrar Datos Oficiales";
             }
