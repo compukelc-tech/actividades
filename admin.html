@@ -47,6 +47,7 @@
     <div class="container">
         <a href="index.html" class="btn-volver">← Volver al Portal Principal</a>
 
+        <!-- TABLA 1: GESTIÓN DE ADMINISTRADORES (Visible solo para el Superadmin 1090391929) -->
         <div id="contenedor-seccion-admins" style="margin-bottom: 40px; display: none;">
             <h3>Gestión de Administradores (Acceso al Panel)</h3>
             <p style="font-size: 12px; color: #666;">Control exclusivo de cuentas con permisos de administración.</p>
@@ -69,6 +70,7 @@
             </div>
         </div>
 
+        <!-- TABLA 2: GESTIÓN DE PERSONAL EDUCATIVO -->
         <div class="seccion-admin" style="margin-top:0; border-top:none; padding-top:0;">
             <h3>Gestión de Personal Educativo (Registros del Portal)</h3>
             <p style="font-size: 12px; color: #666;">Personal registrado a través del formulario público.</p>
@@ -91,6 +93,7 @@
             </div>
         </div>
 
+        <!-- SECCIÓN 1: CREAR ÁLBUM -->
         <div class="seccion-admin">
             <h3>1. Crear Nuevo Álbum de Galería</h3>
             <input type="text" id="album-titulo" placeholder="Título del Álbum" style="margin-bottom: 15px;">
@@ -101,6 +104,7 @@
             </div>
         </div>
 
+        <!-- SECCIÓN 2: GESTIONAR ÁLBUMES -->
         <div class="seccion-admin">
             <h3>2. Gestionar Álbumes</h3>
             <div class="form-grid">
@@ -114,6 +118,7 @@
             <div id="contenedor-fotos-album" style="display: none; margin-top: 20px;"><div id="grilla-fotos-editar" class="grid-editar-fotos"></div></div>
         </div>
 
+        <!-- SECCIÓN 3: PUBLICAR EVENTO -->
         <div class="seccion-admin">
             <h3>3. Publicar Nuevo Evento</h3>
             <input type="text" id="titulo-evento" placeholder="Título" style="margin-bottom: 15px;">
@@ -128,6 +133,7 @@
             <button class="btn-accion" onclick="publicarEventoConPublicidad()">Publicar Evento</button>
         </div>
 
+        <!-- SECCIÓN 4: CONFIGURACIÓN VISUAL TOTAL -->
         <div class="seccion-admin">
             <h3>4. Configuración Visual Total de la Cabecera</h3>
             <div class="caja-herramienta" style="margin-bottom: 20px; background: #eef2f7; border-color: #c1d5e6;">
@@ -171,8 +177,8 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZHhnem9wYWdobWNxcXZibHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODIxODQsImV4cCI6MjEwMzc1ODE4NH0.-LGiK5alHalxQ5b8c5XE_H3o-fIWB4Mj4tVZKpEYuyQ'; 
         const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
-        // ENLACE OFICIAL APPS SCRIPT INYECTADO
-        const urlGoogleAppsScript = "https://script.google.com/macros/s/AKfycbxi91oU9jC-1D8BDy0AU-g9JBYSpt4iTFHgXavr3itNamx1I2katKIr4hJVPHJakdv3Rw/exec";
+        // ENLACE OFICIAL APPS SCRIPT INYECTADO (NUEVA BASE DE DATOS - MINUTA)
+        const urlGoogleAppsScript = "https://script.google.com/macros/s/AKfycbxhVS_qMWdWCO8k-F57aFRlnhqjLbKpEKgIjZLOztMe3zIuD4MHdJsc1LFssE2Cj4BT/exec";
 
         const sesionGuardada = localStorage.getItem('sesion_activa');
         if (!sesionGuardada) { window.location.href = 'login.html'; }
