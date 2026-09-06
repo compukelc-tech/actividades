@@ -396,7 +396,8 @@
                 municipio: document.getElementById('reg-municipio').value,
                 institucion: document.getElementById('reg-institucion').value,
                 clave: clave1,
-                estado: 'pendiente'
+                estado: 'pendiente',
+                accion: "registro"
             };
 
             try {
@@ -408,12 +409,12 @@
                 }
 
                 // URL de Apps Script integrada correctamente
-                const urlGoogleAppsScript = "https://script.google.com/macros/s/AKfycbwOq5BaggiiDas9I85xq1rU_PQ7_qjLcwMa73syaj274bAO3Mg7fTLrnj-BmYAaJI8hmA/exec"; 
+                const urlGoogleAppsScript = "https://script.google.com/macros/s/AKfycbyj8Rn7DszwH9EZ3IleUAe2eIW5U_xfgUmfnxKJTnHiF3nLu4kEvkHZsPdXP7xECbc6PQ/exec"; 
                 
                 await fetch(urlGoogleAppsScript, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
 
